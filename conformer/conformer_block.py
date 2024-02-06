@@ -8,6 +8,7 @@ from convolution import ConvolutionModule
 class MultiHeadedAttentionRPE(nn.Module):
     def __init__(self, num_heads: int = 4):
         super().__init__()
+        """ implement MHA with Relative Position """
 
     def forward(self, x):
         return x
@@ -19,14 +20,15 @@ class ConformerBlock(nn.Module):
     multi head attention -> half step = 1
     convolution module -> half step = 1
     """
-    def __init__(self, half_step_residual: bool = True, attention_heads: int = 4):
+    def __init__(self, d_model: int, dropout: float = 0.1, half_step_residual: bool = True, attention_heads: int = 4):
         super().__init__()
         """ 1/2 Feed forward """
         self.ff1 = ResidualConnection(module=FeedForwardNet(), residual_half_step=0.5)
 
-        """ Multi-head Attention with RPE """
-        self.mha = ResidualConnection(module=MultiHeadedAttentionRPE(
-            num_heads=attention_heads
+        """ Multi-head Attention with APE """
+        self.mha = ResidualConnection(module=MultiheadAttention(
+            num_heads=attention_heads,
+            dropout=dropout
         ), residual_half_step=1.0)
 
         """ Convolution Module """
@@ -46,4 +48,4 @@ class ConformerBlock(nn.Module):
 
 if __name__ == "__main__":
     mha = MultiheadAttention(embed_dim=300, num_heads=4, dropout=0.1)
-    print(f"MHA shape: {mha.shape}")
+    print(f"MHA : {mha}")
