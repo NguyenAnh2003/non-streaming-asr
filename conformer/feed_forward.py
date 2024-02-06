@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from .activations import Swish
+from activations import Swish
 
 class FeedForwardNet(nn.Module):
     def __init__(self, input_size: int, output_size: int, dropout: float):
