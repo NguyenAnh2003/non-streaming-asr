@@ -7,7 +7,7 @@ class ResidualConnection(nn.Module):
         self.module = module
         self.half_step = residual_half_step
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """ :return identity + res_step * module_output """
         identity = x
         module_output = self.module(x)
