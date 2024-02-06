@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from .convolution import SubsamplingConv
-from .conformer_block import ConformerBlock
+from convolution import SubsamplingConv
+from conformer_block import ConformerBlock
 
 
 class Decoder(nn.Module):

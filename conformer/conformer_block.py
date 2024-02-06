@@ -43,3 +43,7 @@ class ConformerBlock(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.conformer_block(x)
+
+if __name__ == "__main__":
+    mha = MultiheadAttention(embed_dim=300, num_heads=4, dropout=0.1)
+    print(f"MHA shape: {mha.shape}")

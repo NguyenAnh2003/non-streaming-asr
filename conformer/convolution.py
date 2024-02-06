@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from .activations import Swish
+from activations import Swish
 
 class PointWise1DConv(nn.Module):
     def __init__(self):
