@@ -169,4 +169,4 @@ saved_model/
 **/.ipynb_checkpoints
 
 # dataset LibriSpeech
-utils/librispeech
+data_loader/librispeech
