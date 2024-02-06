@@ -19,6 +19,14 @@ class DepthWise1DConv(nn.Module):
     def forward(self, x:torch.Tensor) -> torch.Tensor:
         return self.dw_conv(x)
 
+class SubsamplingConv(nn.Module):
+    def __init__(self):
+        super(SubsamplingConv, self).__init__()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x
+
+
 class ConvolutionModule(nn.Module):
     """ implemented Conv module sequentially """
     def __init__(self, in_channels: int, out_channels: int,

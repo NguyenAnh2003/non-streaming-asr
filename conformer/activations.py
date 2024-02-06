@@ -7,4 +7,4 @@ class Swish(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """ x including B (learnable param) """
-        return x * torch.sigmoid(x) #
+        return x * torch.sigmoid(x) # alternative method x.sigmoid()

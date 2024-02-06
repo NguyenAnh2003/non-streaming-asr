@@ -21,6 +21,16 @@ class MultiHeadedAttentionRPE(nn.Module):
 class ConformerBlock(nn.Module):
     def __init__(self):
         super().__init__()
+        """ 1/2 Feed forward """
+
+        """ Multi-head Attention with RPE """
+
+        """ Convolution Module """
+
+        """ 1/2 Feed forward """
+
+        """ LayerNorm """
+        self.layer_norm = nn.LayerNorm()
 
     def forward(self, x):
         return
