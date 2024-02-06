@@ -1,18 +1,12 @@
 import torch
 import torch.nn as nn
+from torch.nn import MultiheadAttention
 from modules import ResidualConnection
 from feed_forward import FeedForwardNet
 from convolution import ConvolutionModule
 
-class RelativePositionalEncoding(nn.Module):
-    def __init__(self):
-        super(RelativePositionalEncoding, self).__init__()
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return
-
 class MultiHeadedAttentionRPE(nn.Module):
-    def __init__(self, attention_heads: int = 4):
+    def __init__(self, num_heads: int = 4):
         super().__init__()
 
     def forward(self, x):
@@ -32,7 +26,7 @@ class ConformerBlock(nn.Module):
 
         """ Multi-head Attention with RPE """
         self.mha = ResidualConnection(module=MultiHeadedAttentionRPE(
-            attention_heads=attention_heads
+            num_heads=attention_heads
         ), residual_half_step=1.0)
 
         """ Convolution Module """
