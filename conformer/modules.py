@@ -12,3 +12,7 @@ class ResidualConnection(nn.Module):
         identity = x
         module_output = self.module(x)
         return identity + (self.half_step * module_output)
+
+if __name__ == "__main__":
+    object = ResidualConnection(nn.Linear(in_features=200, out_features=10), residual_half_step=0.5)
+    print(f"Residual output: {object}")
