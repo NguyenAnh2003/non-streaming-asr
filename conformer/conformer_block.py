@@ -23,7 +23,8 @@ class ConformerBlock(nn.Module):
     def __init__(self, d_model: int, dropout: float = 0.1, half_step_residual: bool = True, attention_heads: int = 4):
         super().__init__()
         """ 1/2 Feed forward """
-        self.ff1 = ResidualConnection(module=FeedForwardNet(), residual_half_step=0.5)
+        self.ff1 = ResidualConnection(module=FeedForwardNet(),
+                                      residual_half_step=0.5)
 
         """ Multi-head Attention with APE """
         self.mha = ResidualConnection(module=MultiheadAttention(
@@ -32,10 +33,12 @@ class ConformerBlock(nn.Module):
         ), residual_half_step=1.0)
 
         """ Convolution Module """
-        self.conv_module = ResidualConnection(module=ConvolutionModule(), residual_half_step=1.0)
+        self.conv_module = ResidualConnection(module=ConvolutionModule(),
+                                              residual_half_step=1.0)
 
         """ 1/2 Feed forward """
-        self.ff2 = ResidualConnection(module=ConvolutionModule(), residual_half_step=0.5)
+        self.ff2 = ResidualConnection(module=ConvolutionModule(),
+                                      residual_half_step=0.5)
 
         """ LayerNorm """
         self.layer_norm = nn.LayerNorm()
