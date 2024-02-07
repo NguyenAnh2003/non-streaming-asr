@@ -11,9 +11,12 @@ class FeedForwardNet(nn.Module):
         """
 
         # LayerNorm explained: https://www.pinecone.io/learn/batch-layer-normalization/
-        self.norm_layer = nn.LayerNorm() # config LayerNorm
+        self.norm_layer = nn.LayerNorm(normalized_shape=input_dim) # config LayerNorm
 
-        # -- --- ---- --- --- ---- -- PointWise FeedForward
+        # Swish activation function
+        self.swish = Swish()
+
+        # -- --- ---- --- --- ---- -- PointWise FeedForward appear in Transformer https://arxiv.org/abs/1706.03762
         # config in feats and out feats of sub-linear 1 network
         self.sub_linear1 = nn.Linear(in_features=input_dim,
                                      out_features=hidden_dim, bias=True)
@@ -25,10 +28,6 @@ class FeedForwardNet(nn.Module):
         self.sub_linear2 = nn.Linear(in_features=hidden_dim, out_features=input_dim,
                                      bias=True)  # final Linear layer
         # -- --- ---- --- --- ---- -- PointWise FeedForward
-
-
-        # Swish activation function
-        self.swish = Swish()
 
         # combine all these block to form a sequence FF
         self.chain = nn.Sequential(
@@ -45,4 +44,5 @@ class FeedForwardNet(nn.Module):
         return self.chain(x)  # return output of FF network
 
 if __name__ == "__main__":
-    ff = FeedForwardNet()
+    ff = FeedForwardNet(300, 100, 0.1)
+    print(f"Feed forward net: {ff}")
