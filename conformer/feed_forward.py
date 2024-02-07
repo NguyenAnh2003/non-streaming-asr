@@ -13,6 +13,7 @@ class FeedForwardNet(nn.Module):
         # LayerNorm explained: https://www.pinecone.io/learn/batch-layer-normalization/
         self.norm_layer = nn.LayerNorm() # config LayerNorm
 
+        # -- --- ---- --- --- ---- -- PointWise FeedForward
         # config in feats and out feats of sub-linear 1 network
         self.sub_linear1 = nn.Linear(in_features=input_dim,
                                      out_features=hidden_dim, bias=True)
@@ -23,6 +24,8 @@ class FeedForwardNet(nn.Module):
         # config in feats and out feats of sub-linear 2 network
         self.sub_linear2 = nn.Linear(in_features=hidden_dim, out_features=input_dim,
                                      bias=True)  # final Linear layer
+        # -- --- ---- --- --- ---- -- PointWise FeedForward
+
 
         # Swish activation function
         self.swish = Swish()
