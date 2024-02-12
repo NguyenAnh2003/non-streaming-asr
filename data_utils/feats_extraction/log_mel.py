@@ -1,3 +1,5 @@
+import math
+
 import torch
 import torchaudio
 import torchaudio.functional as F
@@ -23,5 +25,13 @@ def audio_transforms(array, params):
         n_mels=params["n_mels"],
         mel_scale=params["mel_scale"],
     )
+
+    # get mel spectrogram
     mel_spectrogram = F_mel(array)
-    return mel_spectrogram
+
+    # log mel spectrogram
+    log_melspectrogram = F.amplitude_to_DB(mel_spectrogram, multiplier=10, amin=1e-10,
+                                           db_multiplier=math.log10(max(1e-10, 1)))
+
+    # adjust output
+    return log_melspectrogram
