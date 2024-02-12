@@ -7,7 +7,7 @@ def setup_logger(name: str = "example"):
     in *.log files format date for logfile or filename """
 
     # setup filename
-    filename = f"./{name}.log"
+    filename = f"./logs/{name}.log"
 
     # format date logger
     logging.Formatter(datefmt='%Y-%m-%d,%H:%M:%S',fmt='%(asctime)s.%(msecs)03d',)
@@ -20,5 +20,5 @@ def setup_logger(name: str = "example"):
     return logger
 
 if __name__ == "__main__":
-    logger = setup_logger("example2")
+    logger = setup_logger("example")
     logger.info(f"-- SETUP LOGGER --")
