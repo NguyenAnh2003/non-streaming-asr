@@ -4,6 +4,7 @@ import torch
 import torchaudio
 import torchaudio.functional as F
 import torchaudio.transforms as T
+from utils.visualizer import plot_melspectrogram
 
 """ Taking log mel spectrogram of audio """
 def audio_transforms(array, params):
@@ -39,8 +40,10 @@ def audio_transforms(array, params):
     return log_melspectrogram
 
 if __name__ == "__main__":
-    filepath = "../examples/test2.wav"
+    filepath = "../examples/test.wav"
     array, _ = torchaudio.load(filepath)
     params = get_configs("../../configs/audio_extraction.yaml")
     log_melspec = audio_transforms(array, params)
     print(f"Log mel: {log_melspec} Shape: {log_melspec.shape}")
+    log_mel_plot = torch.squeeze(log_melspec)
+    plot_melspectrogram(specgram=log_mel_plot, title="Log Mel")
