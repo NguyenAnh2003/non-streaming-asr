@@ -39,7 +39,7 @@ def audio_transforms(array, params):
     return log_melspectrogram
 
 if __name__ == "__main__":
-    filepath = "../examples/test.wav"
+    filepath = "../examples/test2.wav"
     array, _ = torchaudio.load(filepath)
     params = get_configs("../../configs/audio_extraction.yaml")
     log_melspec = audio_transforms(array, params)
