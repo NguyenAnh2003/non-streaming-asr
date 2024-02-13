@@ -14,11 +14,9 @@ def setup_logger(name: str = "example"):
     # logger basic setup
     logging.basicConfig(filename=filename, encoding='utf-8',
                         level=logging.INFO, format='%(levelname)s:%(message)s')
-    # define logger for returning
-    logger = logging.getLogger(__name__)
-
-    return logger
+    return logging
 
 if __name__ == "__main__":
     logger = setup_logger("example")
+    logger.getLogger(__name__)
     logger.info(f"-- SETUP LOGGER --")
