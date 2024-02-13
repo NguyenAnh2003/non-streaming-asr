@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-def setup_logger(path: str = "./logs/example"):
+def setup_logger(path: str = "./logs/example.log"):
     """ setup logger with logging package all log information will stored
     in *.log files format date for logfile or filename """
 
