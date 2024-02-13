@@ -22,8 +22,8 @@ def plot_waveform(waveform, sr, title="Waveform"):
 def plot_melspectrogram(specgram, title=None, ylabel=None):
     fig, axs = plt.subplots(1, 1)
     axs.set_title(title or "Mel Spectrogram")
-    axs.set_ylabel("Mel frequency")
-    axs.set_xlabel("Time")
+    axs.set_ylabel(ylabel=ylabel)
+    axs.set_xlabel("frames")
     im = axs.imshow(librosa.power_to_db(specgram), origin="lower", aspect="auto")
     fig.colorbar(im, ax=axs)
     plt.show(block=False)

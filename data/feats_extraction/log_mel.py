@@ -46,4 +46,4 @@ if __name__ == "__main__":
     log_melspec = audio_transforms(array, params)
     print(f"Log mel: {log_melspec} Shape: {log_melspec.shape}")
     log_mel_plot = torch.squeeze(log_melspec)
-    plot_melspectrogram(specgram=log_mel_plot, title="Log Mel")
+    plot_melspectrogram(specgram=log_mel_plot, title="Log Mel", ylabel="banks")
