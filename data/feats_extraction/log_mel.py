@@ -1,5 +1,5 @@
 import math
-
+from utils.utils import get_configs
 import torch
 import torchaudio
 import torchaudio.functional as F
@@ -12,6 +12,8 @@ def audio_transforms(array, params):
     :param params: params config in yaml file
     :return: log mel spectrogram
     """
+
+    # define mel spec transform function
     F_mel = T.MelSpectrogram(
         sample_rate=params["sample_rate"],
         n_fft=params["n_fft"],
@@ -35,3 +37,10 @@ def audio_transforms(array, params):
 
     # adjust output
     return log_melspectrogram
+
+if __name__ == "__main__":
+    filepath = "../examples/test.wav"
+    array, _ = torchaudio.load(filepath)
+    params = get_configs("../../configs/audio_extraction.yaml")
+    log_melspec = audio_transforms(array, params)
+    print(f"Log mel: {log_melspec}")
