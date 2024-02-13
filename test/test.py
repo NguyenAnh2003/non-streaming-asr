@@ -1,10 +1,5 @@
-# import torchaudio
-#
-# audio, sample = torchaudio.load("hehe.wav")
-#
-# print(f"Audio array: {audio} Sample: {sample}")
-from logger.my_logger import setup_logger
+import torchaudio
 
-logger = setup_logger(path="../logger/logs/test.log", location="test")
-logger.getLogger(__name__)
-logger.info("HELLO")
+audio, sample = torchaudio.load("hehe.wav")
+
+print(f"Audio array: {audio} Sample: {sample}")
