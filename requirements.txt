@@ -6,3 +6,5 @@ torch~=2.2.0
 librosa~=0.10.1
 wandb~=0.16.2
 jiwer~=3.0.3
+pandas~=2.2.0
+python-dotenv~=1.0.1

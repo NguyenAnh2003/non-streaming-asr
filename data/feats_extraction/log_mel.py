@@ -43,4 +43,4 @@ if __name__ == "__main__":
     array, _ = torchaudio.load(filepath)
     params = get_configs("../../configs/audio_extraction.yaml")
     log_melspec = audio_transforms(array, params)
-    print(f"Log mel: {log_melspec}")
+    print(f"Log mel: {log_melspec} Shape: {log_melspec.shape}")
