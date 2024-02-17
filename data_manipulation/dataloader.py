@@ -61,8 +61,7 @@ class DevSet(Dataset):
 
 # custom dataloader
 class TrainLoader(DataLoader):
-    def __init__(self, dataset, batch_size: int = 1,
-                 shuffle: bool = True):
+    def __init__(self, dataset, batch_size: int = 1, shuffle: bool = True):
         """ Train loader init """
         super().__init__(dataset, batch_size, shuffle)
         self.train_dataset = dataset
