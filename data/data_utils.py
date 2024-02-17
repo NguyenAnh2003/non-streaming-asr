@@ -9,13 +9,13 @@ FOLDER_IN_ARCHIVE = "LibriSpeech"
 SAMPLE_RATE = 16000
 
 _DATA_SUBSETS = [
-    "dev-clean",
+    "dev-clean", #
     "dev-other",
-    "test-clean",
+    "test-clean", #
     "test-other",
-    "train-clean-100",
-    "train-clean-360",
-    "train-other-500",
+    "train-clean-100", #
+    "train-clean-360", #
+    "train-other-500", #
 ]
 
 _CHECKSUMS = {
@@ -38,10 +38,10 @@ def download_libirspeech_dataset(root: str = f"D:\\", url: str = URL):
 
     # filename with url(openslr url) + extension file
     filename = url + extension
-    archive = os.path.join(root, filename) # store tar file in archive folder
+    archive = os.path.join(root, filename) # binding archive folder
     download_url = os.path.join(base_url, filename)
     if not os.path.isfile(archive):
-        checksum = _CHECKSUMS.get(download_url, None)
+        checksum = _CHECKSUMS.get(download_url, None) #?
         download_url_to_file(download_url, archive) # download tar file
     _extract_tar(archive) # extract archive Libirspeech folder?
 
