@@ -30,6 +30,10 @@ class TrainSet(Dataset):
         # return log_mel and transcript
         return log_mel
 
+    def _get_audio_abosulute_path(self, index):
+
+        pass
+
     def _get_audio_sample_path(self, index):
         """ process audio path """
         return

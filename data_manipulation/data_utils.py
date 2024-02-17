@@ -50,6 +50,25 @@ def get_librispeech_metadata(fileid: str, root: str, folder: str,
 
     pass
 
-if __name__ == "__main__":
+def process_librispeech_dataset(metadata_file_path):
+    """ metadata from txt to csv
+    audio_id, transcript
+    """
+    metadata_dict = {}
 
-    print("DONE")
+    with open(metadata_file_path, 'r') as file:
+        for line in file:
+            # Split each line into audio_id and transcript using space as a delimiter
+            parts = line.strip().split(' ', 1)
+
+            # Ensure that the line has at least two parts (audio_id and transcript)
+            if len(parts) == 2:
+                audio_id, transcript = parts
+                metadata_dict[audio_id] = transcript
+
+    return metadata_dict
+
+if __name__ == "__main__":
+    metadata = process_librispeech_dataset("./librispeech/dev/dev-clean/84/121123/84-121123.trans.txt")
+    item = next((item for i, item in enumerate(metadata.items()) if i == 0), None)
+    print(f"DONE {item}")
