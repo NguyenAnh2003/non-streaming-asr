@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import torch
 import librosa
 
-""" visualize for audio and spectrogram """
 # Plot waveform
 def plot_waveform(waveform, sr, title="Waveform"):
+    """ visualize wave form """
     waveform = waveform.numpy()
 
     num_channels, num_frames = waveform.shape
@@ -20,6 +20,7 @@ def plot_waveform(waveform, sr, title="Waveform"):
 
 # Plot Mel spectrogram
 def plot_melspectrogram(specgram, title=None, ylabel=None):
+    """ visualize mel spectrogram && log mel spectrogram """
     fig, axs = plt.subplots(1, 1)
     axs.set_title(title or "Mel Spectrogram")
     axs.set_ylabel(ylabel=ylabel)
