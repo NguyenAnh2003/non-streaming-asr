@@ -31,9 +31,9 @@ class TrainSet(Dataset):
         log_mel = audio_transforms(array=array, params=self.params)
 
         # return log_mel and transcript
-        return log_mel, str(audio_transcript)
+        return log_mel, audio_transcript
 
-    def _get_audio_sample_path(self, index):
+    def _get_audio_sample_path(self, index) -> str:
         """ process audio path
         :param index -> audio sample
         :return path with audio sample .flac
