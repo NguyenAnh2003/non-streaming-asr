@@ -3,7 +3,6 @@ import torch.nn as nn
 from convolution import SubsamplingConv
 from conformer_block import ConformerBlock
 
-
 class Decoder(nn.Module):
     def __init__(self, bidirectional: bool = True):
         self.lstm = nn.LSTM(bidirectional=bidirectional) # suggest using MHA -> increase params
