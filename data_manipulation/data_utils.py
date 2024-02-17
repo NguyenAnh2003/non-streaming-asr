@@ -5,7 +5,7 @@ import csv
 import pandas as pd
 from logger.my_logger import setup_logger
 
-_logger = setup_logger("../logger/logs/write_csv.log")
+_logger = setup_logger("../logger/logs/write_csv.log", location="data utils")
 _logger.getLogger(__name__)
 
 URL = "dev-clean"
