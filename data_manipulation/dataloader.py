@@ -78,9 +78,9 @@ class DevLoader(DataLoader):
         super().__init__(dataset)
         self.dataset = dataset # validation dataset
 
-""" check """
+# check
 if __name__ == "__main__":
     train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
     data_loader = DataLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
     for step, (log_mel, transcript) in enumerate(data_loader):
-        print(f"Audio log mel: {log_mel.shape} Transcript: {type(transcript)}")
+        logger.log(logger.INFO, f"Audio Log mel: {log_mel.shape} Transcript: {transcript}")
