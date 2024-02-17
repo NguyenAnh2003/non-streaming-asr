@@ -17,7 +17,7 @@ class TrainSet(Dataset):
         self.train_csv = pd.read_csv(csv_file)
 
     def __getitem__(self, index):
-        logger.log(level=logger.DEBUG, msg="-- return log mel and transcript of each data_manipulation point --")
+        logger.log(level=logger.DEBUG, msg="return log mel and transcript of each data_manipulation point")
         """ return log mel spectrogram, and transcript """
 
         # load audio to array and sample
