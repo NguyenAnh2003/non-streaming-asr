@@ -59,9 +59,6 @@ class DevSet(Dataset):
         return
 
 
-""" define data_manipulation loader """
-
-
 # custom dataloader
 class TrainLoader(DataLoader):
     def __init__(self):
