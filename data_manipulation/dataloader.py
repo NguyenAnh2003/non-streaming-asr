@@ -8,7 +8,7 @@ import pandas as pd
 logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
 logger.getLogger(__name__)
 
-# custom data set
+# custom data_manipulation set
 class TrainSet(Dataset):
 
     def __init__(self, csv_file, config_path: str = "../configs/audio_extraction.yaml"):
@@ -17,7 +17,7 @@ class TrainSet(Dataset):
         self.train_csv = pd.read_csv(csv_file)
 
     def __getitem__(self, index):
-        logger.log(level=logger.DEBUG, msg="-- return log mel and transcript of each data point --")
+        logger.log(level=logger.DEBUG, msg="-- return log mel and transcript of each data_manipulation point --")
         """ return log mel spectrogram, and transcript """
 
         # load audio to array and sample
@@ -49,7 +49,7 @@ class DevSet(Dataset):
         return
 
 
-""" define data loader """
+""" define data_manipulation loader """
 
 
 # custom dataloader
