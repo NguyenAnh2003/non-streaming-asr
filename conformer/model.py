@@ -13,8 +13,11 @@ class Decoder(nn.Module):
 
 
 class Conformer(nn.Module):
+    """ Encoder Conformer """
+
     def __init__(self, dropout: float = 0.1):
         """ convolution subsampling """
+        super().__init__()
         self.conv_subsampling = SubsamplingConv()  # config
 
         """ linear """
