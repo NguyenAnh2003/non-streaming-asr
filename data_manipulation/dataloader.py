@@ -61,14 +61,23 @@ class DevSet(Dataset):
 
 # custom dataloader
 class TrainLoader(DataLoader):
-    def __init__(self):
+    def __init__(self, dataset, batch_size: int = 1,
+                 shuffle: bool = True):
         """ Train loader init """
+        super().__init__(dataset, batch_size, shuffle)
+        self.train_dataset = dataset
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+        self.collate_fn = self._my_collate_fn() # padding sample per batch
 
+    def _my_collate_fn(self):
+        pass
 
 class DevLoader(DataLoader):
-    def __init__(self):
+    def __init__(self, dataset):
         """ Dev loader init """
-
+        super().__init__(dataset)
+        self.dataset = dataset # validation dataset
 
 """ check """
 if __name__ == "__main__":
