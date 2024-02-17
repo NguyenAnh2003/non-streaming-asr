@@ -4,6 +4,7 @@ import os
 import csv
 import pandas as pd
 from logger.my_logger import setup_logger
+import shutil
 
 _logger = setup_logger("../logger/logs/write_csv.log", location="data utils")
 _logger.getLogger(__name__)
@@ -86,6 +87,28 @@ def write_metadata_txt_2_csv(csv_path: str):
 
     _logger.log(_logger.INFO,  "WRITE CSV COMPETE")
 
+def combine_audio_from_folders():
+    source_folder_path = "./librispeech/dev/dev-clean/"
+    destination_folder_path = "./librispeech/train-custom-clean"
+
+    # list all child folder in parent
+    for folder_name in os.listdir(source_folder_path):
+        # binding child folder with parent folder
+        child_folder_path = os.path.join(source_folder_path, folder_name)
+
+        if os.path.isdir(child_folder_path):
+            # get all files in one child folder
+            for folder_child_name in os.listdir(child_folder_path):
+                child2_folder_path = os.path.join(child_folder_path, folder_child_name)
+                if os.path.isdir(child2_folder_path):
+                    for filename in os.listdir(child2_folder_path):
+                        file_path = os.path.join(child2_folder_path, filename)
+                        # print(f"From: {child2_folder_path} File: {filename}")
+                        # copy and move to destination
+                        shutil.copy(file_path, destination_folder_path)
+
+def get_numbers_samples():
+    pass
 
 if __name__ == "__main__":
-    write_metadata_txt_2_csv("./examples/example.csv")
+    get_numbers_samples()
