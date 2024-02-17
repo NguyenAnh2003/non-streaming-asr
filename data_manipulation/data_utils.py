@@ -73,7 +73,7 @@ def _process_librispeech_dataset(metadata_file_path):
 def write_metadata_txt_2_csv(csv_path: str):
     # define metadata
     _logger.log(_logger.INFO, "DEFINE METADATA")
-    metadata_dict = _process_librispeech_dataset("./librispeech/dev/dev-clean/84/121123/84-121123.trans.txt")
+    metadata_dict = _process_librispeech_dataset("./librispeech/transcripts.txt")
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as csv_file:
         # define csv writer
@@ -135,4 +135,5 @@ def concat_transcripts_txt_file() -> None:
                 dest_file.write(infile.read())
 
 if __name__ == "__main__":
-    print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
+    # print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
+    write_metadata_txt_2_csv("./train_samples.csv")
