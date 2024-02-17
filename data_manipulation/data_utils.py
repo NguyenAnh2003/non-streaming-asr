@@ -51,11 +51,6 @@ def download_libirspeech_dataset(root: str = f"D:\\", url: str = URL):
         download_url_to_file(download_url, archive) # download tar file
     _extract_tar(archive) # extract archive Libirspeech folder?
 
-def get_librispeech_metadata(fileid: str, root: str, folder: str,
-                             ext_audio: str, ext_text: str):
-
-    pass
-
 def _process_librispeech_dataset(metadata_file_path):
     """ metadata from txt to csv
     audio_id, transcript
