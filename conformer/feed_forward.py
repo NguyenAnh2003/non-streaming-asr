@@ -16,6 +16,9 @@ class FeedForwardNet(nn.Module):
         # Swish activation function
         self.swish = Swish()
 
+        # Alternative activation
+        self.relu = nn.ReLU()
+
         # -- --- ---- --- --- ---- -- PointWise FeedForward appear in Transformer https://arxiv.org/abs/1706.03762
         # config in feats and out feats of sub-linear 1 network
         self.sub_linear1 = nn.Linear(in_features=input_dim,
