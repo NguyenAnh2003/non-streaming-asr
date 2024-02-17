@@ -24,7 +24,7 @@ class TrainSet(Dataset):
 
         # load audio to array and sample
         sample_path = self._get_audio_sample_path(index)
-        audio_transcript = str(self.audio_samples.iloc[index, 1])
+        audio_transcript = self.audio_samples.iloc[index, 1]
         array, rate = torchaudio.load(sample_path)
 
         # transform audio to mel spec
