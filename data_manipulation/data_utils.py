@@ -1,6 +1,12 @@
 from torchaudio._internal import download_url_to_file
 from torchaudio.datasets.utils import _extract_tar
 import os
+import csv
+import pandas as pd
+from logger.my_logger import setup_logger
+
+_logger = setup_logger("../logger/logs/write_csv.log")
+_logger.getLogger(__name__)
 
 URL = "dev-clean"
 
@@ -50,12 +56,11 @@ def get_librispeech_metadata(fileid: str, root: str, folder: str,
 
     pass
 
-def process_librispeech_dataset(metadata_file_path):
+def _process_librispeech_dataset(metadata_file_path):
     """ metadata from txt to csv
     audio_id, transcript
     """
     metadata_dict = {}
-
     with open(metadata_file_path, 'r') as file:
         for line in file:
             # Split each line into audio_id and transcript using space as a delimiter
@@ -65,10 +70,27 @@ def process_librispeech_dataset(metadata_file_path):
             if len(parts) == 2:
                 audio_id, transcript = parts
                 metadata_dict[audio_id] = transcript
-
+    # logging
+    _logger.log(_logger.INFO, "GET METADATA DICT")
     return metadata_dict
 
+def write_metadata_txt_2_csv(csv_path: str):
+    # define metadata
+    _logger.log(_logger.INFO, "DEFINE METADATA")
+    metadata_dict = _process_librispeech_dataset("./librispeech/dev/dev-clean/84/121123/84-121123.trans.txt")
+
+    with open(csv_path, 'w', newline='', encoding='utf-8') as csv_file:
+        # define csv writer
+        csv_writer = csv.writer(csv_file)
+
+        # write row
+        csv_writer.writerow(['audio_id', 'transcript'])
+
+        for audio_id, transcript in metadata_dict.items():
+            csv_writer.writerow([audio_id, transcript])
+
+    _logger.log(_logger.INFO,  "WRITE CSV COMPETE")
+
+
 if __name__ == "__main__":
-    metadata = process_librispeech_dataset("./librispeech/dev/dev-clean/84/121123/84-121123.trans.txt")
-    item = next((item for i, item in enumerate(metadata.items()) if i == 0), None)
-    print(f"DONE {item}")
+    write_metadata_txt_2_csv("./examples/example.csv")
