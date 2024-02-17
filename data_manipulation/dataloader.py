@@ -34,6 +34,9 @@ class TrainSet(Dataset):
         """ process audio path """
         return
 
+    def __len__(self) -> int:
+        return
+
 
 class DevSet(Dataset):
     def __init__(self):
