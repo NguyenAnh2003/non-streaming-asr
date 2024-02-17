@@ -117,5 +117,22 @@ def get_number_audio_samples():
                 amounts.append(file_path)
     return len(amounts)
 
+def concat_transcripts_txt_file() -> None:
+    # source path
+    source_path = "./librispeech/librispeech_transcripts_txt"
+    # combined transcript txt file
+    combined_txt_path = "./librispeech/transcripts.txt"
+
+    # open combined file
+    with open(combined_txt_path, 'w', encoding='utf-8') as dest_file:
+
+        # traverse each file
+        for filename in os.listdir(source_path):
+            file_path = os.path.join(source_path, filename)
+
+            # open file and write to dest_file
+            with open(file_path, 'r', encoding='utf-8') as infile:
+                dest_file.write(infile.read())
+
 if __name__ == "__main__":
     print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
