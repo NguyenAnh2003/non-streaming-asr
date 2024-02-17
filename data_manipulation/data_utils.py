@@ -107,37 +107,15 @@ def combine_audio_from_folders():
                         # copy and move to destination
                         shutil.copy(file_path, destination_folder_path)
 
-def get_numbers_samples():
-    """ get amounts of samples (in dev-clean) """
-    source_folder_path = "./librispeech/dev/dev-clean/"
-    amounts = []
-
-    # list all child folder in parent
-    for folder_name in os.listdir(source_folder_path):
-        # binding child folder with parent folder
-        child_folder_path = os.path.join(source_folder_path, folder_name)
-
-        if os.path.isdir(child_folder_path):
-            # get all files in one child folder
-            for folder_child_name in os.listdir(child_folder_path):
-                child2_folder_path = os.path.join(child_folder_path, folder_child_name)
-                if os.path.isdir(child2_folder_path):
-                    for filename in os.listdir(child2_folder_path):
-                        file_path = os.path.join(child2_folder_path, filename)
-                        if os.path.isfile(file_path):
-                            amounts.append(file_path)
-
-    # length
-    return len(amounts)
-
-def get_number_samples_train_custom():
+def get_number_audio_samples():
     source_path = "./librispeech/train-custom-clean"
     amounts = []
     for filename in os.listdir(source_path):
-        file_path = os.path.join(source_path, filename)
-        if os.path.isfile(file_path):
-            amounts.append(file_path)
+        if filename.endswith(".flac"):
+            file_path = os.path.join(source_path, filename)
+            if os.path.isfile(file_path):
+                amounts.append(file_path)
     return len(amounts)
+
 if __name__ == "__main__":
-    print(f"Number of samples in dev-clean: {get_numbers_samples()}") # this is before put all samples in train-custom-clean
-    print(f"Number of samples in train-custom-clean: {get_number_samples_train_custom()}")
+    print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
