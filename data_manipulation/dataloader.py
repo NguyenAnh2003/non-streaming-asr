@@ -66,7 +66,9 @@ class TrainLoader(DataLoader):
     def __init__(self, *args, **kwargs):
         """ Train loader init """
         super(TrainLoader, self).__init__(*args, **kwargs)
+        self.shuffle = kwargs['shuffle']
         self.collate_fn = self.collate_custom_fn
+
 
     def collate_custom_fn(self, batch):
         for step, (audio_path, audio_transcript) in enumerate(batch):
