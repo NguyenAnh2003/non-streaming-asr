@@ -62,16 +62,9 @@ class DevSet(Dataset):
 
 # custom dataloader
 class TrainLoader(DataLoader):
-    def __init__(self, dataset, batch_size: int = 1, shuffle: bool = True):
+    def __init__(self, *args, **kwargs):
         """ Train loader init """
-        super().__init__(dataset, batch_size, shuffle)
-        self.train_dataset = dataset
-        self.batch_size = batch_size
-        self.shuffle = shuffle
-        self.collate_fn = self._my_collate_fn() # padding sample per batch
-
-    def _my_collate_fn(self):
-        pass
+        super(TrainLoader, self).__init__(*args, **kwargs)
 
 class DevLoader(DataLoader):
     def __init__(self, dataset):
@@ -82,6 +75,7 @@ class DevLoader(DataLoader):
 # check
 if __name__ == "__main__":
     train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
-    data_loader = DataLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
+    # print(train_set.__len__())
+    data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False)
     for step, (log_mel, transcript) in enumerate(data_loader):
-        print(f"Audio: {log_mel} Transcript: {transcript}")
+        print(f"Audio: {log_mel} Transcript: {type(transcript)}")
