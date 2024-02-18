@@ -1,3 +1,4 @@
+import torch
 from torch.utils.data import DataLoader, Dataset, default_collate
 from feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
@@ -48,17 +49,38 @@ class TrainSet(Dataset):
 
 
 class DevSet(Dataset):
-    def __init__(self):
+    def __init__(self, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
+        super(DevSet, self).__init__()
         """ define init """
+        self.params = get_configs(config_path)  # defined params
+        self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
+        self.root_dir = root_dir  # ./
 
-    def __getitem__(self, item):
+    def __getitem__(self, index):
         """ return log mel spectrogram, and transcript """
 
         # load audio to array and sample
+        sample_path, sample_transcript = self._get_audio_sample(index)
+        array, rate = torchaudio.load(sample_path)
 
         # transform audio to mel spec
+        log_mel = audio_transforms(array=array, params=self.params)
 
-        return
+        # return log_mel and transcript
+        return log_mel, sample_transcript
+
+    def _get_audio_sample(self, index) -> Tuple[str, str]:
+        """ process audio path
+        :param index -> audio sample
+        :return path with audio sample .flac
+        """
+        sample_path = os.path.join(self.root_dir, self.audio_samples.iloc[index, 0])  # audio path for each sample index
+        audio_absolute_path = f"{sample_path}.flac"  # process result
+        audio_transcript = self.audio_samples.iloc[index, 1]
+        return audio_absolute_path, audio_transcript
+
+    def __len__(self) -> int:
+        return len(self.audio_samples)
 
 
 # custom dataloader
@@ -71,8 +93,12 @@ class TrainLoader(DataLoader):
 
 
     def collate_custom_fn(self, batch):
+        batch_log_mels = torch.zeros()
+        batch_transcripts = ()
         for step, (audio_path, audio_transcript) in enumerate(batch):
+            # process each sample in 1 batch
             return audio_path, audio_transcript
+
 
 
 class DevLoader(DataLoader):
