@@ -19,7 +19,6 @@ class TrainSet(Dataset):
         self.root_dir = root_dir # ./
 
     def __getitem__(self, index):
-        logger.log(level=logger.DEBUG, msg="return log mel and transcript of each data_manipulation point")
         """ return log mel spectrogram, and transcript """
 
         # load audio to array and sample
@@ -39,7 +38,8 @@ class TrainSet(Dataset):
         :return path with audio sample .flac
         """
         sample_path = os.path.join(self.root_dir, self.audio_samples.iloc[index, 0])  # audio path for each sample index
-        return f"{sample_path}.flac"
+        result = f"{sample_path}.flac" # process result
+        return result
 
     def __len__(self) -> int:
         return len(self.audio_samples)
@@ -83,4 +83,4 @@ if __name__ == "__main__":
     train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
     data_loader = DataLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
     for step, (log_mel, transcript) in enumerate(data_loader):
-        logger.log(logger.INFO, f"Audio Log mel: {log_mel.shape} Transcript: {transcript}")
+        print(f"Audio: {log_mel.shape} Transcript: {transcript}")
