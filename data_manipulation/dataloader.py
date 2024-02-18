@@ -14,6 +14,7 @@ logger.getLogger(__name__)
 class TrainSet(Dataset):
 
     def __init__(self, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
+        super(TrainSet, self).__init__()
         """ define init """
         self.params = get_configs(config_path)  # defined params
         self.audio_samples = pd.read_csv(csv_file) # dataset defined as csv file
@@ -65,6 +66,12 @@ class TrainLoader(DataLoader):
     def __init__(self, *args, **kwargs):
         """ Train loader init """
         super(TrainLoader, self).__init__(*args, **kwargs)
+        self.collate_fn = self.collate_custom_fn
+
+    def collate_custom_fn(self, batch):
+        for step, (audio_path, audio_transcript) in enumerate(batch):
+            return audio_path, audio_transcript
+
 
 class DevLoader(DataLoader):
     def __init__(self, dataset):
@@ -76,6 +83,8 @@ class DevLoader(DataLoader):
 if __name__ == "__main__":
     train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
     # print(train_set.__len__())
-    data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False)
+    # sample, sample_script = train_set.__getitem__(0)
+    # print(sample, type(sample_script))
+    data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
     for step, (log_mel, transcript) in enumerate(data_loader):
-        print(f"Audio: {log_mel} Transcript: {type(transcript)}")
+        print(f"Audio: {log_mel} Transcript: {transcript}")
