@@ -82,9 +82,6 @@ class DevLoader(DataLoader):
 # check
 if __name__ == "__main__":
     train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
-    # print(train_set.__len__())
-    # sample, sample_script = train_set.__getitem__(0)
-    # print(sample, type(sample_script))
-    data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
+    data_loader = TrainLoader(dataset=train_set, batch_size=4, shuffle=False, collate_fn=default_collate)
     for step, (log_mel, transcript) in enumerate(data_loader):
         print(f"Audio: {log_mel} Transcript: {transcript}")
