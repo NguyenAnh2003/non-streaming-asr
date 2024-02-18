@@ -5,6 +5,7 @@ import torchaudio
 from logger.my_logger import setup_logger
 import pandas as pd
 import os
+from typing import Tuple
 
 logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
 logger.getLogger(__name__)
@@ -22,24 +23,24 @@ class TrainSet(Dataset):
         """ return log mel spectrogram, and transcript """
 
         # load audio to array and sample
-        sample_path = self._get_audio_sample_path(index)
-        audio_transcript = self.audio_samples.iloc[index, 1]
+        sample_path, sample_transcript = self._get_audio_sample(index)
         array, rate = torchaudio.load(sample_path)
 
         # transform audio to mel spec
         log_mel = audio_transforms(array=array, params=self.params)
 
         # return log_mel and transcript
-        return log_mel, audio_transcript
+        return log_mel, sample_transcript
 
-    def _get_audio_sample_path(self, index) -> str:
+    def _get_audio_sample(self, index) -> Tuple[str, str]:
         """ process audio path
         :param index -> audio sample
         :return path with audio sample .flac
         """
         sample_path = os.path.join(self.root_dir, self.audio_samples.iloc[index, 0])  # audio path for each sample index
-        result = f"{sample_path}.flac" # process result
-        return result
+        audio_absolute_path = f"{sample_path}.flac" # process result
+        audio_transcript = str(self.audio_samples.iloc[index, 1])
+        return audio_absolute_path, audio_transcript
 
     def __len__(self) -> int:
         return len(self.audio_samples)
@@ -83,4 +84,4 @@ if __name__ == "__main__":
     train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
     data_loader = DataLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
     for step, (log_mel, transcript) in enumerate(data_loader):
-        print(f"Audio: {log_mel.shape} Transcript: {transcript}")
+        print(f"Audio: {log_mel} Transcript: {transcript}")
