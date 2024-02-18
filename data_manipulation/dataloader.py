@@ -39,7 +39,7 @@ class TrainSet(Dataset):
         """
         sample_path = os.path.join(self.root_dir, self.audio_samples.iloc[index, 0])  # audio path for each sample index
         audio_absolute_path = f"{sample_path}.flac" # process result
-        audio_transcript = str(self.audio_samples.iloc[index, 1])
+        audio_transcript = self.audio_samples.iloc[index, 1]
         return audio_absolute_path, audio_transcript
 
     def __len__(self) -> int:
