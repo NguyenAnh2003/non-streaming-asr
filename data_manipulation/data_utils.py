@@ -136,4 +136,5 @@ def concat_transcripts_txt_file() -> None:
 
 if __name__ == "__main__":
     # print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
-    write_metadata_txt_2_csv("./train_samples.csv")
+    # write_metadata_txt_2_csv("./train_samples.csv")
+    pass
