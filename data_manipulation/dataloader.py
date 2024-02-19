@@ -22,7 +22,6 @@ class LibriSpeechVocabRAW:
         self.vocab_file = vocab_file_path
         self.word2index = {}
         self.index2word = {}
-
         self.index_of_word = 1 # default index for a word
         self._process_vocab()
 
