@@ -8,3 +8,4 @@ wandb~=0.16.2
 jiwer~=3.0.3
 pandas~=2.2.0
 python-dotenv~=1.0.1
+torchtext~=0.17.0

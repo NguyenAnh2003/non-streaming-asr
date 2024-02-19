@@ -1,32 +1,49 @@
 import torch
-from torch.utils.data import DataLoader, Dataset, default_collate
+from torch.utils.data import DataLoader, Dataset
 from feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
 import torchaudio
 from logger.my_logger import setup_logger
 import pandas as pd
 import os
-from typing import Tuple
+from typing import Tuple, Dict
+from torchtext.vocab import Vocab
 
 logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
 logger.getLogger(__name__)
 
+
 # vocab
-class LibriSpeechVocab:
+class LibriSpeechVocabRAW:
+    # language librispeech vocab file: https://openslr.trmal.net/resources/11/librispeech-vocab.txt
+
     def __init__(self, vocab_file_path: str = "./vocab.txt"):
         # vocab file
         self.vocab_file = vocab_file_path
+        self.word2index = {}
+        self.index2word = {}
 
+        self.index_of_word = 1 # default index for a word
+        self._process_vocab()
+
+    def _process_vocab(self):
+        with open(self.vocab_file, 'r', encoding='utf-8') as vb_file:
+            for line in vb_file:
+                # assign word to index and index to word (line.replace("\n", "") represent for a line -> 1 word 1 line)
+                self.word2index[line.replace("\n", "")] = self.index_of_word
+                self.index2word[self.index_of_word] = line.replace("\n", "")
+                self.index_of_word += 1 # increase index
 
 # custom data_manipulation set
 class TrainSet(Dataset):
 
-    def __init__(self, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
+    def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
         super(TrainSet, self).__init__()
         """ define init """
         self.params = get_configs(config_path)  # defined params
-        self.audio_samples = pd.read_csv(csv_file) # dataset defined as csv file
-        self.root_dir = root_dir # ./
+        self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
+        self.root_dir = root_dir  # ./
+        self.vocab = vocab
 
     def __getitem__(self, index):
         """ return log mel spectrogram, and transcript """
@@ -48,7 +65,7 @@ class TrainSet(Dataset):
         :return path with audio sample .flac
         """
         sample_path = os.path.join(self.root_dir, self.audio_samples.iloc[index, 0])  # audio path for each sample index
-        audio_absolute_path = f"{sample_path}.flac" # process result
+        audio_absolute_path = f"{sample_path}.flac"  # process result
         audio_transcript = self.audio_samples.iloc[index, 1]
         return audio_absolute_path, audio_transcript
 
@@ -99,24 +116,26 @@ class TrainLoader(DataLoader):
         self.shuffle = kwargs['shuffle']
         # self.collate_fn = self.collate_custom_fn
 
-
     def collate_custom_fn(self, batch):
         # https://stackoverflow.com/questions/65279115/how-to-use-collate-fn-with-dataloaders
         pass
         # for step, (audio_path, audio_transcript) in enumerate(batch):
-            # process each sample in 1 batch
-            # return audio_path, audio_transcript
+        # process each sample in 1 batch
+        # return audio_path, audio_transcript
+
 
 class DevLoader(DataLoader):
     def __init__(self, *args, **kwargs):
         """ Dev loader init """
         super().__init__(*args, **kwargs)
+
+
 # check
 if __name__ == "__main__":
-    train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
-    data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
+    librispeech_vocab = LibriSpeechVocabRAW()
+    print(f"Word indexes: {librispeech_vocab.word2index}")
+    print(f"Indexes of words: {librispeech_vocab.index2word}")
+    # train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
+    # data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
     # for step, (log_mel, transcript) in enumerate(data_loader):
     #     print(f"Audio: {log_mel} Transcript: {transcript}")
-    # vocab
-    vocab = LibriSpeechVocab()
-    print(vocab.vocab_file)
