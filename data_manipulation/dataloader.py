@@ -11,6 +11,11 @@ from typing import Tuple
 logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
 logger.getLogger(__name__)
 
+# vocab
+class LibriSpeechVocab:
+    def __init__(self, vocab_file_path: str = "./vocab.txt"):
+        self.vocab_file = vocab_file_path
+
 # custom data_manipulation set
 class TrainSet(Dataset):
 
@@ -26,6 +31,7 @@ class TrainSet(Dataset):
 
         # load audio to array and sample
         sample_path, sample_transcript = self._get_audio_sample(index)
+        print(sample_path)
         array, rate = torchaudio.load(sample_path)
 
         # transform audio to mel spec
@@ -89,27 +95,23 @@ class TrainLoader(DataLoader):
         """ Train loader init """
         super(TrainLoader, self).__init__(*args, **kwargs)
         self.shuffle = kwargs['shuffle']
-        self.collate_fn = self.collate_custom_fn
+        # self.collate_fn = self.collate_custom_fn
 
 
     def collate_custom_fn(self, batch):
-        batch_log_mels = torch.zeros()
-        batch_transcripts = ()
-        for step, (audio_path, audio_transcript) in enumerate(batch):
+        # https://stackoverflow.com/questions/65279115/how-to-use-collate-fn-with-dataloaders
+        pass
+        # for step, (audio_path, audio_transcript) in enumerate(batch):
             # process each sample in 1 batch
-            return audio_path, audio_transcript
-
-
+            # return audio_path, audio_transcript
 
 class DevLoader(DataLoader):
-    def __init__(self, dataset):
+    def __init__(self, *args, **kwargs):
         """ Dev loader init """
-        super().__init__(dataset)
-        self.dataset = dataset # validation dataset
-
+        super().__init__(*args, **kwargs)
 # check
 if __name__ == "__main__":
     train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
-    data_loader = TrainLoader(dataset=train_set, batch_size=4, shuffle=False, collate_fn=default_collate)
+    data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
     for step, (log_mel, transcript) in enumerate(data_loader):
         print(f"Audio: {log_mel} Transcript: {transcript}")
