@@ -14,7 +14,9 @@ logger.getLogger(__name__)
 # vocab
 class LibriSpeechVocab:
     def __init__(self, vocab_file_path: str = "./vocab.txt"):
+        # vocab file
         self.vocab_file = vocab_file_path
+
 
 # custom data_manipulation set
 class TrainSet(Dataset):
@@ -113,5 +115,8 @@ class DevLoader(DataLoader):
 if __name__ == "__main__":
     train_set = TrainSet(csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
     data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
-    for step, (log_mel, transcript) in enumerate(data_loader):
-        print(f"Audio: {log_mel} Transcript: {transcript}")
+    # for step, (log_mel, transcript) in enumerate(data_loader):
+    #     print(f"Audio: {log_mel} Transcript: {transcript}")
+    # vocab
+    vocab = LibriSpeechVocab()
+    print(vocab.vocab_file)
