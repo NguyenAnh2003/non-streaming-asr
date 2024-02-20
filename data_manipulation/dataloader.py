@@ -51,7 +51,7 @@ class TrainSet(Dataset):
         """ return log mel spectrogram, and transcript """
 
         # load audio to array and sample
-        sample_path, sample_transcript = self._get_audio_sample(index)
+        sample_path, sample_transcript = self.__get_audio_sample(index)
         array, rate = torchaudio.load(sample_path)
 
         # transform audio to mel spec
@@ -60,7 +60,7 @@ class TrainSet(Dataset):
         # return log_mel and transcript
         return log_mel, sample_transcript
 
-    def _get_audio_sample(self, index) -> Tuple[str, str]:
+    def __get_audio_sample(self, index) -> Tuple[str, str]:
         """ process audio path
         :param index -> audio sample
         :return path with audio sample .flac
@@ -134,11 +134,15 @@ class TrainLoader(DataLoader):
         """ Train loader init """
         super(TrainLoader, self).__init__(*args, **kwargs)
         self.shuffle = kwargs['shuffle']
-        # self.collate_fn = self.collate_custom_fn
+        self.collate_fn = self.collate_custom_fn
 
     def collate_custom_fn(self, batch):
         # https://stackoverflow.com/questions/65279115/how-to-use-collate-fn-with-dataloaders
-        pass
+        # batch_logmel = torch.zeros()
+        # batch_transcript = torch.zeros()
+        max_frames = max(x[0].size(2) for x in batch) # get max n_frames per batch
+        for step, (log_mel, transcript) in enumerate(batch):
+            return log_mel, transcript, max_frames
         # for step, (audio_path, audio_transcript) in enumerate(batch):
         # process each sample in 1 batch
         # return audio_path, audio_transcript
@@ -153,9 +157,28 @@ class DevLoader(DataLoader):
 # check
 if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
+
+    def process_sample_transcript(batch: Dataset):
+        """ function receive batch and mapp each transcript to index in Vocab """
+        batch["transcript"] = batch["transcript"].split()
+        batch["transcript"] = [*map(librispeech_vocab.word2index.get, batch["transcript"])]
+        return batch
+
     train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
     # for step in range(train_set.__len__()):
     #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
+
+    # hg_set = HuggingFaceDataset.from_pandas(df=pd.read_csv("./train_samples.csv"))
+    # hg_set = hg_set.map(process_sample_transcript)
+    # print(hg_set.to_dict())
+
     data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False)
-    for step, (log_mel, transcript) in enumerate(data_loader):
-        print(f"Audio: {log_mel.shape} Transcript: {transcript}")
+    for step, (log_mel, transcript, max_frames) in enumerate(data_loader):
+        print(f"Audio: {log_mel.shape} Transcript: {transcript} Max: {max_frames}")
+    # logMel = torch.randn([1, 81, 204])
+    # max_frames = 400
+    # batch_logmel = torch.zeros(4, max_frames, 81, dtype=torch.float32)
+    # narrow: input, dim, start, length
+    # batch_logmel[2].narrow(0, 0, batch_logmel.size(0)).copy_(logMel)
+    # print(batch_logmel)
+    print("DONE")
