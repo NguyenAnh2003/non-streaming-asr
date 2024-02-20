@@ -14,12 +14,6 @@ from torchtext.vocab import Vocab
 logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
 logger.getLogger(__name__)
 
-
-def _create_huggingface_dataset(csv_path: str):
-    train_csv = pd.read_csv(csv_path)
-    dataset = HuggingFaceDataset.from_pandas(train_csv)
-    return dataset
-
 # vocab
 class LibriSpeechVocabRAW:
     # language librispeech vocab file: https://openslr.trmal.net/resources/11/librispeech-vocab.txt
@@ -50,7 +44,8 @@ class TrainSet(Dataset):
         self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
         self.root_dir = root_dir  # ./
         self.vocab = vocab
-        self.hg_dataset = _create_huggingface_dataset(csv_path=csv_file)
+        self.hg_dataset = self.__create_huggingface_dataset(csv_path=csv_file)
+        self.hg_dataset = self.hg_dataset.map(self.__process_sample_transcript)
 
     def __getitem__(self, index):
         """ return log mel spectrogram, and transcript """
@@ -74,6 +69,18 @@ class TrainSet(Dataset):
         audio_absolute_path = f"{sample_path}.flac"  # process result
         audio_transcript = self.hg_dataset[index]['transcript']
         return audio_absolute_path, audio_transcript
+
+    @staticmethod
+    def __create_huggingface_dataset(csv_path: str):
+        train_csv = pd.read_csv(csv_path)
+        dataset = HuggingFaceDataset.from_pandas(train_csv)
+        return dataset
+
+    def __process_sample_transcript(self, batch: Dataset):
+        """ function receive batch and mapp each transcript to index in Vocab """
+        batch["transcript"] = batch["transcript"].split()
+        batch["transcript"] = [*map(self.vocab.word2index.get, batch["transcript"])]
+        return batch
 
     def __len__(self) -> int:
         return len(self.audio_samples)
@@ -147,6 +154,8 @@ class DevLoader(DataLoader):
 if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
     train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
+    # for step in range(train_set.__len__()):
+    #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
     data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False)
     for step, (log_mel, transcript) in enumerate(data_loader):
-        print(f"Audio: {log_mel} Transcript: {transcript}")
+        print(f"Audio: {log_mel.shape} Transcript: {transcript}")
