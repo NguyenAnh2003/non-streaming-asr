@@ -142,7 +142,7 @@ class TrainLoader(DataLoader):
         # batch_transcript = torch.zeros()
         max_frames = max(x[0].size(2) for x in batch) # get max n_frames per batch
         for step, (log_mel, transcript) in enumerate(batch):
-            return log_mel, transcript, max_frames
+            return log_mel, transcript
         # for step, (audio_path, audio_transcript) in enumerate(batch):
         # process each sample in 1 batch
         # return audio_path, audio_transcript
@@ -173,8 +173,8 @@ if __name__ == "__main__":
     # print(hg_set.to_dict())
 
     data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False)
-    for step, (log_mel, transcript, max_frames) in enumerate(data_loader):
-        print(f"Audio: {log_mel.shape} Transcript: {transcript} Max: {max_frames}")
+    for step, (log_mel, transcript) in enumerate(data_loader):
+        print(f"Audio: {log_mel.shape} Transcript: {transcript}")
     # logMel = torch.randn([1, 81, 204])
     # max_frames = 400
     # batch_logmel = torch.zeros(4, max_frames, 81, dtype=torch.float32)
