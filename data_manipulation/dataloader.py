@@ -14,6 +14,8 @@ from torchtext.vocab import Vocab
 logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
 logger.getLogger(__name__)
 
+_FILTER_BANKS = 81
+
 # vocab
 class LibriSpeechVocabRAW:
     # language librispeech vocab file: https://openslr.trmal.net/resources/11/librispeech-vocab.txt
@@ -138,14 +140,23 @@ class TrainLoader(DataLoader):
 
     def collate_custom_fn(self, batch):
         # https://stackoverflow.com/questions/65279115/how-to-use-collate-fn-with-dataloaders
-        # batch_logmel = torch.zeros()
-        # batch_transcript = torch.zeros()
+
+        batch_size = len(batch) # create temp batch_size
         max_frames = max(x[0].size(2) for x in batch) # get max n_frames per batch
+        max_len_transcript = max(len(x[1]) for x in batch)
+
+        # create empty tensor with batch_size, max_frames and banks
+        batch_logmel = torch.zeros(batch_size, max_frames, _FILTER_BANKS)
+
+        batch_transcript = torch.zeros(batch_size, max_len_transcript)
+
         for step, (log_mel, transcript) in enumerate(batch):
+            # process each single sample and add to batch
+            # batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
+            # batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
             return log_mel, transcript
-        # for step, (audio_path, audio_transcript) in enumerate(batch):
-        # process each sample in 1 batch
-        # return audio_path, audio_transcript
+        # return batch_logmel, batch_transcript
+
 
 
 class DevLoader(DataLoader):
@@ -179,6 +190,15 @@ if __name__ == "__main__":
     # max_frames = 400
     # batch_logmel = torch.zeros(4, max_frames, 81, dtype=torch.float32)
     # narrow: input, dim, start, length
-    # batch_logmel[2].narrow(0, 0, batch_logmel.size(0)).copy_(logMel)
+    # batch_logmel[2].narrow(0, 0, batch_logmel.size(1)).copy_(logMel)
     # print(batch_logmel)
+
+    # Create a tensor
+    # original_tensor = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    # print(original_tensor.shape)
+    # # Use narrow_ to create a narrowed view along the second dimension
+    # original_tensor.narrow(dim=0, start=0, length=2)
+    #
+    # print("Original Tensor (after narrowing):")
+    # print(original_tensor.shape)
     print("DONE")
