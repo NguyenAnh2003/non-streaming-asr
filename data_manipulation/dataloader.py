@@ -91,7 +91,7 @@ class DevSet(Dataset):
         """ return log mel spectrogram, and transcript """
 
         # load audio to array and sample
-        sample_path, sample_transcript = self._get_audio_sample(index)
+        sample_path, sample_transcript = self.__get_audio_sample(index)
         array, rate = torchaudio.load(sample_path)
 
         # transform audio to mel spec
@@ -100,7 +100,7 @@ class DevSet(Dataset):
         # return log_mel and transcript
         return log_mel, sample_transcript
 
-    def _get_audio_sample(self, index) -> Tuple[str, str]:
+    def __get_audio_sample(self, index) -> Tuple[str, str]:
         """ process audio path
         :param index -> audio sample
         :return path with audio sample .flac
