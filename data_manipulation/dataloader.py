@@ -50,13 +50,13 @@ class TrainSet(Dataset):
         self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
         self.root_dir = root_dir  # ./
         self.vocab = vocab
+        self.hg_dataset = _create_huggingface_dataset(csv_path=csv_file)
 
     def __getitem__(self, index):
         """ return log mel spectrogram, and transcript """
 
         # load audio to array and sample
         sample_path, sample_transcript = self._get_audio_sample(index)
-        print(sample_path)
         array, rate = torchaudio.load(sample_path)
 
         # transform audio to mel spec
@@ -70,9 +70,9 @@ class TrainSet(Dataset):
         :param index -> audio sample
         :return path with audio sample .flac
         """
-        sample_path = os.path.join(self.root_dir, self.audio_samples.iloc[index, 0])  # audio path for each sample index
+        sample_path = os.path.join(self.root_dir, self.hg_dataset[index]['audio_id'])  # audio path for each sample index
         audio_absolute_path = f"{sample_path}.flac"  # process result
-        audio_transcript = self.audio_samples.iloc[index, 1]
+        audio_transcript = self.hg_dataset[index]['transcript']
         return audio_absolute_path, audio_transcript
 
     def __len__(self) -> int:
@@ -146,7 +146,7 @@ class DevLoader(DataLoader):
 # check
 if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
-    # train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
-    # data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
-    # for step, (log_mel, transcript) in enumerate(data_loader):
-    #     print(f"Audio: {log_mel} Transcript: {transcript}")
+    train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
+    data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False)
+    for step, (log_mel, transcript) in enumerate(data_loader):
+        print(f"Audio: {log_mel} Transcript: {transcript}")
