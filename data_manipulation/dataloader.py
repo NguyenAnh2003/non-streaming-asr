@@ -1,5 +1,6 @@
 import torch
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset # torch Dataset
+from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
 from feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
 import torchaudio
@@ -7,11 +8,17 @@ from logger.my_logger import setup_logger
 import pandas as pd
 import os
 from typing import Tuple, Dict
+
 from torchtext.vocab import Vocab
 
 logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
 logger.getLogger(__name__)
 
+
+def _create_huggingface_dataset(csv_path: str):
+    train_csv = pd.read_csv(csv_path)
+    dataset = HuggingFaceDataset.from_pandas(train_csv)
+    return dataset
 
 # vocab
 class LibriSpeechVocabRAW:
@@ -104,6 +111,13 @@ class DevSet(Dataset):
         audio_transcript = self.audio_samples.iloc[index, 1]
         return audio_absolute_path, audio_transcript
 
+    def _process_sample_transcript(self, index):
+        """
+        :param index: index for each sample
+        the function used for process audio transcript from str to int
+        list[index]
+        """
+
     def __len__(self) -> int:
         return len(self.audio_samples)
 
@@ -133,8 +147,6 @@ class DevLoader(DataLoader):
 # check
 if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
-    print(f"Word indexes: {librispeech_vocab.word2index}")
-    print(f"Indexes of words: {librispeech_vocab.index2word}")
     # train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
     # data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False, collate_fn=default_collate)
     # for step, (log_mel, transcript) in enumerate(data_loader):
