@@ -152,10 +152,10 @@ class TrainLoader(DataLoader):
 
         for step, (log_mel, transcript) in enumerate(batch):
             # process each single sample and add to batch
-            # batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
-            # batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
-            return log_mel, transcript
-        # return batch_logmel, batch_transcript
+            batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
+            batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
+            # return log_mel, transcript
+        return batch_logmel, batch_transcript
 
 
 
@@ -193,13 +193,4 @@ if __name__ == "__main__":
     # # narrow: input, dim, start, length
     # batch_logmel[2].narrow(0, 0, batch_logmel.size(1)).copy_(logMel)
     # print(batch_logmel)
-    #
-    # # Create a tensor
-    # original_tensor = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    # print(original_tensor.shape)
-    # # Use narrow_ to create a narrowed view along the second dimension
-    # original_tensor.narrow(dim=0, start=0, length=2)
-    #
-    # print("Original Tensor (after narrowing):")
-    # print(original_tensor.shape)
     print("DONE")
