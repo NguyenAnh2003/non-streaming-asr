@@ -156,12 +156,10 @@ class TrainLoader(DataLoader):
 
         for step, (log_mel, transcript) in enumerate(batch):
             # process each single sample and add to batch
-            print(log_mel.shape)
-            print(batch_logmel[step].shape)
-            # batch_logmel[step].narrow(0, 0, log_mel.size(1)).copy_(log_mel)
-            # batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
-            return log_mel, transcript
-        # return batch_logmel, batch_transcript
+            batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
+            batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
+            # return log_mel, transcript
+        return batch_logmel, batch_transcript
 
 
 
