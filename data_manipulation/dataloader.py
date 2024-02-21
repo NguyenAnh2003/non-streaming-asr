@@ -142,7 +142,11 @@ class TrainLoader(DataLoader):
         # https://stackoverflow.com/questions/65279115/how-to-use-collate-fn-with-dataloaders
 
         batch_size = len(batch) # create temp batch_size
+
+        # max_frames - each one: tensor([n_frames, banks])
         max_frames = max(x[0].size(0) for x in batch) # get max n_frames per batch
+
+        # max_len_transcript - each one: len(transcript)
         max_len_transcript = max(len(x[1]) for x in batch)
 
         # create empty tensor with batch_size, max_frames and banks
