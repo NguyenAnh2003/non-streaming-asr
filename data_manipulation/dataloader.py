@@ -60,9 +60,8 @@ class TrainSet(Dataset):
         array, rate = torchaudio.load(sample_path)
         # transform audio to mel spec
         log_mel = audio_transforms(array=array, params=self.params)
-
         # return log_mel and transcript
-        return log_mel, sample_transcript
+        return log_mel, torch.tensor(sample_transcript)
 
     def __get_audio_sample(self, index) -> Tuple[str, List[int]]:
         """ process audio path
