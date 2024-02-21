@@ -142,20 +142,22 @@ class TrainLoader(DataLoader):
         # https://stackoverflow.com/questions/65279115/how-to-use-collate-fn-with-dataloaders
 
         batch_size = len(batch) # create temp batch_size
-        max_frames = max(x[0].size(1) for x in batch) # get max n_frames per batch
+        max_frames = max(x[0].size(0) for x in batch) # get max n_frames per batch
         max_len_transcript = max(len(x[1]) for x in batch)
 
         # create empty tensor with batch_size, max_frames and banks
-        batch_logmel = torch.zeros(batch_size, max_frames, _FILTER_BANKS)
+        batch_logmel = torch.zeros(batch_size, max_frames, _FILTER_BANKS, dtype=torch.float32)
 
         batch_transcript = torch.zeros(batch_size, max_len_transcript)
 
         for step, (log_mel, transcript) in enumerate(batch):
             # process each single sample and add to batch
-            batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
-            batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
-            # return log_mel, transcript
-        return batch_logmel, batch_transcript
+            print(log_mel.shape)
+            print(batch_logmel[step].shape)
+            # batch_logmel[step].narrow(0, 0, log_mel.size(1)).copy_(log_mel)
+            # batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
+            return log_mel, transcript
+        # return batch_logmel, batch_transcript
 
 
 
@@ -183,7 +185,7 @@ if __name__ == "__main__":
     # hg_set = hg_set.map(process_sample_transcript)
     # print(hg_set.to_dict())
 
-    data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False)
+    data_loader = TrainLoader(dataset=train_set, batch_size=4, shuffle=False)
     for step, (log_mel, transcript) in enumerate(data_loader):
         print(f"Audio: {log_mel.shape} Transcript: {transcript}")
         
