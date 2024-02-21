@@ -7,7 +7,7 @@ import torchaudio
 from logger.my_logger import setup_logger
 import pandas as pd
 import os
-from typing import Tuple, Dict
+from typing import Tuple, List
 from tqdm import tqdm
 
 from torchtext.vocab import Vocab
@@ -27,9 +27,9 @@ class LibriSpeechVocabRAW:
         self.word2index = {}
         self.index2word = {}
         self.index_of_word = 1 # default index for a word
-        self._process_vocab()
+        self.__process_vocab()
 
-    def _process_vocab(self):
+    def __process_vocab(self):
         with open(self.vocab_file, 'r', encoding='utf-8') as vb_file:
             for line in vb_file:
                 # assign word to index and index to word (line.replace("\n", "") represent for a line -> 1 word 1 line)
@@ -37,7 +37,7 @@ class LibriSpeechVocabRAW:
                 self.index2word[self.index_of_word] = line.replace("\n", "")
                 self.index_of_word += 1 # increase index
 
-# custom data_manipulation set
+# dataset
 class TrainSet(Dataset):
 
     def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
@@ -62,9 +62,9 @@ class TrainSet(Dataset):
         log_mel = audio_transforms(array=array, params=self.params)
 
         # return log_mel and transcript
-        return log_mel, torch.IntTensor(sample_transcript)
+        return log_mel, sample_transcript
 
-    def __get_audio_sample(self, index) -> Tuple[str, str]:
+    def __get_audio_sample(self, index) -> Tuple[str, List[int]]:
         """ process audio path
         :param index -> audio sample
         :return path with audio sample .flac
@@ -72,6 +72,7 @@ class TrainSet(Dataset):
         sample_path = os.path.join(self.root_dir, self.hg_dataset[index]['audio_id'])  # audio path for each sample index
         audio_absolute_path = f"{sample_path}.flac"  # process result
         audio_transcript = self.hg_dataset[index]['transcript']
+
         return audio_absolute_path, audio_transcript
 
     @staticmethod
