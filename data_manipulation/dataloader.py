@@ -47,7 +47,9 @@ class TrainSet(Dataset):
         self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
         self.root_dir = root_dir  # ./
         self.vocab = vocab
+        # init hugging face dataset
         self.hg_dataset = self.__create_huggingface_dataset(csv_path=csv_file)
+        # map each transcript from str to index(int) in word2index dict
         self.hg_dataset = self.hg_dataset.map(self.__process_sample_transcript)
 
     def __getitem__(self, index):
