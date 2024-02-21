@@ -9,6 +9,7 @@ import pandas as pd
 import os
 from typing import Tuple, List
 from tqdm import tqdm
+import numpy as np
 
 from torchtext.vocab import Vocab
 
@@ -60,8 +61,9 @@ class TrainSet(Dataset):
         array, rate = torchaudio.load(sample_path)
         # transform audio to mel spec
         log_mel = audio_transforms(array=array, params=self.params)
+
         # return log_mel and transcript
-        return log_mel, torch.tensor(sample_transcript)
+        return log_mel, sample_transcript
 
     def __get_audio_sample(self, index) -> Tuple[str, List[int]]:
         """ process audio path
@@ -153,14 +155,15 @@ class TrainLoader(DataLoader):
         # create empty tensor with batch_size, max_frames and banks
         batch_logmel = torch.zeros(batch_size, max_frames, _FILTER_BANKS, dtype=torch.float32)
 
-        batch_transcript = torch.zeros(batch_size, max_len_transcript)
+        batch_transcript = []
 
         for step, (log_mel, transcript) in enumerate(batch):
             # process each single sample and add to batch
             batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
             # batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
-            return log_mel, transcript
-        # return batch_logmel, batch_transcript
+            batch_transcript.append(transcript)
+            # return log_mel, transcript
+        return batch_logmel, batch_transcript
 
 
 
