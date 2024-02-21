@@ -142,7 +142,7 @@ class TrainLoader(DataLoader):
         # https://stackoverflow.com/questions/65279115/how-to-use-collate-fn-with-dataloaders
 
         batch_size = len(batch) # create temp batch_size
-        max_frames = max(x[0].size(2) for x in batch) # get max n_frames per batch
+        max_frames = max(x[0].size(1) for x in batch) # get max n_frames per batch
         max_len_transcript = max(len(x[1]) for x in batch)
 
         # create empty tensor with batch_size, max_frames and banks
@@ -176,8 +176,8 @@ if __name__ == "__main__":
     #     return batch
 
     train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
-    for step in range(train_set.__len__()):
-        print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
+    # for step in range(train_set.__len__()):
+    #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 
     # hg_set = HuggingFaceDataset.from_pandas(df=pd.read_csv("./train_samples.csv"))
     # hg_set = hg_set.map(process_sample_transcript)
