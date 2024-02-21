@@ -169,15 +169,15 @@ class DevLoader(DataLoader):
 if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
 
-    def process_sample_transcript(batch: Dataset):
-        """ function receive batch and mapp each transcript to index in Vocab """
-        batch["transcript"] = batch["transcript"].split()
-        batch["transcript"] = [*map(librispeech_vocab.word2index.get, batch["transcript"])]
-        return batch
+    # def process_sample_transcript(batch: Dataset):
+    #     """ function receive batch and mapp each transcript to index in Vocab """
+    #     batch["transcript"] = batch["transcript"].split()
+    #     batch["transcript"] = [*map(librispeech_vocab.word2index.get, batch["transcript"])]
+    #     return batch
 
     train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
-    # for step in range(train_set.__len__()):
-    #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
+    for step in range(train_set.__len__()):
+        print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 
     # hg_set = HuggingFaceDataset.from_pandas(df=pd.read_csv("./train_samples.csv"))
     # hg_set = hg_set.map(process_sample_transcript)
@@ -186,14 +186,15 @@ if __name__ == "__main__":
     data_loader = TrainLoader(dataset=train_set, batch_size=1, shuffle=False)
     for step, (log_mel, transcript) in enumerate(data_loader):
         print(f"Audio: {log_mel.shape} Transcript: {transcript}")
+        
     # logMel = torch.randn([1, 81, 204])
     # max_frames = 400
     # batch_logmel = torch.zeros(4, max_frames, 81, dtype=torch.float32)
-    # narrow: input, dim, start, length
+    # # narrow: input, dim, start, length
     # batch_logmel[2].narrow(0, 0, batch_logmel.size(1)).copy_(logMel)
     # print(batch_logmel)
-
-    # Create a tensor
+    #
+    # # Create a tensor
     # original_tensor = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     # print(original_tensor.shape)
     # # Use narrow_ to create a narrowed view along the second dimension
