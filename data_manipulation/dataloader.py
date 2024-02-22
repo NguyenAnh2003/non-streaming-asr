@@ -25,8 +25,8 @@ class LibriSpeechVocabRAW:
     def __init__(self, vocab_file_path: str = "./vocab.txt"):
         # vocab file
         self.vocab_file = vocab_file_path
-        self.word2index = {"PAD": 0, "UNF": 1}
-        self.index2word = {0: "PAD", 1: "UNF"}
+        self.word2index = {"PAD": 0, "UNF": 1} # update code
+        self.index2word = {0: "PAD", 1: "UNF"} # update code
         self.index_of_word = 2 # default index for a word
         self.__process_vocab()
 
@@ -63,7 +63,7 @@ class TrainSet(Dataset):
         log_mel = audio_transforms(array=array, params=self.params)
 
         # return log_mel and transcript
-        return log_mel, sample_transcript
+        return log_mel, torch.tensor(sample_transcript)
 
     def __get_audio_sample(self, index) -> Tuple[str, List[int]]:
         """ process audio path
@@ -86,7 +86,7 @@ class TrainSet(Dataset):
         """ function receive batch and mapp each transcript to index in Vocab """
         batch["transcript"] = batch["transcript"].split()
         batch["transcript"] = [*map(self.vocab.word2index.get, batch["transcript"])]
-        batch["transcript"] = [int(1 if value is None else value) for value in batch["transcript"]]
+        batch["transcript"] = [int(1 if value is None else value) for value in batch["transcript"]] # update code
         return batch
 
     def __len__(self) -> int:
@@ -162,7 +162,7 @@ class TrainLoader(DataLoader):
             # process each single sample and add to batch
 
             batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
-            batch_transcript[step].narrow(0, 0, len(transcript)).copy_(torch.tensor(transcript))
+            batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
             # return log_mel, transcript
         return batch_logmel, batch_transcript
 
