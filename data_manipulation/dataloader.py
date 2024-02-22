@@ -94,12 +94,17 @@ class TrainSet(Dataset):
 
 
 class DevSet(Dataset):
-    def __init__(self, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
-        super(DevSet, self).__init__()
+    def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
+        super(TrainSet, self).__init__()
         """ define init """
         self.params = get_configs(config_path)  # defined params
         self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
         self.root_dir = root_dir  # ./
+        self.vocab = vocab
+        # init hugging face dataset
+        self.hg_dataset = self.__create_huggingface_dataset(csv_path=csv_file)
+        # map each transcript from str to index(int) in word2index dict
+        self.hg_dataset = self.hg_dataset.map(self.__process_sample_transcript)
 
     def __getitem__(self, index):
         """ return log mel spectrogram, and transcript """
@@ -111,24 +116,32 @@ class DevSet(Dataset):
         log_mel = audio_transforms(array=array, params=self.params)
 
         # return log_mel and transcript
-        return log_mel, sample_transcript
+        return log_mel, torch.tensor(sample_transcript)
 
-    def __get_audio_sample(self, index) -> Tuple[str, str]:
+    def __get_audio_sample(self, index) -> Tuple[str, List[int]]:
         """ process audio path
         :param index -> audio sample
         :return path with audio sample .flac
         """
-        sample_path = os.path.join(self.root_dir, self.audio_samples.iloc[index, 0])  # audio path for each sample index
+        sample_path = os.path.join(self.root_dir,
+                                   self.hg_dataset[index]['audio_id'])  # audio path for each sample index
         audio_absolute_path = f"{sample_path}.flac"  # process result
-        audio_transcript = self.audio_samples.iloc[index, 1]
+        audio_transcript = self.hg_dataset[index]['transcript']
+
         return audio_absolute_path, audio_transcript
 
-    def _process_sample_transcript(self, index):
-        """
-        :param index: index for each sample
-        the function used for process audio transcript from str to int
-        list[index]
-        """
+    @staticmethod
+    def __create_huggingface_dataset(csv_path: str):
+        train_csv = pd.read_csv(csv_path)
+        dataset = HuggingFaceDataset.from_pandas(train_csv)
+        return dataset
+
+    def __process_sample_transcript(self, batch: Dataset):
+        """ function receive batch and mapp each transcript to index in Vocab """
+        batch["transcript"] = batch["transcript"].split()
+        batch["transcript"] = [*map(self.vocab.word2index.get, batch["transcript"])]
+        batch["transcript"] = [int(1 if value is None else value) for value in batch["transcript"]]  # update code
+        return batch
 
     def __len__(self) -> int:
         return len(self.audio_samples)
