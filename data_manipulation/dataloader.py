@@ -25,9 +25,9 @@ class LibriSpeechVocabRAW:
     def __init__(self, vocab_file_path: str = "./vocab.txt"):
         # vocab file
         self.vocab_file = vocab_file_path
-        self.word2index = {}
-        self.index2word = {}
-        self.index_of_word = 1 # default index for a word
+        self.word2index = {"PAD": 0, "UNF": 1}
+        self.index2word = {0: "PAD", 1: "UNF"}
+        self.index_of_word = 2 # default index for a word
         self.__process_vocab()
 
     def __process_vocab(self):
@@ -86,6 +86,7 @@ class TrainSet(Dataset):
         """ function receive batch and mapp each transcript to index in Vocab """
         batch["transcript"] = batch["transcript"].split()
         batch["transcript"] = [*map(self.vocab.word2index.get, batch["transcript"])]
+        batch["transcript"] = [int(1 if value is None else value) for value in batch["transcript"]]
         return batch
 
     def __len__(self) -> int:
@@ -155,13 +156,13 @@ class TrainLoader(DataLoader):
         # create empty tensor with batch_size, max_frames and banks
         batch_logmel = torch.zeros(batch_size, max_frames, _FILTER_BANKS, dtype=torch.float32)
 
-        batch_transcript = []
+        batch_transcript = torch.zeros(batch_size, max_len_transcript, dtype=torch.int)
 
         for step, (log_mel, transcript) in enumerate(batch):
             # process each single sample and add to batch
+
             batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
-            # batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
-            batch_transcript.append(transcript)
+            batch_transcript[step].narrow(0, 0, len(transcript)).copy_(torch.tensor(transcript))
             # return log_mel, transcript
         return batch_logmel, batch_transcript
 
@@ -183,6 +184,7 @@ if __name__ == "__main__":
 
     data_loader = TrainLoader(dataset=train_set, batch_size=4, shuffle=False)
     for step, (log_mel, transcript) in tqdm(enumerate(data_loader)):
+        pass
         print(f"Audio: {log_mel} Shape{log_mel.shape} "
               f"Transcript: {transcript}")
 
