@@ -177,14 +177,40 @@ class TrainLoader(DataLoader):
             batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
             batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
             # return log_mel, transcript
+
         return batch_logmel, batch_transcript
 
 
 
 class DevLoader(DataLoader):
     def __init__(self, *args, **kwargs):
-        """ Dev loader init """
-        super().__init__(*args, **kwargs)
+        """ Train loader init """
+        super(DevLoader, self).__init__(*args, **kwargs)
+        self.shuffle = kwargs['shuffle']
+        self.collate_fn = self.collate_custom_fn
+
+    def collate_custom_fn(self, batch):
+        batch_size = len(batch)  # create temp batch_size
+
+        # max_frames - each one: tensor([n_frames, banks])
+        max_frames = max(x[0].size(0) for x in batch)  # get max n_frames per batch
+
+        # max_len_transcript - each one: len(transcript)
+        max_len_transcript = max(len(x[1]) for x in batch)
+
+        # create empty tensor with batch_size, max_frames and banks
+        batch_logmel = torch.zeros(batch_size, max_frames, _FILTER_BANKS, dtype=torch.float32)
+
+        batch_transcript = torch.zeros(batch_size, max_len_transcript, dtype=torch.int)
+
+        for step, (log_mel, transcript) in enumerate(batch):
+            # process each single sample and add to batch
+
+            batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
+            batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
+            # return log_mel, transcript
+
+        return batch_logmel, batch_transcript
 
 
 # check
