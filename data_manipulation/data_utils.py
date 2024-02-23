@@ -154,10 +154,10 @@ if __name__ == "__main__":
     print(f"Length: {len(amounts)}")
 
     # write metadata from txt to csv
-    # write_metadata_txt_2_csv("train-clean.csv")
+    # write_metadata_txt_2_csv("metadata-train-clean.csv")
 
     # double check csv file
-    train_df = pd.read_csv("train-clean.csv")
+    train_df = pd.read_csv("metadata-train-clean.csv")
     print(f"NUmber of samples in train-csv: {train_df.shape[0]}")
     #
     # source_path = "librispeech/train-custom-clean"
@@ -169,5 +169,5 @@ if __name__ == "__main__":
     #             shutil.move(file_path, dest_path)
 
 
-    # write_metadata_txt_2_csv("./dev-clean.csv")
+    # write_metadata_txt_2_csv("./metadata-dev-clean.csv")
     print("DONE")
