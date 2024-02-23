@@ -159,7 +159,7 @@ if __name__ == "__main__":
     # double check csv file
     train_df = pd.read_csv("train-clean.csv")
     print(f"NUmber of samples in train-csv: {train_df.shape[0]}")
-
+    #
     # source_path = "librispeech/train-custom-clean"
     # dest_path = "librispeech/train_libri_transcripts"
     # for filename in os.listdir(source_path):
