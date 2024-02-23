@@ -73,7 +73,7 @@ def _process_librispeech_dataset(metadata_file_path):
 def write_metadata_txt_2_csv(csv_path: str):
     # define metadata
     _logger.log(_logger.INFO, "DEFINE METADATA")
-    metadata_dict = _process_librispeech_dataset("./librispeech/transcripts.txt")
+    metadata_dict = _process_librispeech_dataset("librispeech/dev-transcripts.txt")
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as csv_file:
         # define csv writer
@@ -88,8 +88,8 @@ def write_metadata_txt_2_csv(csv_path: str):
     _logger.log(_logger.INFO,  "WRITE CSV COMPETE")
 
 def combine_audio_from_folders():
-    source_folder_path = "./librispeech/dev/dev-clean/"
-    destination_folder_path = "librispeech/dev-custom-clean"
+    source_folder_path = "./librispeech/train-clean-100/train-clean-100"
+    destination_folder_path = "librispeech/train-custom-clean"
 
     # list all child folder in parent
     for folder_name in os.listdir(source_folder_path):
@@ -108,7 +108,7 @@ def combine_audio_from_folders():
                         shutil.copy(file_path, destination_folder_path)
 
 def get_number_audio_samples():
-    source_path = "librispeech/dev-custom-clean"
+    source_path = "librispeech/train-custom-clean"
     amounts = []
     for filename in os.listdir(source_path):
         if filename.endswith(".flac"):
@@ -119,9 +119,9 @@ def get_number_audio_samples():
 
 def concat_transcripts_txt_file() -> None:
     # source path
-    source_path = "./librispeech/librispeech_transcripts_txt"
+    source_path = "./librispeech/train_libri_transcripts"
     # combined transcript txt file
-    combined_txt_path = "./librispeech/transcripts.txt"
+    combined_txt_path = "librispeech/train-transcripts.txt"
 
     # open combined file
     with open(combined_txt_path, 'w', encoding='utf-8') as dest_file:
@@ -135,6 +135,23 @@ def concat_transcripts_txt_file() -> None:
                 dest_file.write(infile.read())
 
 if __name__ == "__main__":
-    # print(f"Number of samples in dev-custom-clean: {get_number_audio_samples()}")
-    # write_metadata_txt_2_csv("./train_samples.csv")
-    pass
+    # flow process librispeech data folder
+    # 1. combine all file in folder
+    # 2. filter .flac and txt file
+    # 3. combine content of txt file
+    # 4. concat content of txt file
+    # 5. write metadata from txt 2 csv file
+
+    # dev-clean 2703; train-clean 28539
+    # concat_transcripts_txt_file()
+    print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
+
+    source_path = "librispeech/train-transcripts.txt"
+    amounts = []
+    with open(source_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            amounts.append(line)
+    print(f"Length: {len(amounts)}")
+
+    # write_metadata_txt_2_csv("./dev-clean.csv")
+    print("DONE")
