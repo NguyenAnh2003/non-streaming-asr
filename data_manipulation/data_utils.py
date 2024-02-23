@@ -73,7 +73,7 @@ def _process_librispeech_dataset(metadata_file_path):
 def write_metadata_txt_2_csv(csv_path: str):
     # define metadata
     _logger.log(_logger.INFO, "DEFINE METADATA")
-    metadata_dict = _process_librispeech_dataset("librispeech/dev-transcripts.txt")
+    metadata_dict = _process_librispeech_dataset("librispeech/train-transcripts.txt")
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as csv_file:
         # define csv writer
@@ -152,6 +152,13 @@ if __name__ == "__main__":
         for line in file:
             amounts.append(line)
     print(f"Length: {len(amounts)}")
+
+    # write metadata from txt to csv
+    # write_metadata_txt_2_csv("train-clean.csv")
+
+    # double check csv file
+    train_df = pd.read_csv("train-clean.csv")
+    print(f"NUmber of samples in train-csv: {train_df.shape[0]}")
 
     # write_metadata_txt_2_csv("./dev-clean.csv")
     print("DONE")
