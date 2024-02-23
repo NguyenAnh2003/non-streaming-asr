@@ -89,7 +89,7 @@ def write_metadata_txt_2_csv(csv_path: str):
 
 def combine_audio_from_folders():
     source_folder_path = "./librispeech/dev/dev-clean/"
-    destination_folder_path = "./librispeech/train-custom-clean"
+    destination_folder_path = "librispeech/dev-custom-clean"
 
     # list all child folder in parent
     for folder_name in os.listdir(source_folder_path):
@@ -108,7 +108,7 @@ def combine_audio_from_folders():
                         shutil.copy(file_path, destination_folder_path)
 
 def get_number_audio_samples():
-    source_path = "./librispeech/train-custom-clean"
+    source_path = "librispeech/dev-custom-clean"
     amounts = []
     for filename in os.listdir(source_path):
         if filename.endswith(".flac"):
@@ -135,6 +135,6 @@ def concat_transcripts_txt_file() -> None:
                 dest_file.write(infile.read())
 
 if __name__ == "__main__":
-    # print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
+    # print(f"Number of samples in dev-custom-clean: {get_number_audio_samples()}")
     # write_metadata_txt_2_csv("./train_samples.csv")
     pass

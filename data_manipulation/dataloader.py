@@ -217,7 +217,8 @@ class DevLoader(DataLoader):
 if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
 
-    train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="./librispeech/train-custom-clean")
+    # aaa
+    train_set = TrainSet(vocab= librispeech_vocab, csv_file="./train_samples.csv", root_dir="librispeech/dev-custom-clean")
     # for step in range(train_set.__len__()):
     #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 
