@@ -160,5 +160,14 @@ if __name__ == "__main__":
     train_df = pd.read_csv("train-clean.csv")
     print(f"NUmber of samples in train-csv: {train_df.shape[0]}")
 
+    # source_path = "librispeech/train-custom-clean"
+    # dest_path = "librispeech/train_libri_transcripts"
+    # for filename in os.listdir(source_path):
+    #     if filename.endswith(".txt"):
+    #         file_path = os.path.join(source_path, filename)
+    #         if os.path.isfile(file_path):
+    #             shutil.move(file_path, dest_path)
+
+
     # write_metadata_txt_2_csv("./dev-clean.csv")
     print("DONE")
