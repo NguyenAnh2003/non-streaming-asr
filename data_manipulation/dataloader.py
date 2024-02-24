@@ -222,9 +222,8 @@ if __name__ == "__main__":
     # for step in range(train_set.__len__()):
     #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 
-    data_loader = TrainLoader(dataset=train_set, batch_size=4, shuffle=False)
+    data_loader = TrainLoader(dataset=train_set, batch_size=16, shuffle=False)
     for step, (log_mel, transcript) in tqdm(enumerate(data_loader)):
-        pass
         print(f"Audio: {log_mel} Shape{log_mel.shape} "
               f"Transcript: {transcript}")
 

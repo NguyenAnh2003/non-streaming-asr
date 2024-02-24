@@ -35,7 +35,8 @@ class Conformer(nn.Module):
         self.softmax = nn.Softmax()
 
         """ model chain """
-        self.encoder_chain = nn.Sequential(self.conv_subsampling, self.linear, self.dropout, self.conformer_encoder)
+        self.encoder_chain = nn.Sequential(self.conv_subsampling, self.linear,
+                                           self.dropout, self.conformer_encoder)
 
     def forward(self, x):
         hidden_state = self.encoder_chain(x) # get relation ship between audio frame
