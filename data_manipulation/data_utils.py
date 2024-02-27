@@ -35,7 +35,7 @@ _CHECKSUMS = {
     "http://www.openslr.org/resources/12/train-other-500.tar.gz": "ddb22f27f96ec163645d53215559df6aa36515f26e01dd70798188350adcb6d2",  # noqa: E501
 }
 
-
+# LibriSpeech data utils
 def download_libirspeech_dataset(root: str = f"D:\\", url: str = URL):
     """ auto download librispeech dataset """
     # base url
@@ -133,6 +133,9 @@ def concat_transcripts_txt_file() -> None:
             # open file and write to dest_file
             with open(file_path, 'r', encoding='utf-8') as infile:
                 dest_file.write(infile.read())
+
+# Audio preprocessing
+
 
 if __name__ == "__main__":
     # flow process librispeech data folder
