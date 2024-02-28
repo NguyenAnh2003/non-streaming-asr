@@ -41,7 +41,7 @@ class LibriSpeechVocabRAW:
 # dataset
 class TrainSet(Dataset):
 
-    def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
+    def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_processing.yaml"):
         super(TrainSet, self).__init__()
         """ define init """
         self.params = get_configs(config_path)  # defined params
@@ -94,7 +94,7 @@ class TrainSet(Dataset):
 
 
 class DevSet(Dataset):
-    def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_extraction.yaml"):
+    def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_processing.yaml"):
         super(TrainSet, self).__init__()
         """ define init """
         self.params = get_configs(config_path)  # defined params

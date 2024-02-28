@@ -134,9 +134,6 @@ def concat_transcripts_txt_file() -> None:
             with open(file_path, 'r', encoding='utf-8') as infile:
                 dest_file.write(infile.read())
 
-# Audio preprocessing
-
-
 if __name__ == "__main__":
     # flow process librispeech data folder
     # 1. combine all file in folder
@@ -147,21 +144,21 @@ if __name__ == "__main__":
 
     # dev-clean 2703; train-clean 28539
     # concat_transcripts_txt_file()
-    print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
-
-    source_path = "librispeech/train-transcripts.txt"
-    amounts = []
-    with open(source_path, 'r', encoding='utf-8') as file:
-        for line in file:
-            amounts.append(line)
-    print(f"Length: {len(amounts)}")
+    # print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
+    #
+    # source_path = "librispeech/train-transcripts.txt"
+    # amounts = []
+    # with open(source_path, 'r', encoding='utf-8') as file:
+    #     for line in file:
+    #         amounts.append(line)
+    # print(f"Length: {len(amounts)}")
 
     # write metadata from txt to csv
     # write_metadata_txt_2_csv("metadata-train-clean.csv")
 
     # double check csv file
-    train_df = pd.read_csv("metadata-train-clean.csv")
-    print(f"NUmber of samples in train-csv: {train_df.shape[0]}")
+    # train_df = pd.read_csv("metadata-train-clean.csv")
+    # print(f"NUmber of samples in train-csv: {train_df.shape[0]}")
     #
     # source_path = "librispeech/train-custom-clean"
     # dest_path = "librispeech/train_libri_transcripts"
@@ -173,4 +170,6 @@ if __name__ == "__main__":
 
 
     # write_metadata_txt_2_csv("./metadata-dev-clean.csv")
+
+
     print("DONE")

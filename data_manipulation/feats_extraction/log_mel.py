@@ -49,7 +49,7 @@ if __name__ == "__main__":
     y_trimmed, _ = librosa.effects.trim(array.squeeze(0), top_db=20)
     y_trimmed = torch.tensor(y_trimmed).unsqueeze(0)
 
-    params = get_configs("../../configs/audio_extraction.yaml")
+    params = get_configs("../../configs/audio_processing.yaml")
     log_melspec_trimmed = audio_transforms(y_trimmed, params)
     log_melspec = audio_transforms(array, params)
     print(f"Log mel: {log_melspec} Shape: {log_melspec.shape}"
