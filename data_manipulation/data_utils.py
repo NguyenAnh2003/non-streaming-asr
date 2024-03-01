@@ -15,7 +15,7 @@ from utils.utils import get_configs
 
 _params = get_configs("../configs/audio_processing.yaml")
 
-_logger = setup_logger("../logger/logs/write_csv.log", location="data utils")
+_logger = setup_logger("../logger/logs/data_utls.log", location="data utils")
 _logger.getLogger(__name__)
 
 URL = "dev-clean"
@@ -162,6 +162,7 @@ def _get_long_audio(source_path: str = "./librispeech/train-custom-clean") -> Li
         # log mel shape [n_frames, banks]
         if logmel_sample.size(0) > 900:
             laus.append((logmel_sample.shape, file_path))
+            _logger.log(_logger.INFO, f"Long audio frames: {logmel_sample.shape} Path: {file_path}")
 
     print("DONE Getting long audio")
     return laus
