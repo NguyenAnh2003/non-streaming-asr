@@ -218,7 +218,7 @@ if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
 
     # aaa
-    train_set = TrainSet(vocab= librispeech_vocab, csv_file="metadata-train-clean.csv", root_dir="librispeech/train-custom-clean")
+    train_set = TrainSet(vocab= librispeech_vocab, csv_file="metadata-dev-clean.csv", root_dir="librispeech/train-custom-clean")
     # for step in range(train_set.__len__()):
     #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 

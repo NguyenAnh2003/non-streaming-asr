@@ -1,3 +1,4 @@
+import torch
 from torchaudio._internal import download_url_to_file
 from torchaudio.datasets.utils import _extract_tar
 import os
@@ -5,6 +6,14 @@ import csv
 import pandas as pd
 from logger.my_logger import setup_logger
 import shutil
+from feats_extraction.log_mel import audio_transforms
+from typing import List, Tuple
+import torchaudio
+import torch
+from tqdm import tqdm
+from utils.utils import get_configs
+
+_params = get_configs("../configs/audio_processing.yaml")
 
 _logger = setup_logger("../logger/logs/write_csv.log", location="data utils")
 _logger.getLogger(__name__)
@@ -117,6 +126,7 @@ def get_number_audio_samples():
                 amounts.append(file_path)
     return len(amounts)
 
+# LibriSpeech utils
 def concat_transcripts_txt_file() -> None:
     # source path
     source_path = "./librispeech/train_libri_transcripts"
@@ -133,6 +143,29 @@ def concat_transcripts_txt_file() -> None:
             # open file and write to dest_file
             with open(file_path, 'r', encoding='utf-8') as infile:
                 dest_file.write(infile.read())
+
+# get longest audio
+def _get_long_audio(source_path: str = "./librispeech/train-custom-clean") -> List[Tuple[torch.Tensor, str]]:
+    # shape [n_frames, banks] get long audio from 900 n_frames
+    laus = []
+    print("Getting long audio")
+    for filename in tqdm(os.listdir(source_path)):
+        # file path can be represented for filename
+        file_path = os.path.join(source_path, filename)
+
+        # audio array load
+        audio_array, _ = torchaudio.load(file_path)
+
+        # get log mel shape
+        logmel_sample = audio_transforms(array=audio_array, params=_params)
+
+        # log mel shape [n_frames, banks]
+        if logmel_sample.size(0) > 900:
+            laus.append((logmel_sample.shape, file_path))
+
+    print("DONE Getting long audio")
+    return laus
+
 
 if __name__ == "__main__":
     # flow process librispeech data folder
@@ -171,5 +204,8 @@ if __name__ == "__main__":
 
     # write_metadata_txt_2_csv("./metadata-dev-clean.csv")
 
+    # long audios
+    las = _get_long_audio(source_path="./librispeech/train-custom-clean")
+    print(f"List of long audio: {las}")
 
     print("DONE")

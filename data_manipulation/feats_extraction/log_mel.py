@@ -38,8 +38,8 @@ def audio_transforms(array, params):
                                            db_multiplier=math.log10(max(1e-10, 1)))
 
     # adjust output
-    # return log_melspectrogram.squeeze(0).transpose(0, 1).contiguous()
-    return log_melspectrogram.squeeze(0)
+    return log_melspectrogram.squeeze(0).transpose(0, 1).contiguous()
+    # return log_melspectrogram.squeeze(0)
 
 if __name__ == "__main__":
     filepath = "../examples/kkk.flac"
