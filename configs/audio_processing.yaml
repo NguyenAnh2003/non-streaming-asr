@@ -18,4 +18,4 @@ n_mels: 81 # mel banks default
 mel_scale: "slaney"
 
 # trim audio configs librosa
-top_db: 20
+top_db: 25
