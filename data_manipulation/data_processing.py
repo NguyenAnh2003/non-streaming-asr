@@ -19,7 +19,7 @@ def _add_noise2audio(sample_array: torch.Tensor, noise_array: torch.Tensor):
     :param noise_array
     :return augmented audio with noise
     """
-    # work with noise have tensor([2, ...n_frames]) 2 channels - audio with 2 channels can be considered as stereo sound
+    # work with noise have tensor([>= 1, ...n_frames]) 2 channels - audio with 2 channels can be considered as stereo sound
     noise_array = noise_array[0, :sample_array.size(1)] # take n_frames -> vector
     
     noise_array = noise_array.unsqueeze(0) # turn back to matrix reduce 1 channel
@@ -67,7 +67,8 @@ if __name__ == "__main__":
     # print(f"Shape before trimmed: {array.shape} After trimmed: {trimmed_array.shape}")
 
     # adding noise
-    n_array, _ = torchaudio.load("./noises/re_radio.wav")
+    n_array, _ = torchaudio.load("./noises/re_tam.wav")
+    print(n_array.shape)
     
     augmented = _add_noise2audio(sample_array=array, noise_array=n_array) #
     print(augmented.shape)
