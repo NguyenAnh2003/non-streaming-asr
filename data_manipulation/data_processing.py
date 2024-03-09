@@ -7,11 +7,21 @@ from utils.utils import get_configs
 from pydub import AudioSegment
 import transformers
 
+# Audio Augmentation: https://pytorch.org/audio/main/tutorials/audio_data_augmentation_tutorial.html
+
 # including preprocessing and post-processing
 _params = get_configs("../configs/audio_processing.yaml")
 
+# noise file url
+_NOISE_SUBSETS = [
+    "",
+    ""
+]
 
-# Audio preprocessing
+# adding noise
+
+
+# use later
 def _trim_audio(audio_array, params):
     """ Trim audio with Librosa
     :param audio_array
@@ -26,6 +36,7 @@ def _trim_audio(audio_array, params):
     # return trimmed audio -> audio array
     return trimmed_audio
 
+# use later = ))
 def _audio_segmentation(path: str):
     """ :param -> wav file path
     :returns audio segmented
@@ -42,7 +53,6 @@ if __name__ == "__main__":
 
     # print(f"Shape before trimmed: {array.shape} After trimmed: {trimmed_array.shape}")
 
-    # audio segment
-    segmented = _audio_segmentation("examples")
+    # adding noise
 
     print("DONE")

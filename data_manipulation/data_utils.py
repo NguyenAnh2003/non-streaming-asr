@@ -167,6 +167,16 @@ def _get_long_audio(source_path: str = "./librispeech/train-custom-clean") -> Li
     print("DONE Getting long audio")
     return laus
 
+# file process
+def get_noise_files(path: str) -> List[str]:
+    # return list of file_path
+    result = []
+    for filename in os.listdir(path):
+        if(filename.endswith(".wav")):
+            file_path = os.path.join(path, filename)
+            result.append(file_path)
+
+    return result
 
 if __name__ == "__main__":
     # flow process librispeech data folder
