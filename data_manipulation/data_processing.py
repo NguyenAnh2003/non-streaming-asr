@@ -19,7 +19,22 @@ _NOISE_SUBSETS = [
 ]
 
 # adding noise
-
+def add_noise2audio(sample_array: torch.Tensor, noise_array: torch.Tensor):
+    """ SNR explained: https://www.linkedin.com/pulse/signal-to-noise-ratio-snr-explained-leonid-ayzenshtat/
+    :param sample_array: torch.Tensor,
+    :param noise_array
+    :return augmented audio with noise
+    """
+    snr_dbs = torch.tensor([20, 10, 3])
+    
+    # length for audio and noise -> focus on audio size
+    length_augmented = sample_array.size()
+    
+    # augmented_audio
+    augmented_audio = F.add_noise(waveform=sample_array, noise=noise_array, snr=snr_dbs,
+                                  lengths=length_augmented)
+    
+    return augmented_audio #
 
 # use later
 def _trim_audio(audio_array, params):
