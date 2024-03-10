@@ -1,15 +1,11 @@
-# sample rate for common config
+# common config
 sample_rate: 16000
-
-
-# mel spectrogram configs
-#
 n_fft: 640
 win_length: 640
 hop_length: 321
-
-#
 window_fn: "torch.hamming_window"
+
+# 
 center: True
 pad_mode: "reflect"
 power: 2.0
@@ -19,3 +15,7 @@ mel_scale: "slaney"
 
 # trim audio configs librosa
 top_db: 25
+
+# pitch shift audio torchaudio
+pshift_bins_per_octave: 12
+pshift_steps: 4
