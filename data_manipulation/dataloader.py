@@ -78,7 +78,7 @@ class TrainSet(Dataset):
 
     @staticmethod
     def __create_huggingface_dataset(csv_path: str):
-        train_csv = pd.read_csv(csv_path)
+        train_csv = pd.read_csv(csv_path, nrows=10000)
         dataset = HuggingFaceDataset.from_pandas(train_csv)
         return dataset
 
