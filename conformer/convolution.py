@@ -3,25 +3,40 @@ import torch.nn as nn
 from activations import Swish
 
 class PointWise1DConv(nn.Module):
-    def __init__(self):
-        """"""
+    def __init__(self, in_channels: int = 0, out_channels: int = 1, 
+                kernel_size: int = 3, stride: int = 1, padding: int = 1,
+                bias: bool = True):
+        """ point wise conv """
         super(PointWise1DConv, self).__init__()
-        self.conv = nn.Conv1d()
+        self.pconv = nn.Conv1d(in_channels=in_channels, out_channels=out_channels,
+                              kernel_size=kernel_size, stride=stride, 
+                              padding=padding, bias=bias)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.conv(x)
+        return self.pconv(x)
 
 class DepthWise1DConv(nn.Module):
-    def __init__(self):
+    
+    # audio just have 1 channel
+    def __init__(self, in_channels: int = 1, out_channels: int = 16, 
+                kernel_size: int = 3, stride: int = 1, padding: int = 1,
+                bias: bool = True):
         super(DepthWise1DConv, self).__init__()
-        self.dw_conv = nn.Conv1d()
+        self.dw_conv = nn.Conv1d(in_channels=in_channels, out_channels=out_channels, 
+                                stride=stride, padding=padding, bias=bias)
 
     def forward(self, x:torch.Tensor) -> torch.Tensor:
         return self.dw_conv(x)
 
-class SubsamplingConv(nn.Module):
-    def __init__(self):
-        super(SubsamplingConv, self).__init__()
+class ConvSubSampling(nn.Module):
+    def __init__(self, in_channels: int, out_channels: int):
+        super(ConvSubSampling, self).__init__()
+        self.chain = nn.Sequential(
+            nn.Conv2d(in_channels=in_channels),
+            nn.ReLU(),
+            nn.Conv2d(in_channels, out_channels=out_channels),
+            nn.ReLU()
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return x

@@ -6,7 +6,8 @@ class FeedForwardNet(nn.Module):
     def __init__(self, input_dim: int, hidden_dim: int, dropout: float = 0.1):
         super().__init__() # inherit Module
         """
-        :param input_size: number of weight after dropout
+        :param input_size: number of input
+        :param hidden_dim: dimension
         This FF network consists of LayerNorm -> Linear -> Dropout -> Linear -> Swish
         """
 
@@ -14,10 +15,10 @@ class FeedForwardNet(nn.Module):
         self.norm_layer = nn.LayerNorm(normalized_shape=input_dim) # config LayerNorm
 
         # Swish activation function
-        self.swish = Swish()
+        self.swish = Swish() #
 
         # Alternative activation
-        self.relu = nn.ReLU()
+        self.relu = nn.ReLU() # alternative for Swish
 
         # -- --- ---- --- --- ---- -- PointWise FeedForward appear in Transformer https://arxiv.org/abs/1706.03762
         # config in feats and out feats of sub-linear 1 network
@@ -49,3 +50,5 @@ class FeedForwardNet(nn.Module):
 if __name__ == "__main__":
     ff = FeedForwardNet(300, 100, 0.1)
     print(f"Feed forward net: {ff}")
+    x = torch.tensor([4, 300])
+    print(f"result: {ff(x)}")

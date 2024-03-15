@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
-from convolution import SubsamplingConv
+from convolution import ConvSubSampling
 from conformer_block import ConformerBlock
+import torchaudio.models.conformer
 
 class Decoder(nn.Module):
     def __init__(self, bidirectional: bool = True):
@@ -17,7 +18,7 @@ class Conformer(nn.Module):
     def __init__(self, dropout: float = 0.1):
         """ convolution subsampling """
         super().__init__()
-        self.conv_subsampling = SubsamplingConv()  # config
+        self.conv_subsampling = ConvSubSampling()  # config
 
         """ linear """
         self.linear = nn.Linear()

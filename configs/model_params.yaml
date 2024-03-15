@@ -1,0 +1,4 @@
+# kernel size define sequentially
+# https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks
+kernel_size: "[(5,5), (3,3)]"
+channels: "[(1, 16), (16, 64)]"
