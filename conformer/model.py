@@ -6,10 +6,14 @@ import torchaudio.models.conformer
 
 class Decoder(nn.Module):
     def __init__(self, bidirectional: bool = True):
+        super().__init__()
         self.lstm = nn.LSTM(bidirectional=bidirectional) # suggest using MHA -> increase params
+        self.log_softmax = nn.LogSoftmax()
 
     def forward(self, x):
-        return self.lstm(x) # perform soft max on output
+        x = self.lstm(x)
+        output = self.log_softmax(x)
+        return output # perform soft max on output
 
 
 class Conformer(nn.Module):
