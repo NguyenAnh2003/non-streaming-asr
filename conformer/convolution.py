@@ -29,17 +29,24 @@ class DepthWise1DConv(nn.Module):
         return self.dw_conv(x)
 
 class ConvSubSampling(nn.Module):
-    def __init__(self, in_channels: int, out_channels: int):
+
+    # basic CNN bloack
+    # Conv2D sub sampling implemented follow this guide
+    # https://www.tutorialexample.com/understand-convolution-subsampling-module-in-conformer-deep-learning-tutorial/
+    def __init__(self, in_channels: int, out_channels: int, 
+                kernel_size: int = 5, stride: int = 1, padding: int = 0):
         super(ConvSubSampling, self).__init__()
         self.chain = nn.Sequential(
-            nn.Conv2d(in_channels=in_channels),
+            nn.Conv2d(in_channels=in_channels, out_channels=out_channels, 
+                      kernel_size=kernel_size, stride=1, padding=padding),
             nn.ReLU(),
-            nn.Conv2d(in_channels, out_channels=out_channels),
+            nn.Conv2d(in_channels=out_channels, out_channels=out_channels,
+                      kernel_size=kernel_size, stride=stride, padding=padding),
             nn.ReLU()
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x
+        return self.chain(x)
 
 
 class ConvolutionModule(nn.Module):
@@ -56,7 +63,7 @@ class ConvolutionModule(nn.Module):
         self.point_wise1 = PointWise1DConv(in_channels=in_channels, stride=stride,
                                            padding=padding, bias=bias) # customized Pointwise Conv
 
-        self.glu_activation = nn.GLU() # customized GLU
+        self.glu_activation = nn.GLU()
 
         """ Depthwise Conv 1D """
         self.dw_conv = DepthWise1DConv()
@@ -83,3 +90,7 @@ class ConvolutionModule(nn.Module):
         identity = x # define identity contain x (input)
         conv_output = self.conv_module(x)
         return identity + conv_output
+    
+if __name__ == "__main__":
+    subsampling = ConvSubSampling(in_channels=1, out_channels=16, kernel_size=5)
+    x = torch.randint()

@@ -39,7 +39,7 @@ class ConformerBlock(nn.Module):
 
         """ Multi-head Attention with APE """
         self.mha = ResidualConnection(module=MultiheadAttention(
-            num_heads=attention_heads,
+            num_heads=attention_heads, # default attention heads are 4
             dropout=dropout), residual_half_step=1.0)
 
         """ Convolution Module """
@@ -61,5 +61,4 @@ class ConformerBlock(nn.Module):
 
 
 if __name__ == "__main__":
-    ff = ResidualConnection(module=FeedForwardNet(), residual_half_step=0.5)
-    print(f"Feed forward : {ff}")
+    pass

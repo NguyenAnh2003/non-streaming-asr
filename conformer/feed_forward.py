@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from activations import Swish
+from modules import ResidualConnection
 
 class FeedForwardNet(nn.Module):
     def __init__(self, input_dim: int, hidden_dim: int, dropout: float = 0.1):
@@ -50,5 +51,9 @@ class FeedForwardNet(nn.Module):
 if __name__ == "__main__":
     ff = FeedForwardNet(300, 100, 0.1)
     print(f"Feed forward net: {ff}")
-    x = torch.tensor([4, 300])
+    x = torch.randint(1, 300)
     print(f"result: {ff(x)}")
+    
+    # with residual connection
+    # ffr = ResidualConnection(ff(x))
+    # print(f"ff residual connection result: {ffr}")
