@@ -27,24 +27,25 @@ class Conformer(nn.Module):
         self.flatten = nn.Flatten()
 
         # from conv to linear the feature must be flatten
+        """ linear """
         self.linear = nn.Linear(in_features=out_channels)
 
-        # dropout
+        """ dropout """
         self.dropout = nn.Dropout(p=dropout)
 
-        # conformer block - encoder
+        """ conformer encoder """
         self.conformer_encoder = ConformerBlock()  # encoder
 
-        # lstm decoder
+        """ decoder """
         self.decoder = DecoderLSTM(bidirectional=True)  #
 
-        # softmax
+        """ softmax """
         self.softmax = nn.Softmax()
 
-        # log-softmax
-        self.log_softmax = nn.LogSoftmax()
+        """ log softmax """
+        # self.log_softmax = nn.LogSoftmax()
 
-        # model
+        """ model chain """
         self.encoder_chain = nn.Sequential(self.conv_subsampling, self.flatten,
                                            self.linear, self.dropout,
                                            self.conformer_encoder)
