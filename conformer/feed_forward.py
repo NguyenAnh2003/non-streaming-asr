@@ -51,7 +51,8 @@ class FeedForwardNet(nn.Module):
 if __name__ == "__main__":
     ff = FeedForwardNet(300, 100, 0.1)
     print(f"Feed forward net: {ff}")
-    x = torch.randint(1, 300)
+    x = torch.randint(0, 100, (81, 300)).float()
+    print(f"{x} Shape: {x.shape}")
     print(f"result: {ff(x)}")
     
     # with residual connection
