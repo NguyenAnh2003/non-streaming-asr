@@ -23,7 +23,7 @@ class DepthWise1DConv(nn.Module):
                 bias: bool = True):
         super(DepthWise1DConv, self).__init__()
         self.dw_conv = nn.Conv1d(in_channels=in_channels, out_channels=out_channels, 
-                                stride=stride, padding=padding, bias=bias)
+                                stride=stride, padding=padding, bias=bias, groups=in_channels)
 
     def forward(self, x:torch.Tensor) -> torch.Tensor:
         return self.dw_conv(x)
