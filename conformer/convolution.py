@@ -46,6 +46,7 @@ class ConvSubSampling(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x - tensor[batch_size, n_frames, fbanks]
         return self.chain(x)
 
 

@@ -95,7 +95,7 @@ class TrainSet(Dataset):
 
 class DevSet(Dataset):
     def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_processing.yaml"):
-        super(TrainSet, self).__init__()
+        super(DevSet, self).__init__()
         """ define init """
         self.params = get_configs(config_path)  # defined params
         self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     # for step in range(train_set.__len__()):
     #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 
-    data_loader = TrainLoader(dataset=train_set, batch_size=16, shuffle=False)
+    data_loader = TrainLoader(dataset=train_set, batch_size=4, shuffle=False)
     for step, (log_mel, transcript) in tqdm(enumerate(data_loader)):
         print(f"Audio: {log_mel} Shape{log_mel.shape} "
               f"Transcript: {transcript}")
