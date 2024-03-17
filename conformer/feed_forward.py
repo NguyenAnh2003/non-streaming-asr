@@ -36,7 +36,7 @@ class FeedForwardNet(nn.Module):
 
         # combine all these block to form a sequence FF
         self.chain = nn.Sequential(
-            self.norm_layer,
+            # self.norm_layer,
             self.sub_linear1,
             self.swish,
             self.dropout,
@@ -56,5 +56,5 @@ if __name__ == "__main__":
     print(f"result: {ff(x)}")
     
     # with residual connection
-    # ffr = ResidualConnection(ff(x))
-    # print(f"ff residual connection result: {ffr}")
+    ffr = ResidualConnection(module=ff, residual_half_step=0.5)
+    print(f"ff residual connection result: {ffr(x)}")
