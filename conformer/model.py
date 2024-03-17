@@ -18,8 +18,8 @@ class Conformer(nn.Module):
     def __init__(self, in_channels: int, out_channels: int,
                  kernel_size: int, stride: int, padding: int,
                  dropout: float = 0.1, num_layers: int = 1):
-        """ :param num_layers -> number of conformer encoders. """
         super().__init__()
+        """ :param num_layers -> number of conformer encoders. """
         
         # usually audio have only 1 channel -> in_channel : 1
         self.conv_subsampling = ConvSubSampling(in_channels=in_channels, out_channels=out_channels,
@@ -29,7 +29,7 @@ class Conformer(nn.Module):
 
         # from conv to linear the feature must be flatten
         """ linear """
-        self.linear = nn.Linear(in_features=out_channels, out_features=)
+        self.linear = nn.Linear(in_features=out_channels)
 
         """ dropout """
         self.dropout = nn.Dropout(p=dropout)
