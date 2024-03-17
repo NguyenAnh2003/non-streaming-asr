@@ -31,10 +31,12 @@ class ConformerBlock(nn.Module):
     convolution module -> half step = 1
     """
 
-    def __init__(self, dropout: float = 0.1, attention_heads: int = 4):
+    def __init__(self, in_feats: int, out_feats: int, dropout: float = 0.1, attention_heads: int = 4):
         super().__init__()
+        
+        # Feed forward net sanwiching acting like point-wise ff network
         """ 1/2 Feed forward """
-        self.ff1 = ResidualConnection(module=FeedForwardNet(),
+        self.ff1 = ResidualConnection(module=FeedForwardNet(in_feats=in_feats, out_feats=out_feats),
                                       residual_half_step=0.5)
 
         """ Multi-head Attention with APE """
@@ -47,7 +49,7 @@ class ConformerBlock(nn.Module):
                                               residual_half_step=1.0)
 
         """ 1/2 Feed forward """
-        self.ff2 = ResidualConnection(module=ConvolutionModule(),
+        self.ff2 = ResidualConnection(module=FeedForwardNet(in_feats=out_feats, out_feats=in_feats),
                                       residual_half_step=0.5)
 
         """ LayerNorm """

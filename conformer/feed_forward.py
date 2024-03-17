@@ -4,16 +4,16 @@ from activations import Swish
 from modules import ResidualConnection
 
 class FeedForwardNet(nn.Module):
-    def __init__(self, input_dim: int, hidden_dim: int, dropout: float = 0.1):
+    def __init__(self, in_feats: int, out_feats: int, dropout: float = 0.1, bias: bool = True):
         super().__init__() # inherit Module
         """
-        :param input_size: number of input
-        :param hidden_dim: dimension
+        :param in_feats:
+        :param out_feats: 
         This FF network consists of LayerNorm -> Linear -> Dropout -> Linear -> Swish
         """
 
         # LayerNorm explained: https://www.pinecone.io/learn/batch-layer-normalization/
-        self.norm_layer = nn.LayerNorm(normalized_shape=input_dim) # config LayerNorm
+        self.norm_layer = nn.LayerNorm(normalized_shape=in_feats) # config LayerNorm
 
         # Swish activation function
         self.swish = Swish() #
@@ -23,15 +23,15 @@ class FeedForwardNet(nn.Module):
 
         # -- --- ---- --- --- ---- -- PointWise FeedForward appear in Transformer https://arxiv.org/abs/1706.03762
         # config in feats and out feats of sub-linear 1 network
-        self.sub_linear1 = nn.Linear(in_features=input_dim,
-                                     out_features=hidden_dim, bias=True)
+        self.sub_linear1 = nn.Linear(in_features=in_feats,
+                                     out_features=out_feats, bias=bias)
 
         # config dropout for common usage in FF block
         self.dropout = nn.Dropout(p=dropout)  # common dropout
 
         # config in feats and out feats of sub-linear 2 network
-        self.sub_linear2 = nn.Linear(in_features=hidden_dim, out_features=input_dim,
-                                     bias=True)  # final Linear layer
+        self.sub_linear2 = nn.Linear(in_features=out_feats, out_features=in_feats,
+                                     bias=bias)  # final Linear layer
         # -- --- ---- --- --- ---- -- PointWise FeedForward
 
         # combine all these block to form a sequence FF
@@ -49,7 +49,7 @@ class FeedForwardNet(nn.Module):
         return self.chain(x)  # return output of FF network
 
 if __name__ == "__main__":
-    ff = FeedForwardNet(300, 100, 0.1)
+    ff = FeedForwardNet(300, 100)
     print(f"Feed forward net: {ff}")
     x = torch.randint(0, 100, (81, 300)).float()
     print(f"{x} Shape: {x.shape}")

@@ -14,13 +14,14 @@ class DecoderLSTM(nn.Module):
 
 
 class Conformer(nn.Module):
-    """ Encoder Conformer """
 
     def __init__(self, in_channels: int, out_channels: int,
                  kernel_size: int, stride: int, padding: int,
-                 dropout: float = 0.1):
-        """ convolution subsampling """
+                 dropout: float = 0.1, num_layers: int = 1):
+        """ :param num_layers -> number of conformer encoders. """
         super().__init__()
+        
+        # usually audio have only 1 channel -> in_channel : 1
         self.conv_subsampling = ConvSubSampling(in_channels=in_channels, out_channels=out_channels,
                                                 kernel_size=kernel_size, stride=stride, padding=padding)  # config
 
@@ -28,13 +29,14 @@ class Conformer(nn.Module):
 
         # from conv to linear the feature must be flatten
         """ linear """
-        self.linear = nn.Linear(in_features=out_channels)
+        self.linear = nn.Linear(in_features=out_channels, out_features=)
 
         """ dropout """
         self.dropout = nn.Dropout(p=dropout)
 
-        """ conformer encoder """
-        self.conformer_encoder = ConformerBlock()  # encoder
+        """ conformer encoder with layers """
+        self.conformer_encoder_layers = nn.ModuleList([
+            ConformerBlock() for _ in range(num_layers)]) #
 
         """ decoder """
         self.decoder = DecoderLSTM(bidirectional=True)  #
