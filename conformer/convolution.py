@@ -94,6 +94,8 @@ class ConvolutionModule(nn.Module):
         return identity + conv_output
     
 if __name__ == "__main__":
+
+    # conv subsampling
     subsampling = ConvSubSampling(in_channels=1, out_channels=16,
                                   kernel_size=3, padding=0, stride=1)
     # n_frames, mel bins
@@ -101,3 +103,9 @@ if __name__ == "__main__":
 
     print(f"Dtype: {x.dtype}")
     print(f"Conv SubSampling result: {subsampling(x)} Shape: {subsampling(x).shape}")
+
+    # depth wise 1D
+
+    # point wise 1D
+
+    # conv module
