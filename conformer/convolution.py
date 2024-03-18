@@ -94,5 +94,10 @@ class ConvolutionModule(nn.Module):
         return identity + conv_output
     
 if __name__ == "__main__":
-    subsampling = ConvSubSampling(in_channels=1, out_channels=16, kernel_size=5)
-    x = torch.randint()
+    subsampling = ConvSubSampling(in_channels=1, out_channels=16,
+                                  kernel_size=3, padding=0, stride=1)
+    # n_frames, mel bins
+    x = torch.randn(1, 300, 81)
+
+    print(f"Dtype: {x.dtype}")
+    print(f"Conv SubSampling result: {subsampling(x)} Shape: {subsampling(x).shape}")
