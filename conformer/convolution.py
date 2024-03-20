@@ -23,8 +23,9 @@ class DepthWise1DConv(nn.Module):
                 bias: bool = True):
         super(DepthWise1DConv, self).__init__()
         # depth wise -> groups
-        self.dw_conv = nn.Conv1d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size,
-                                stride=stride, padding=padding, bias=bias, groups=in_channels)
+        self.dw_conv = nn.Conv1d(in_channels=in_channels, groups=in_channels, 
+                                out_channels=out_channels, kernel_size=kernel_size,
+                                stride=stride, padding=padding, bias=bias)
 
     def forward(self, x:torch.Tensor) -> torch.Tensor:
         return self.dw_conv(x)
@@ -54,7 +55,7 @@ class ConvolutionModule(nn.Module):
     def __init__(self, in_channels: int, out_channels: int,
                  stride: int, padding: int, bias: bool):
         super().__init__()
-        
+
         self.norm_layer = nn.LayerNorm() # normalize with LayerNorm
 
         self.point_wise1 = PointWise1DConv(in_channels=in_channels, stride=stride,

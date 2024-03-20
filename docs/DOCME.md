@@ -1,7 +1,9 @@
 # Documents
 1. Convolution Subsampling: [link](https://www.tutorialexample.com/understand-convolution-subsampling-module-in-conformer-deep-learning-tutorial/)
 2. Separable Convolution: [link](https://towardsdatascience.com/a-basic-introduction-to-separable-convolutions-b99ec3102728)
-
+3. Separable Convolution: [link](https://blog.csdn.net/yyp1998/article/details/121048613?spm=1001.2101.3001.4242.1&utm_relevant_index=3)
+4. DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0)
+5. DepthWise-tt: [link](DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0))
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 
