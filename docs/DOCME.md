@@ -1,5 +1,6 @@
 # Documents
-1. Convolution Subsampling: https://www.tutorialexample.com/understand-convolution-subsampling-module-in-conformer-deep-learning-tutorial/
+1. Convolution Subsampling: [text](https://www.tutorialexample.com/understand-convolution-subsampling-module-in-conformer-deep-learning-tutorial/)
+2. Separable Convolution: [text](https://towardsdatascience.com/a-basic-introduction-to-separable-convolutions-b99ec3102728)
 
 ### Guides
 1. https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/
