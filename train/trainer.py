@@ -62,12 +62,12 @@ def trainer():
     val_losses.append(val_avg_loss)
     
     # logger
-    _train_logger.log(_train_logger.INFO, f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} 
-                      DEV LOSS: {val_avg_loss}")
+    _train_logger.log(_train_logger.INFO, f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss}")
 
+  end_time = time.time()
+  print(f"EPOCHES: {_EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {end_time - start_time}")
   # logging summary
-  _train_logger.log(_train_logger.INFO, f"EPOCHES: {_EPOCHS} TOTAL TRAIN LOSS: {min(train_losses)} 
-                    TOTAL DEV LOSS: {min(val_losses)}")
+  _train_logger.log(_train_logger.INFO, f"EPOCHES: {_EPOCHS} TOTAL TRAIN LOSS: {min(train_losses)} TOTAL DEV LOSS: {min(val_losses)}")
 
 if __name__ == "__main__":
   trainer()
