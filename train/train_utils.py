@@ -1,8 +1,6 @@
 import torch
-from torch.utils.data import DataLoader
 
-
-def train_one_epoch(train_loader: DataLoader, model, optimizer, loss_fn):
+def train_one_epoch(train_loader, model, optimizer, loss_fn):
     """ 
     :param train dataloader
     :param model
@@ -40,7 +38,7 @@ def train_one_epoch(train_loader: DataLoader, model, optimizer, loss_fn):
     # return poss per epoch
     return epoch_losses
 
-def eval_one_epoch(val_loader: DataLoader, model, loss_fn):
+def eval_one_epoch(val_loader, model, loss_fn):
     """ setup validation data_manipulation loader for 1 epoch
     :param val_loader
     :param model
