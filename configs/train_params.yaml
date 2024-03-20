@@ -1,2 +1,3 @@
-epochs: 100
+epochs: 50
 batch_size: 16
+shuffle: True

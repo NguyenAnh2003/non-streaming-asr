@@ -31,15 +31,13 @@ class DepthWise1DConv(nn.Module):
 
 class ConvSubSampling(nn.Module):
 
-    # basic CNN bloack
     # Conv2D sub sampling implemented follow this guide
-    # https://www.tutorialexample.com/understand-convolution-subsampling-module-in-conformer-deep-learning-tutorial/
     def __init__(self, in_channels: int, out_channels: int, 
-                kernel_size: int = 5, stride: int = 1, padding: int = 0):
+                kernel_size: int = 3, stride: int = 2, padding: int = 0):
         super(ConvSubSampling, self).__init__()
         self.chain = nn.Sequential(
             nn.Conv2d(in_channels=in_channels, out_channels=out_channels, 
-                      kernel_size=kernel_size, stride=1, padding=padding),
+                      kernel_size=kernel_size, stride=stride, padding=padding),
             nn.ReLU(),
             nn.Conv2d(in_channels=out_channels, out_channels=out_channels,
                       kernel_size=kernel_size, stride=stride, padding=padding),
@@ -47,7 +45,8 @@ class ConvSubSampling(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # x - tensor[batch_size, n_frames, fbanks]
+        # x - tensor[batch_size, n_frames, fbanks] - input
+
         return self.chain(x)
 
 
@@ -98,11 +97,11 @@ if __name__ == "__main__":
     # conv subsampling
     subsampling = ConvSubSampling(in_channels=1, out_channels=16,
                                   kernel_size=3, padding=0, stride=1)
-    # n_frames, mel bins
-    x = torch.randn(1, 300, 81)
+    # batch_size, n_frames, mel bins
+    x = torch.randn(16, 1, 900, 81)
 
     print(f"Dtype: {x.dtype}")
-    print(f"Conv SubSampling result: {subsampling(x)} Shape: {subsampling(x).shape}")
+    print(f"Shape: {subsampling(x).shape}")
 
     # depth wise 1D
 

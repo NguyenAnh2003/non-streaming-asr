@@ -11,8 +11,7 @@ class FeedForwardNet(nn.Module):
         :param out_feats: 
         This FF network consists of LayerNorm -> Linear -> Dropout -> Linear -> Swish
         """
-
-        # LayerNorm explained: https://www.pinecone.io/learn/batch-layer-normalization/
+        # layer norm
         self.norm_layer = nn.LayerNorm(normalized_shape=in_feats) # config LayerNorm
 
         # Swish activation function
