@@ -6,6 +6,7 @@
 5. DepthWise-tt: [link](DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0))
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
+2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
 
 ## Understanding
 1. Convolution Subsampling: used for sampling the input data, with kernel 3x3 abd stride 2

@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # conv subsampling
     subsampling = ConvSubSampling(in_channels=1, out_channels=16,
                                   kernel_size=3, padding=0, stride=1)
-    # batch_size, n_frames, mel bins
+    # batch_size, channel (1), n_frames, mel bins
     x = torch.randn(16, 1, 900, 81)
 
     print(f"Dtype: {x.dtype}")
