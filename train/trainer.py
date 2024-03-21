@@ -65,6 +65,9 @@ def trainer():
     # logger
     _train_logger.log(_train_logger.INFO, f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss}")
 
+    # console log
+    print(f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss} TIME: {get_executing_time(start_time=start_time)}")
+
   trained_time = get_executing_time(start_time)
   print(f"EPOCHES: {_EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
   # logging summary
