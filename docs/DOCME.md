@@ -1,9 +1,10 @@
 # Documents
 1. Convolution Subsampling: [link](https://www.tutorialexample.com/understand-convolution-subsampling-module-in-conformer-deep-learning-tutorial/)
-2. Separable Convolution: [link](https://towardsdatascience.com/a-basic-introduction-to-separable-convolutions-b99ec3102728)
-3. Separable Convolution: [link](https://blog.csdn.net/yyp1998/article/details/121048613?spm=1001.2101.3001.4242.1&utm_relevant_index=3)
-4. DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0)
-5. DepthWise-tt: [link](DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0))
+2. Conv Subsampling: [link](https://blog.csdn.net/ldy007714/article/details/127086170?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522171118103416800184166564%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=171118103416800184166564&biz_id=0&spm=1018.2226.3001.4187)
+3. Separable Convolution: [link](https://towardsdatascience.com/a-basic-introduction-to-separable-convolutions-b99ec3102728)
+4. Separable Convolution: [link](https://blog.csdn.net/yyp1998/article/details/121048613?spm=1001.2101.3001.4242.1&utm_relevant_index=3)
+5. DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0)
+6. DepthWise-tt: [link](DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0))
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)

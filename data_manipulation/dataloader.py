@@ -20,7 +20,6 @@ _FILTER_BANKS = 81
 
 # vocab
 class LibriSpeechVocabRAW:
-    # language librispeech vocab file: https://openslr.trmal.net/resources/11/librispeech-vocab.txt
 
     def __init__(self, vocab_file_path: str = "./vocab.txt"):
         # vocab file
@@ -156,7 +155,6 @@ class TrainLoader(DataLoader):
         self.collate_fn = self.collate_custom_fn
 
     def collate_custom_fn(self, batch):
-        # https://stackoverflow.com/questions/65279115/how-to-use-collate-fn-with-dataloaders
 
         batch_size = len(batch) # create temp batch_size
 
