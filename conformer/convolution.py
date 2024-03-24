@@ -18,13 +18,13 @@ class PointWise1DConv(nn.Module):
 class DepthWise1DConv(nn.Module):
     
     # audio just have 1 channel
-    def __init__(self, in_channels: int , out_channels: int, 
+    def __init__(self, in_channels: int  = 1, out_channels: int = 1, 
                 kernel_size: int = 1, stride: int = 1, padding: int = 1,
                 bias: bool = True):
         super(DepthWise1DConv, self).__init__()
         # depth wise -> groups
         self.dw_conv = nn.Conv1d(in_channels=in_channels, groups=in_channels, 
-                                out_channels=in_channels, kernel_size=kernel_size,
+                                out_channels=out_channels, kernel_size=kernel_size,
                                 stride=stride, padding=padding, bias=bias)
 
     def forward(self, x:torch.Tensor) -> torch.Tensor:
@@ -103,11 +103,15 @@ if __name__ == "__main__":
     print(f"In Shape: {x.shape}")
     print(f"Shape: {subsampling(x).shape}")
 
-    # depth wise 1D
+    # depth wise 1D (batch_size, channel, n_frames, banks)
     a = torch.randn(16, 1, 81)
-    dw = DepthWise1DConv(in_channels=1, out_channels=1)
+    dw = DepthWise1DConv(in_channels=1)
     print(f"Depthwise: {dw(a).shape}")
     
     # point wise 1D
+    b = torch.randn(16, 1, 81)
+    pw = PointWise1DConv()
+    print(f"Pointwise: {pw(b).shape}")
 
     # conv module
+    

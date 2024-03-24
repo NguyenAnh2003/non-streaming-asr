@@ -11,6 +11,8 @@
 
 ## Understanding
 1. Convolution Subsampling: used for sampling the input data, with kernel 3x3 abd stride 2
+2. DNN can ignore input topology and resize into column vector, but with the audio feature (mel-spectroram or log mel) these contain low level features that needed to learn so that CNN is suitable for this solution.
+
 
 # Development
 1. ZipFormer: [link](https://arxiv.org/pdf/2310.11230.pdf)
