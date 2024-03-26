@@ -38,6 +38,9 @@ def audio_transforms(array, params):
                                            db_multiplier=math.log10(max(1e-10, 1)))
 
     # adjust output
+    # standard output: [bannks, n_frames (times)]
+    # the banks can be represent the in channels for CNN can be considered as standard channels, 
+    # the n_frames cannot be channels because the data in not consistent in distribution in n_frames (time).
     return log_melspectrogram.squeeze(0).transpose(0, 1).contiguous()
     # return log_melspectrogram.squeeze(0)
 
