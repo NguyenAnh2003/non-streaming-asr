@@ -41,7 +41,7 @@ def audio_transforms(array, params):
     # standard output: [bannks, n_frames (times)]
     # the banks can be represent the in channels for CNN can be considered as standard channels, 
     # the n_frames cannot be channels because the data in not consistent in distribution in n_frames (time).
-    return log_melspectrogram.squeeze(0).transpose(0, 1).contiguous()
+    return log_melspectrogram.squeeze(0)
 
 if __name__ == "__main__":
     filepath = "../examples/kkk.flac"
@@ -54,10 +54,10 @@ if __name__ == "__main__":
     params = get_configs("../../configs/audio_processing.yaml")
     log_melspec_trimmed = audio_transforms(y_trimmed, params)
     log_melspec = audio_transforms(array, params)
-    print(f"Log mel: {log_melspec} Shape: {log_melspec.shape}"
-          f"Log mel Trimmed: {log_melspec_trimmed}")
+    print(f"Log mel Shape: {log_melspec.shape}"
+          f"Log mel Trimmed: {log_melspec_trimmed.shape}")
     log_mel_plot = torch.squeeze(log_melspec)
 
     # plot log mel and log mel trimmed
-    plot_melspectrogram(specgram=log_mel_plot, title="Log Mel", ylabel="banks")
-    plot_melspectrogram(specgram=log_melspec_trimmed, title="Log Mel Trimmed", ylabel="banks")
+    # plot_melspectrogram(specgram=log_mel_plot, title="Log Mel", ylabel="banks")
+    # plot_melspectrogram(specgram=log_melspec_trimmed, title="Log Mel Trimmed", ylabel="banks")

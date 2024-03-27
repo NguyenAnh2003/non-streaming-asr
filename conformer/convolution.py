@@ -18,7 +18,7 @@ class PointWise1DConv(nn.Module):
 class DepthWise1DConv(nn.Module):
     
     # audio just have 1 channel
-    def __init__(self, in_channels: int  = 1, out_channels: int = 1, 
+    def __init__(self, in_channels: int = 1, out_channels: int = 1,
                 kernel_size: int = 1, stride: int = 1, padding: int = 1,
                 bias: bool = True):
         super(DepthWise1DConv, self).__init__()
@@ -38,10 +38,10 @@ class ConvSubSampling(nn.Module):
         super(ConvSubSampling, self).__init__()
         # stride = 2 -> expirement: using max pooling layer
         self.chain = nn.Sequential(
-            nn.Conv2d(in_channels=in_channels, out_channels=out_channels, 
+            nn.Conv1d(in_channels=in_channels, out_channels=out_channels,
                       kernel_size=kernel_size, stride=stride, padding=padding),
             nn.ReLU(),
-            nn.Conv2d(in_channels=out_channels, out_channels=out_channels,
+            nn.Conv1d(in_channels=out_channels, out_channels=out_channels,
                       kernel_size=kernel_size, stride=stride, padding=padding),
             nn.ReLU()
         )
@@ -98,19 +98,19 @@ if __name__ == "__main__":
     # conv subsampling
     subsampling = ConvSubSampling(in_channels=1, out_channels=16,
                                   kernel_size=3, padding=0, stride=2)
-    # batch_size, channel (1), n_frames, mel bins
-    x = torch.randn(16, 1, 800, 81)
+    # batch_size, n_frames, mel bins
+    x = torch.randn(16, 1, 81*800)
 
     print(f"In Shape: {x.shape}")
     print(f"Shape: {subsampling(x).shape}")
 
     # depth wise 1D (batch_size, channel, n_frames, banks)
-    a = torch.randn(16, 1, 81)
-    dw = DepthWise1DConv(in_channels=1)
+    a = torch.randn(16, 1, 81*100)
+    dw = DepthWise1DConv()
     print(f"Depthwise: {dw(a).shape}")
     
     # point wise 1D
-    b = torch.randn(16, 1, 81)
+    b = torch.randn(16, 1, 81*100)
     pw = PointWise1DConv()
     print(f"Pointwise: {pw(b).shape}")
 
