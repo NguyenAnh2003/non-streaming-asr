@@ -29,7 +29,9 @@ class SpeechModel(nn.Module):
 
         # from conv to linear the feature must be flatten
         """ linear """
-        self.linear = nn.Linear(in_features=out_channels)
+        # in_feats must be out_channels of CNN, 16 as considered out channels
+        self.linear = nn.Linear(in_features=out_channels, out_features=out_channels,
+                                bias=True, dtype=torch.float32)
 
         """ dropout """
         self.dropout = nn.Dropout(p=dropout)

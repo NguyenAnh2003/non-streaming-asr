@@ -1,6 +1,9 @@
 import torch
 import torch.nn as nn
 from activations import Swish
+from utils.utils import get_configs
+
+_params = get_configs("../configs/model_params.yaml")
 
 class PointWise1DConv(nn.Module):
     def __init__(self, in_channels: int = 0, out_channels: int = 1, 
@@ -18,7 +21,7 @@ class PointWise1DConv(nn.Module):
 class DepthWise1DConv(nn.Module):
     
     # audio just have 1 channel
-    def __init__(self, in_channels: int = 1, out_channels: int = 1,
+    def __init__(self, in_channels: int = 1, out_channels: int = 16,
                 kernel_size: int = 1, stride: int = 1, padding: int = 1,
                 bias: bool = True):
         super(DepthWise1DConv, self).__init__()
@@ -54,13 +57,13 @@ class ConvSubSampling(nn.Module):
 
 class ConvolutionModule(nn.Module):
     """ implemented Conv module sequentially """
-    def __init__(self, in_channels: int, out_channels: int, hidden_units: int,
+    def __init__(self, in_channels: int, out_channels: int,
                  stride: int, padding: int, bias: bool):
         super().__init__()
 
-        self.norm_layer = nn.LayerNorm() # normalize with LayerNorm
+        self.norm_layer = nn.LayerNorm(normalized_shape=in_channels) # normalize with LayerNorm
 
-        self.point_wise1 = PointWise1DConv(in_channels=in_channels, out_channels=out_channels, kernel_size=1, 
+        self.point_wise1 = PointWise1DConv(in_channels=in_channels, out_channels=out_channels, kernel_size=1,
                                            stride=stride, padding=padding, bias=bias) # customized Pointwise Conv
 
         self.glu_activation = nn.GLU()
@@ -94,25 +97,27 @@ class ConvolutionModule(nn.Module):
         return identity + conv_output
     
 if __name__ == "__main__":
-
+    print(f"Params: {_params}")
     # conv subsampling
     subsampling = ConvSubSampling(in_channels=1, out_channels=16,
                                   kernel_size=3, padding=0, stride=2)
     # batch_size, n_frames, mel bins
-    x = torch.randn(16, 1, 81*800)
+    x = torch.randn(16, 1, 81*100)
 
     print(f"In Shape: {x.shape}")
-    print(f"Shape: {subsampling(x).shape}")
+    sub_result = subsampling(x)
+    print(f"Shape: {sub_result.shape}")
 
     # depth wise 1D (batch_size, channel, n_frames, banks)
-    a = torch.randn(16, 1, 81*100)
-    dw = DepthWise1DConv()
-    print(f"Depthwise: {dw(a).shape}")
+    dw = DepthWise1DConv(in_channels=1)
+    print(f"Depthwise: {dw(x).shape}")
     
     # point wise 1D
-    b = torch.randn(16, 1, 81*100)
     pw = PointWise1DConv(in_channels=1)
-    print(f"Pointwise: {pw(b).shape}")
+    print(f"Pointwise: {pw(x).shape}")
 
     # conv module
-    
+    conv_module = ConvolutionModule(in_channels=1, out_channels=64, stride=1,
+                                    padding=0, bias=True)
+    conv_m_result = conv_module(x)
+    print(f"Conv Module: {conv_m_result.shape}")
