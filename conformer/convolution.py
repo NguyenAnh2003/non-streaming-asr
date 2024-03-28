@@ -111,7 +111,7 @@ if __name__ == "__main__":
     
     # point wise 1D
     b = torch.randn(16, 1, 81*100)
-    pw = PointWise1DConv()
+    pw = PointWise1DConv(in_channels=1)
     print(f"Pointwise: {pw(b).shape}")
 
     # conv module
