@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from activations import Swish
+from torchaudio.models import conformer
 # from utils.utils import get_configs
 
 # _params = get_configs("../configs/model_params.yaml")
@@ -130,5 +131,5 @@ if __name__ == "__main__":
     print(f"Flatten conv out: {flattened_x.shape}")
     chain = nn.Sequential(nn.Dropout(p=0.1), nn.Linear(in_features=flattened_x.size(1), 
                                                        out_features=10, bias=True), conv_module)
-    out = chain(x)
+    out = chain(flattened_x)
     print(f"Conv module: {out.shape}")
