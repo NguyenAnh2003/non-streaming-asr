@@ -22,7 +22,7 @@ class PointWise1DConv(nn.Module):
 class DepthWise1DConv(nn.Module):
     
     # audio just have 1 channel
-    def __init__(self, in_channels: int = 1, out_channels: int = 16,
+    def __init__(self, in_channels: int = 1, out_channels: int = 1,
                 kernel_size: int = 1, stride: int = 1, padding: int = 1,
                 bias: bool = True):
         super(DepthWise1DConv, self).__init__()
@@ -42,10 +42,10 @@ class ConvSubSampling(nn.Module):
         super(ConvSubSampling, self).__init__()
         # stride = 2 -> expirement: using max pooling layer
         self.chain = nn.Sequential(
-            nn.Conv1d(in_channels=in_channels, out_channels=out_channels,
+            nn.Conv2d(in_channels=in_channels, out_channels=out_channels,
                       kernel_size=kernel_size, stride=stride, padding=padding),
             nn.ReLU(),
-            nn.Conv1d(in_channels=out_channels, out_channels=out_channels,
+            nn.Conv2d(in_channels=out_channels, out_channels=out_channels,
                       kernel_size=kernel_size, stride=stride, padding=padding),
             nn.ReLU()
         )
@@ -86,7 +86,8 @@ class ConvolutionModule(nn.Module):
 
         """ sequence of entire convolution """
         self.conv_module = nn.Sequential(
-            self.norm_layer, self.point_wise1, self.glu_activation,
+            # self.norm_layer, 
+            self.point_wise1, self.glu_activation,
             self.dw_conv, self.batch_norm, self.swish, self.point_wise2,
             self.dropout
         )
@@ -103,11 +104,11 @@ if __name__ == "__main__":
     subsampling = ConvSubSampling(in_channels=1, out_channels=16,
                                   kernel_size=3, padding=0, stride=2)
     # batch_size, n_frames, mel bins
-    x = torch.randn(16, 1, 81*100)
+    x = torch.randn(16, 1, 81, 300)
+    print(f"In Shape: {x.shape}")
+    sub_result = subsampling(x)
+    print(f"Shape: {sub_result.shape}")
 
-    # print(f"In Shape: {x.shape}")
-    # sub_result = subsampling(x)
-    # print(f"Shape: {sub_result.shape}")
 
     # # depth wise 1D (batch_size, channel, n_frames, banks)
     # dw = DepthWise1DConv(in_channels=1)
@@ -122,7 +123,7 @@ if __name__ == "__main__":
     y = torch.randn(16, 64)
     conv_module = ConvolutionModule(in_channels=64, out_channels=128, stride=1,
                                     padding=0, bias=True)
-    print(f"Conv module dict: {conv_module}")
+    # print(f"Conv module dict: {conv_module}")
 
     # sample chain
     flatten = nn.Flatten()

@@ -17,7 +17,8 @@ class SpeechModel(nn.Module):
 
     def __init__(self, in_channels: int, out_channels: int,
                  kernel_size: int, stride: int, padding: int,
-                 dropout: float = 0.1, num_layers: int = 1):
+                 dropout: float = 0.1, num_layers: int = 1, 
+                 d_model: int = 144):
         super().__init__()
         """ :param num_layers -> number of conformer encoders. """
         
@@ -50,15 +51,18 @@ class SpeechModel(nn.Module):
         # self.log_softmax = nn.LogSoftmax()
         
         # encoder chain -> linear -> dropout -> conformer encoder blocks
-        self.encoder_chain = nn.Sequential(self.linear, self.dropout,
-                                           self.conformer_encoder_layers)
+        self.input_projection = nn.Sequential(self.linear, self.dropout)
 
     def _forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
         x = self.conv_subsampling(x)
-        x = self.flatten(x)
-        x = self.encoder_chain(x)
-        return x
+        x = self.input_projection(x)
+
+        # output for each conformer block
+        for layer in self.conformer_encoder_layers:
+            output = layer(x)
+        
+        return output
 
     def forward(self, x):
         # forward encoder
