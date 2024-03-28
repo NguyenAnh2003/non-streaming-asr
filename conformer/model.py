@@ -62,7 +62,7 @@ class SpeechModel(nn.Module):
 
     def forward(self, x):
         # forward encoder
-        hidden_state = self.encoder_chain(x) # get relation ship between audio frame
+        hidden_state = self._forward_encoder(x) # get relation ship between audio frame
         # forward decoder
         output = self.decoder(hidden_state)
         return self.softmax(output) # normalize output to probability with softmax
