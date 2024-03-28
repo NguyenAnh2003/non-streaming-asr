@@ -48,11 +48,17 @@ class SpeechModel(nn.Module):
 
         """ log softmax """
         # self.log_softmax = nn.LogSoftmax()
+        
+        # encoder chain -> linear -> dropout -> conformer encoder blocks
+        self.encoder_chain = nn.Sequential(self.linear, self.dropout,
+                                           self.conformer_encoder_layers)
 
-        """ model chain """
-        self.encoder_chain = nn.Sequential(self.conv_subsampling, self.flatten,
-                                           self.linear, self.dropout,
-                                           self.conformer_encoder)
+    def _forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
+        # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
+        x = self.conv_subsampling(x)
+        x = self.flatten(x)
+        x = self.encoder_chain(x)
+        return x
 
     def forward(self, x):
         # forward encoder

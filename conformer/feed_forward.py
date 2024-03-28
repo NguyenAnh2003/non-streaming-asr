@@ -35,7 +35,7 @@ class FeedForwardNet(nn.Module):
 
         # combine all these block to form a sequence FF
         self.chain = nn.Sequential(
-            # self.norm_layer,
+            self.norm_layer,
             self.sub_linear1,
             self.swish,
             self.dropout,

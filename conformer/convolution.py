@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 from activations import Swish
-from utils.utils import get_configs
+# from utils.utils import get_configs
 
-_params = get_configs("../configs/model_params.yaml")
+# _params = get_configs("../configs/model_params.yaml")
 
 class PointWise1DConv(nn.Module):
     def __init__(self, in_channels: int = 0, out_channels: int = 1, 
@@ -97,27 +97,38 @@ class ConvolutionModule(nn.Module):
         return identity + conv_output
     
 if __name__ == "__main__":
-    print(f"Params: {_params}")
+    # print(f"Params: {_params}")
     # conv subsampling
     subsampling = ConvSubSampling(in_channels=1, out_channels=16,
                                   kernel_size=3, padding=0, stride=2)
     # batch_size, n_frames, mel bins
     x = torch.randn(16, 1, 81*100)
 
-    print(f"In Shape: {x.shape}")
-    sub_result = subsampling(x)
-    print(f"Shape: {sub_result.shape}")
+    # print(f"In Shape: {x.shape}")
+    # sub_result = subsampling(x)
+    # print(f"Shape: {sub_result.shape}")
 
-    # depth wise 1D (batch_size, channel, n_frames, banks)
-    dw = DepthWise1DConv(in_channels=1)
-    print(f"Depthwise: {dw(x).shape}")
+    # # depth wise 1D (batch_size, channel, n_frames, banks)
+    # dw = DepthWise1DConv(in_channels=1)
+    # print(f"Depthwise: {dw(x).shape}")
     
-    # point wise 1D
-    pw = PointWise1DConv(in_channels=1)
-    print(f"Pointwise: {pw(x).shape}")
-
+    # # point wise 1D
+    # pw = PointWise1DConv(in_channels=1)
+    # print(f"Pointwise: {pw(x).shape}")
+    
     # conv module
-    conv_module = ConvolutionModule(in_channels=1, out_channels=64, stride=1,
+    # conv subsampling -> linear -> conv module
+    y = torch.randn(16, 64)
+    conv_module = ConvolutionModule(in_channels=64, out_channels=128, stride=1,
                                     padding=0, bias=True)
-    conv_m_result = conv_module(x)
-    print(f"Conv Module: {conv_m_result.shape}")
+    print(f"Conv module dict: {conv_module}")
+
+    # sample chain
+    flatten = nn.Flatten()
+
+    flattened_x = flatten(subsampling(x))
+    print(f"Flatten conv out: {flattened_x.shape}")
+    chain = nn.Sequential(nn.Dropout(p=0.1), nn.Linear(in_features=flattened_x.size(1), 
+                                                       out_features=10, bias=True), conv_module)
+    out = chain(x)
+    print(f"Conv module: {out.shape}")
