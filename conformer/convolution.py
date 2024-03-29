@@ -101,36 +101,26 @@ class ConvolutionModule(nn.Module):
 if __name__ == "__main__":
     # print(f"Params: {_params}")
     # conv subsampling
-    subsampling = ConvSubSampling(in_channels=1, out_channels=16,
+    encoder_dim = 144
+    subsampling = ConvSubSampling(in_channels=1, out_channels=encoder_dim,
                                   kernel_size=3, padding=0, stride=2)
     # batch_size, n_frames, mel bins
-    x = torch.randn(16, 1, 81, 300)
+    
+    # sample input
+    x = torch.randn(16, 81, 300)
     print(f"In Shape: {x.shape}")
-    sub_result = subsampling(x)
+    sub_result = subsampling(x.unsqueeze_(1))
     print(f"Shape: {sub_result.shape}")
-
-
-    # # depth wise 1D (batch_size, channel, n_frames, banks)
-    # dw = DepthWise1DConv(in_channels=1)
-    # print(f"Depthwise: {dw(x).shape}")
-    
-    # # point wise 1D
-    # pw = PointWise1DConv(in_channels=1)
-    # print(f"Pointwise: {pw(x).shape}")
-    
+    batch_size, channels, banks, times = sub_result.size()
     # conv module
     # conv subsampling -> linear -> conv module
-    y = torch.randn(16, 64)
     conv_module = ConvolutionModule(in_channels=64, out_channels=128, stride=1,
                                     padding=0, bias=True)
     # print(f"Conv module dict: {conv_module}")
 
     # sample chain
-    flatten = nn.Flatten()
 
-    flattened_x = flatten(subsampling(x))
-    print(f"Flatten conv out: {flattened_x.shape}")
-    chain = nn.Sequential(nn.Dropout(p=0.1), nn.Linear(in_features=flattened_x.size(1), 
-                                                       out_features=10, bias=True), conv_module)
-    out = chain(flattened_x)
+    chain = nn.Sequential(nn.Dropout(p=0.1), nn.Linear(in_features=channels*banks*times, 
+                                                       out_features=encoder_dim, bias=True), conv_module)
+    out = chain(sub_result)
     print(f"Conv module: {out.shape}")
