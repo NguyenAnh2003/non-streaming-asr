@@ -90,12 +90,12 @@ if __name__ == "__main__":
     # MHA
     mha = nn.MultiheadAttention(num_heads=4, embed_dim=encoder_dim, dropout=0.1, batch_first=True)
     out, _ = mha(ff_out, ff_out, ff_out)
-    print(f"MHA out: {out.shape}")
+    print(f"MHA out: {out.shape} Transpose: {out.transpose(1, 2).shape}")
     
     # Conv module
     conv_module = ConvolutionModule(in_channels=encoder_dim, out_channels=encoder_dim, 
                                     stride=1, padding=0, bias=True)
 
     # 
-    out_conv = conv_module(out)
+    out_conv = conv_module(out.transpose(1, 2))
     print(f"Conv module out: {out_conv.shape}")
