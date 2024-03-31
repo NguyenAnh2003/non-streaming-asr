@@ -50,7 +50,7 @@ class ConvSubSampling(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x - tensor(batch_size, channels (1), n_frames, fbanks) - input
-        # Conv1D input - (batch_size, in_channels, out_channels)
+        x = x.unsqueeze_(1) # add dimension channel
         return self.chain(x)
 
 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     # sample input
     x = torch.randn(16, 81, 300)
     print(f"In Shape: {x.shape}")
-    sub_result = subsampling(x.unsqueeze_(1))
+    sub_result = subsampling(x)
     print(f"ConvSubsampling result: {sub_result.shape}")
     # dimension extraction
     batch_size, channels, banks, times = sub_result.size()
@@ -118,12 +118,5 @@ if __name__ == "__main__":
     # print(f"Conv module dict: {conv_module}")
 
     # sample chain
-    permuted_out = sub_result.permute(0, 2, 1, 3) # permute (B, times, channels, banks)
-    print(f"Permuted: {permuted_out.shape}")
-    viewed_out = permuted_out.contiguous().view(batch_size, times, channels*banks)
-    print(f"Reshaped tensor: {viewed_out.shape}")
-
-    # chain = nn.Sequential(nn.Dropout(p=0.1), nn.Linear(in_features=channels*banks*times, 
-                                                    #    out_features=encoder_dim, bias=True), conv_module)
-    # out = chain(sub_result)
-    # print(f"Conv module: {out.shape}")
+    sub_result = sub_result.contiguous().view(batch_size, times, -1)
+    print(f"Reshaped tensor: {sub_result.shape}")
