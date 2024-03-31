@@ -49,15 +49,17 @@ class ConvSubSampling(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # x - tensor(batch_size, channels (1), n_frames, fbanks) - input
-        x = x.unsqueeze(1) # add dimension channel
+        # in - (batch_size, channels (1), n_frames, fbanks)
+        x = x.unsqueeze_(1) # add dimension channel
 
         # conv subsampling
         x = self.chain(x) # convovle the input
         
-        # process product dimension
-        batch_size, channels, times, banks = x.size() # get ele
+        # process product dimension - (batch_size, channels, times, fbanks)
+        batch_size, _, times, _ = x.size() # get ele
         x = x.permute(0, 2, 1, 3)
+        
+        # (batch_size, times, channels*fbanks)
         out = x.contiguous().view(batch_size, times, -1)
         return out
 
