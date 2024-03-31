@@ -50,11 +50,16 @@ class ConvSubSampling(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x - tensor(batch_size, channels (1), n_frames, fbanks) - input
-        batch_size, channels, times, banks = x.size()
-        x = x.unsqueeze_(1) # add dimension channel
+        x = x.unsqueeze(1) # add dimension channel
+
+        # conv subsampling
+        x = self.chain(x) # convovle the input
+        
+        # process product dimension
+        batch_size, channels, times, banks = x.size() # get ele
         x = x.permute(0, 2, 1, 3)
-        x = x.contiguous().view(batch_size, times, -1)
-        return self.chain(x)
+        out = x.contiguous().view(batch_size, times, -1)
+        return out
 
 
 class ConvolutionModule(nn.Module):
@@ -112,14 +117,6 @@ if __name__ == "__main__":
     print(f"In Shape: {x.shape}")
     sub_result = subsampling(x)
     print(f"ConvSubsampling result: {sub_result.shape}")
-    # dimension extraction
-    batch_size, channels, banks, times = sub_result.size()
-    # conv module
-    # conv subsampling -> linear -> conv module
-    conv_module = ConvolutionModule(in_channels=64, out_channels=128, stride=1,
-                                    padding=0, bias=True)
-    # print(f"Conv module dict: {conv_module}")
 
     # sample chain
-    sub_result = sub_result.contiguous().view(batch_size, times, -1)
     print(f"Reshaped tensor: {sub_result.shape}")
