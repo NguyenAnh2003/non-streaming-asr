@@ -2,9 +2,7 @@ import torch
 import torch.nn as nn
 from activations import Swish
 from torchaudio.models import conformer
-# from utils.utils import get_configs
 
-# _params = get_configs("../configs/model_params.yaml")
 
 class PointWise1DConv(nn.Module):
     def __init__(self, in_channels: int = 0, out_channels: int = 1, 
@@ -107,7 +105,7 @@ if __name__ == "__main__":
     # batch_size, n_frames, mel bins
     
     # sample input
-    x = torch.randn(1, 81, 300)
+    x = torch.randn(16, 81, 300)
     print(f"In Shape: {x.shape}")
     sub_result = subsampling(x.unsqueeze_(1))
     print(f"ConvSubsampling result: {sub_result.shape}")
@@ -120,7 +118,7 @@ if __name__ == "__main__":
     # print(f"Conv module dict: {conv_module}")
 
     # sample chain
-    permuted_out = sub_result.permute(0, 2, 1, 3)
+    permuted_out = sub_result.permute(0, 2, 1, 3) # permute (B, times, channels, banks)
     print(f"Permuted: {permuted_out.shape}")
     viewed_out = permuted_out.contiguous().view(batch_size, times, channels*banks)
     print(f"Reshaped tensor: {viewed_out.shape}")
