@@ -19,15 +19,13 @@ class SpeechModel(nn.Module):
     def __init__(self, in_channels: int, out_channels: int,
                  kernel_size: int, stride: int, padding: int,
                  dropout: float = 0.1, num_layers: int = 1, 
-                 d_model: int = 144):
+                 encoder_dim: int = 144):
         super().__init__()
         """ :param num_layers -> number of conformer encoders. """
         
         # usually audio have only 1 channel -> in_channel : 1
         self.conv_subsampling = ConvSubSampling(in_channels=in_channels, out_channels=out_channels,
                                                 kernel_size=kernel_size, stride=stride, padding=padding)  # config
-
-        self.flatten = nn.Flatten()
 
         # from conv to linear the feature must be flatten
         """ linear """
@@ -73,5 +71,24 @@ class SpeechModel(nn.Module):
         return self.softmax(output) # normalize output to probability with softmax
 
 if __name__ == "__main__":
-    x = torch.randn(16, 1, 340, 81)
-    model = SpeechModel(in_channels=1)
+    x = torch.randn(16, 81, 300)    
+    encoder_dim = 144
+    subsampling = ConvSubSampling(in_channels=1, out_channels=encoder_dim,
+                                  kernel_size=3, padding=0, stride=2)
+    # batch_size, n_frames, mel bins
+    
+    # sample input
+    print(f"In Shape: {x.shape}")
+    sub_result = subsampling(x)
+    print(f"ConvSubsampling result: {sub_result.shape}")
+    # dimension extraction
+    batch_size, channels, banks, times = sub_result.size()
+    # sample chain
+    sub_result = sub_result.contiguous().view(batch_size, times, -1)
+    print(f"Reshaped tensor: {sub_result.shape}")
+    
+    # linear
+    linear = nn.Linear(in_features=banks*channels, out_features=encoder_dim, bias=True)
+
+    out = linear(sub_result)
+    print(f"Linear: {out.shape}")

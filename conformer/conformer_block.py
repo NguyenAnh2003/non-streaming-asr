@@ -55,14 +55,47 @@ class ConformerBlock(nn.Module):
                                       residual_half_step=0.5)
 
         """ LayerNorm """
-        self.layer_norm = nn.LayerNorm()
-
-        """ Conformer block with LayerNorm and Chain """
-        self.conformer_block = nn.Sequential(self.ff1, self.mha, self.conv_module, self.ff2, self.layer_norm)
-
+        self.layer_norm = nn.LayerNorm(normalized_shape=in_feats)
+        
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.conformer_block(x)
+        # ff module - sandwich
+        x = self.ff1(x)
+
+        # MHA process
+        out, _ = self.mha(x, x, x) # Q, K, V
+
+        # get last hidden state and feed to conv module
+        out = self.conv_module(out) 
+
+        # ff module - sandwich
+        out = self.ff2(out)
+        
+        # normalize distribution of output
+        out = self.layer_norm(out)
+        
+        return out
 
 
 if __name__ == "__main__":
-    pass
+    encoder_dim = 144
+    # batch_size, times, banks*channels
+    x = torch.randn(16, 74, 144)
+    batch_size, times, feats = x.size()
+
+    # linear
+    pointwise_ff = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim*2)
+    ff_out = pointwise_ff(x)
+    print(f"Feed forward module out: {ff_out.shape}")
+    
+    # MHA
+    mha = nn.MultiheadAttention(num_heads=4, embed_dim=encoder_dim, dropout=0.1, batch_first=True)
+    out, _ = mha(ff_out, ff_out, ff_out)
+    print(f"MHA out: {out.shape}")
+    
+    # Conv module
+    conv_module = ConvolutionModule(in_channels=encoder_dim, out_channels=encoder_dim, 
+                                    stride=1, padding=0, bias=True)
+
+    # 
+    out_conv = conv_module(out)
+    print(f"Conv module out: {out_conv.shape}")

@@ -50,14 +50,17 @@ class ConvSubSampling(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x - tensor(batch_size, channels (1), n_frames, fbanks) - input
+        batch_size, channels, times, banks = x.size()
         x = x.unsqueeze_(1) # add dimension channel
+        x = x.permute(0, 2, 1, 3)
+        x = x.contiguous().view(batch_size, times, -1)
         return self.chain(x)
 
 
 class ConvolutionModule(nn.Module):
     """ implemented Conv module sequentially """
     def __init__(self, in_channels: int, out_channels: int,
-                 stride: int, padding: int, bias: bool):
+                 stride: int = 1, padding: int = 0, bias: bool = True):
         super().__init__()
 
         self.norm_layer = nn.LayerNorm(normalized_shape=in_channels) # normalize with LayerNorm
