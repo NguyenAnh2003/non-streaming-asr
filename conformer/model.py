@@ -7,7 +7,8 @@ import torchaudio.models.conformer
 class DecoderLSTM(nn.Module):
     def __init__(self, bidirectional: bool = True):
         super().__init__()
-        self.lstm = nn.LSTM(bidirectional=bidirectional) # suggest using MHA -> increase params
+        # batch_first -> in & out (batch, seq, feature)
+        self.lstm = nn.LSTM(bidirectional=bidirectional, batch_first=True) # suggest using MHA -> increase params
 
     def forward(self, x):
         return self.lstm(x) # perform soft max on output

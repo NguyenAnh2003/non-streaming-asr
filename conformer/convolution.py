@@ -107,10 +107,11 @@ if __name__ == "__main__":
     # batch_size, n_frames, mel bins
     
     # sample input
-    x = torch.randn(16, 81, 300)
+    x = torch.randn(1, 81, 300)
     print(f"In Shape: {x.shape}")
     sub_result = subsampling(x.unsqueeze_(1))
-    print(f"Shape: {sub_result.shape}")
+    print(f"ConvSubsampling result: {sub_result.shape}")
+    # dimension extraction
     batch_size, channels, banks, times = sub_result.size()
     # conv module
     # conv subsampling -> linear -> conv module
@@ -119,8 +120,12 @@ if __name__ == "__main__":
     # print(f"Conv module dict: {conv_module}")
 
     # sample chain
+    permuted_out = sub_result.permute(0, 2, 1, 3)
+    print(f"Permuted: {permuted_out.shape}")
+    viewed_out = permuted_out.contiguous().view(batch_size, times, channels*banks)
+    print(f"Reshaped tensor: {viewed_out.shape}")
 
-    chain = nn.Sequential(nn.Dropout(p=0.1), nn.Linear(in_features=channels*banks*times, 
-                                                       out_features=encoder_dim, bias=True), conv_module)
-    out = chain(sub_result)
-    print(f"Conv module: {out.shape}")
+    # chain = nn.Sequential(nn.Dropout(p=0.1), nn.Linear(in_features=channels*banks*times, 
+                                                    #    out_features=encoder_dim, bias=True), conv_module)
+    # out = chain(sub_result)
+    # print(f"Conv module: {out.shape}")
