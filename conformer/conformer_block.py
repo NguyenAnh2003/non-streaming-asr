@@ -36,7 +36,7 @@ class ConformerBlock(nn.Module):
                  out_feats: int,
                  dropout: float = 0.1, 
                  attention_heads: int = 4, 
-                 embed_dim: int = 512):
+                 embed_dim: int = 144):
         super().__init__()
         
         # Feed forward net sanwiching acting like point-wise ff network
@@ -92,10 +92,10 @@ if __name__ == "__main__":
     encoder_dim = 144
     # batch_size, times, banks*channels
     x = torch.randn(16, 74, 144)
-    batch_size, times, feats = x.size()
+    # batch_size, times, feats = x.size()
 
     # linear
-    ff_net1 = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim*2)
+    ff_net1 = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim)
     ff_out1 = ff_net1(x)
     # print(f"Feed forward module out: {ff_out1.shape}")
     
@@ -121,6 +121,7 @@ if __name__ == "__main__":
     embed_dim = 512
     encoder = ConformerBlock(in_feats=encoder_dim, 
                              out_feats=encoder_dim, 
-                             embed_dim=encoder_dim)
+                             embed_dim=encoder_dim,
+                             )
     en_out = encoder(x)
-    print(f"Encoder out: {en_out}")
+    print(f"Encoder out: {en_out.shape}")
