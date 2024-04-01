@@ -46,11 +46,11 @@ class ConformerBlock(nn.Module):
                                       residual_half_step=0.5)
 
         """ Multi-head Attention with APE """
-        self.mha = ResidualConnection(module=MultiheadAttention(
+        self.mha = MultiheadAttention(
             num_heads=attention_heads, # default attention heads are 4
             embed_dim=embed_dim, # embedding dimenssion
             dropout=dropout,
-            batch_first=True), residual_half_step=1.0)
+            batch_first=True)
 
         """ Convolution Module """
         self.conv_module = ResidualConnection(module=ConvolutionModule(in_channels=encoder_dim,
@@ -72,7 +72,9 @@ class ConformerBlock(nn.Module):
         x = self.ff1(x)
 
         # MHA process
+        identity = x
         out, _ = self.mha(x, x, x) # Q, K, V
+        out = identity + (1.*out)
         out = out.transpose(1, 2) # transpose (batch_size, encoder_dim, times)
 
         # get last hidden state and feed to conv module
@@ -117,6 +119,9 @@ if __name__ == "__main__":
     # print(f"FF module 2 out: {ff_out2.shape}")
     
     # conformer encoder
-    encoder = ConformerBlock(in_feats=encoder_dim, out_feats=encoder_dim)
+    embed_dim = 512
+    encoder = ConformerBlock(in_feats=encoder_dim, 
+                             out_feats=encoder_dim, 
+                             embed_dim=embed_dim)
     en_out = encoder(x)
     print(f"Encoder out: {en_out}")
