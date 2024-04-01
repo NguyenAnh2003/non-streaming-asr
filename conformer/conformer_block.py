@@ -49,8 +49,7 @@ class ConformerBlock(nn.Module):
         self.mha = MultiheadAttention(
             num_heads=attention_heads, # default attention heads are 4
             embed_dim=embed_dim, # embedding dimenssion
-            dropout=dropout,
-            batch_first=True)
+            dropout=dropout)
 
         """ Convolution Module """
         self.conv_module = ResidualConnection(module=ConvolutionModule(in_channels=encoder_dim,
@@ -122,6 +121,6 @@ if __name__ == "__main__":
     embed_dim = 512
     encoder = ConformerBlock(in_feats=encoder_dim, 
                              out_feats=encoder_dim, 
-                             embed_dim=embed_dim)
+                             embed_dim=encoder_dim)
     en_out = encoder(x)
     print(f"Encoder out: {en_out}")
