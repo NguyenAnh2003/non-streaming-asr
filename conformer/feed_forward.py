@@ -56,4 +56,5 @@ if __name__ == "__main__":
     
     # with residual connection
     ffr = ResidualConnection(module=ff, residual_half_step=0.5)
+    ffr2 = ResidualConnection(module=ff, residual_half_step=0.5)
     print(f"ff residual connection result: {ffr(x).shape}")
