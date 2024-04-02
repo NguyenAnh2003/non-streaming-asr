@@ -4,7 +4,9 @@ from activations import Swish
 from modules import ResidualConnection
 
 class FeedForwardNet(nn.Module):
-    def __init__(self, in_feats: int, out_feats: int, dropout: float = 0.1, bias: bool = True):
+    def __init__(self, in_feats: int, out_feats: int, 
+                 dropout: float = 0.1, 
+                 bias: bool = True):
         super().__init__() # inherit Module
         """
         :param in_feats:
@@ -29,7 +31,8 @@ class FeedForwardNet(nn.Module):
         self.dropout = nn.Dropout(p=dropout)  # common dropout
 
         # config in feats and out feats of sub-linear 2 network
-        self.sub_linear2 = nn.Linear(in_features=out_feats, out_features=in_feats,
+        self.sub_linear2 = nn.Linear(in_features=out_feats, 
+                                     out_features=in_feats,
                                      bias=bias)  # final Linear layer
         # -- --- ---- --- --- ---- -- PointWise FeedForward
 

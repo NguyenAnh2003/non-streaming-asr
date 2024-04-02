@@ -16,22 +16,31 @@ class DecoderLSTM(nn.Module):
 
 class SpeechModel(nn.Module):
 
-    def __init__(self, in_channels: int, out_channels: int,
-                 kernel_size: int, stride: int, padding: int,
-                 dropout: float = 0.1, num_layers: int = 1, 
+    def __init__(self, in_channels: int, 
+                 out_channels: int,
+                 kernel_size: int, 
+                 stride: int, 
+                 padding: int,
+                 dropout: float = 0.1, 
+                 num_layers: int = 1, 
                  encoder_dim: int = 144):
         super().__init__()
         """ :param num_layers -> number of conformer encoders. """
         
         # usually audio have only 1 channel -> in_channel : 1
-        self.conv_subsampling = ConvSubSampling(in_channels=in_channels, out_channels=out_channels,
-                                                kernel_size=kernel_size, stride=stride, padding=padding)  # config
+        self.conv_subsampling = ConvSubSampling(in_channels=in_channels, 
+                                                out_channels=out_channels,
+                                                kernel_size=kernel_size, 
+                                                stride=stride, 
+                                                padding=padding)  # config
 
         # from conv to linear the feature must be flatten
         """ linear """
         # in_feats must be out_channels of CNN, 16 as considered out channels
-        self.linear = nn.Linear(in_features=out_channels, out_features=out_channels,
-                                bias=True, dtype=torch.float32)
+        self.linear = nn.Linear(in_features=out_channels, 
+                                out_features=out_channels,
+                                bias=True, 
+                                dtype=torch.float32)
 
         """ dropout """
         self.dropout = nn.Dropout(p=dropout)
@@ -73,8 +82,11 @@ class SpeechModel(nn.Module):
 if __name__ == "__main__":
     x = torch.randn(16, 81, 300)    
     encoder_dim = 144
-    subsampling = ConvSubSampling(in_channels=1, out_channels=encoder_dim,
-                                  kernel_size=3, padding=0, stride=2)
+    subsampling = ConvSubSampling(in_channels=1, 
+                                  out_channels=encoder_dim,
+                                  kernel_size=3, 
+                                  padding=0, 
+                                  stride=2)
     # batch_size, n_frames, mel bins
     
     # sample input

@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 
 class ResidualConnection(nn.Module):
-    def __init__(self, module: nn.Module = None, residual_half_step: float = 0.5):
+    def __init__(self, module: nn.Module = None, 
+                 residual_half_step: float = 0.5):
         super(ResidualConnection, self).__init__()
         self.module = module
         self.half_step = residual_half_step
