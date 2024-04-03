@@ -82,6 +82,9 @@ def trainer(exp_name: str):
                   train_loss=train_avg_loss,
                   dev_loss=val_avg_loss)
 
+  # terminate wandb
+  wandb.finish()
+  
   trained_time = get_executing_time(start_time)
   print(f"EPOCHES: {_EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
   # logging summary

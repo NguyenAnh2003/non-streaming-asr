@@ -8,8 +8,6 @@ from utils.utils import get_configs
 from pydub import AudioSegment
 import transformers
 
-# Audio Augmentation: https://pytorch.org/audio/main/tutorials/audio_data_augmentation_tutorial.html
-
 # including preprocessing and post-processing
 _params = get_configs("../configs/audio_processing.yaml")
 

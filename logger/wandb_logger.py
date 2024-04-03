@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 # load env var
 load_dotenv()
 
-def train_logging(model_name: str, 
-                  dev_loss: float, 
+def train_logging(dev_loss: float, 
                   train_loss: float, 
                   dev_acc: float, 
                   train_acc: float):
