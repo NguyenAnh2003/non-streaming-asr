@@ -5,6 +5,7 @@
 4. Separable Convolution: [link](https://blog.csdn.net/yyp1998/article/details/121048613?spm=1001.2101.3001.4242.1&utm_relevant_index=3)
 5. DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0)
 6. DepthWise-tt: [link](DepthWise: [link](https://www.youtube.com/watch?v=ftc7rj7kzQ0))
+7. Add noises: [link](https://www.linkedin.com/pulse/signal-to-noise-ratio-snr-explained-leonid-ayzenshtat/)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)

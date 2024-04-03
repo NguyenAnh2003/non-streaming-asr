@@ -15,7 +15,7 @@ _params = get_configs("../configs/audio_processing.yaml")
 
 # adding background noise
 def _add_noise2audio(sample_array: torch.Tensor, noise_array: torch.Tensor):
-    """ SNR explained: https://www.linkedin.com/pulse/signal-to-noise-ratio-snr-explained-leonid-ayzenshtat/
+    """ 
     :param sample_array: torch.Tensor,
     :param noise_array
     :return augmented audio with noise
