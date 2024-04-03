@@ -12,6 +12,7 @@ class ResidualConnection(nn.Module):
         """ :return identity + res_step * module_output """
         identity = x
         module_output = self.module(x)
+        print(f"Identity: {identity.shape} Module: {module_output.shape}")
         return identity + (self.half_step * module_output)
 
 if __name__ == "__main__":

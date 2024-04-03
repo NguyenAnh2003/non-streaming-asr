@@ -78,6 +78,7 @@ class ConformerBlock(nn.Module):
 
         # get last hidden state and feed to conv module
         out = self.conv_module(out)
+        out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
 
         # ff module - sandwich
         out = self.ff2(out)
@@ -92,12 +93,12 @@ if __name__ == "__main__":
     encoder_dim = 144
     # batch_size, times, banks*channels
     x = torch.randn(16, 74, 144)
-    # batch_size, times, feats = x.size()
+    batch_size, times, feats = x.size()
 
     # linear
     ff_net1 = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim)
     ff_out1 = ff_net1(x)
-    # print(f"Feed forward module out: {ff_out1.shape}")
+    print(f"Feed forward module out: {ff_out1.shape}")
     
     # MHA
     mha = nn.MultiheadAttention(num_heads=4, 
@@ -105,7 +106,7 @@ if __name__ == "__main__":
                                 dropout=0.1, 
                                 batch_first=True)
     out, _ = mha(ff_out1, ff_out1, ff_out1)
-    # print(f"MHA out: {out.shape} Transpose: {out.transpose(1, 2).shape}")
+    print(f"MHA out: {out.shape} Transpose: {out.transpose(1, 2).shape}")
     
     # Conv module
     conv_module = ConvolutionModule(in_channels=encoder_dim, 
@@ -116,18 +117,18 @@ if __name__ == "__main__":
 
     # out conv
     out_conv = conv_module(out.transpose(1, 2))
-    # print(f"Conv module out: {out_conv.shape}")
+    print(f"Conv module out: {out_conv.shape}")
     
     # ff module 2
     ff_net2 = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim*2)
     ff_out2 = ff_net2(out_conv)
-    # print(f"FF module 2 out: {ff_out2.shape}")
+    print(f"FF module 2 out: {ff_out2.shape}")
     
     # conformer encoder
-    embed_dim = 512
-    encoder = ConformerBlock(in_feats=encoder_dim, 
-                             out_feats=encoder_dim,
-                             embed_dim=encoder_dim,
-                             )
-    en_out = encoder(x)
-    print(f"Encoder out: {en_out.shape}")
+    # embed_dim = 512
+    # encoder = ConformerBlock(in_feats=encoder_dim, 
+    #                          out_feats=encoder_dim,
+    #                          embed_dim=encoder_dim,
+    #                          )
+    # en_out = encoder(x)
+    # print(f"Encoder out: {en_out.shape}")

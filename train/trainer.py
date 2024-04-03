@@ -9,6 +9,8 @@ import torch.nn as nn
 import time
 from logger.my_logger import setup_logger
 from utils.utils import get_executing_time
+import wandb
+from logger.wandb_logger import train_logging
 
 # train logger
 _train_logger = setup_logger(path="../logs/train.log", location="trainer")
@@ -41,11 +43,18 @@ train_dataloader = TrainLoader(dataset=train_dataset, bactch_size=BATCH_SIZE, sh
 dev_dataset = DevSet(vocab=libri_vocab, csv_file="../metadata-train-clean.csv", root_dir="../librispeech/train-custom-clean")
 dev_dataloader = DevLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
-def trainer():
+def trainer(exp_name: str):
+  # init var
   train_losses = []
   val_losses = []
   start_time = time.time()
+
+  # wandb init
+  wandb.init(project="S2T", name=exp_name)
+
+  # iterate epochs
   for epoch in range(_EPOCHS):
+    
     # train mode
     model.train(True)
 
@@ -68,10 +77,16 @@ def trainer():
     # console log
     print(f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss} TIME: {get_executing_time(start_time=start_time)}")
 
+    # wandb logging
+    train_logging(model_name=exp_name,
+                  train_loss=train_avg_loss,
+                  dev_loss=val_avg_loss)
+
   trained_time = get_executing_time(start_time)
   print(f"EPOCHES: {_EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
   # logging summary
   _train_logger.log(_train_logger.INFO, f"EPOCHES: {_EPOCHS} TOTAL TRAIN LOSS: {min(train_losses)} TOTAL DEV LOSS: {min(val_losses)}")
 
 if __name__ == "__main__":
-  trainer()
+  EXP_NAME = _train_params['model_name']
+  trainer(EXP_NAME)
