@@ -79,10 +79,11 @@ class ConformerBlock(nn.Module):
         # get last hidden state and feed to conv module
         conv_identity = out # (batch_size, encoder_dim, times)
         out = self.conv_module(out)
-        out += conv_identity # transpose (batch_size, times, encoder_dim)
+        out += conv_identity 
 
         print(f"Conv shape: {out.shape}")
 
+        out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
         # ff module - sandwich
         out = self.ff2(out)
         
