@@ -11,7 +11,7 @@ def train_logging(dev_loss: float,
                   train_acc: float):
     
   # logging dev/train loss
-  wandb.log({"train loss/epoch": train_loss, "dev loss/epoch": dev_loss})
+  wandb.log({"train/loss_per_epoch": train_loss, "train/acc_per_epoch": train_acc})
   
   # logging dev/train accuracy
-  wandb.log({"train acc/epoch": train_acc, "dev acc/epoch": dev_acc})
+  wandb.log({"dev/loss_per_epoch": dev_loss, "dev/acc_per_epoch": dev_acc})
