@@ -64,6 +64,9 @@ def trainer(exp_name: str):
   wandb.init(project="S2T", 
              name=exp_name,
              config=configs)
+  
+  # wandb watch model grads
+  wandb.watch(models=model, criterion=criterion, log="all", log_freq=10)
 
   # iterate epochs
   for epoch in range(EPOCHS):
