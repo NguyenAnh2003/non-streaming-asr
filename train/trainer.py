@@ -75,15 +75,19 @@ def trainer(exp_name: str):
     model.train(True)
 
     # average loss
-    train_avg_loss = train_one_epoch(train_loader=train_dataloader, model=model,
-                               optimizer=optimizer, loss_fn=criterion)
+    train_avg_loss = train_one_epoch(train_loader=train_dataloader, 
+                                     model=model,
+                                     optimizer=optimizer, 
+                                     loss_fn=criterion)
 
     # append avg loss
     train_losses.append(train_avg_loss)
 
     # model validation
     model.eval(True)
-    val_avg_loss = eval_one_epoch(val_loader=dev_dataloader, model=model, loss_fn=criterion)
+    val_avg_loss = eval_one_epoch(val_loader=dev_dataloader, 
+                                  model=model, 
+                                  loss_fn=criterion)
 
     val_losses.append(val_avg_loss)
     
