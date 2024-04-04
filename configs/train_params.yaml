@@ -2,3 +2,5 @@ epochs: 50
 batch_size: 16
 shuffle: True
 model_name: "conformer-144-dim"
+learning_rate: 0.001
+dataset_name: "LibriSpeech"

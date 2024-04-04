@@ -23,16 +23,18 @@ model = Conformer()
 _train_params = get_configs("../configs/train_params.yaml")
 _model_params = get_configs("../configs/model_params.yaml")
 
+# necess params
+EPOCHS = _train_params['epochs']
+BATCH_SIZE = _train_params['batch_size']
+LR = _train_params['learning_rate']
+DATASET_NAME = _train_params['dataset_name']
+SHUFFLE = _train_params['shuffle']
+
 # optimizer Adam
-optimizer = Adam(model.parameters)
+optimizer = Adam(model.parameters, lr=LR)
 
 # loss function - ctc-loss 
 criterion = nn.CTCLoss(blank=28) #
-
-# necess params
-_EPOCHS = _train_params['epochs']
-BATCH_SIZE = _train_params['batch_size']
-SHUFFLE = _train_params['shuffle']
 
 # init dataloader
 libri_vocab = LibriSpeechVocabRAW() # librispeech vocab
@@ -44,16 +46,27 @@ dev_dataset = DevSet(vocab=libri_vocab, csv_file="../metadata-train-clean.csv", 
 dev_dataloader = DevLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
 def trainer(exp_name: str):
+  # wandb config
+  configs = dict(
+    epochs=EPOCHS,
+    batch_size=BATCH_SIZE,
+    learning_rate=LR,
+    dataset=DATASET_NAME,
+    architecture=exp_name
+  )
+
   # init var
   train_losses = []
   val_losses = []
   start_time = time.time()
 
   # wandb init
-  wandb.init(project="S2T", name=exp_name)
+  wandb.init(project="S2T", 
+             name=exp_name,
+             config=configs)
 
   # iterate epochs
-  for epoch in range(_EPOCHS):
+  for epoch in range(EPOCHS):
     
     # train mode
     model.train(True)
@@ -80,15 +93,15 @@ def trainer(exp_name: str):
     # wandb logging
     train_logging(model_name=exp_name,
                   train_loss=train_avg_loss,
-                  dev_loss=val_avg_loss)
+                  dev_loss=val_avg_loss, epoch=epoch)
 
   # terminate wandb
   wandb.finish()
   
   trained_time = get_executing_time(start_time)
-  print(f"EPOCHES: {_EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
+  print(f"EPOCHES: {EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
   # logging summary
-  _train_logger.log(_train_logger.INFO, f"EPOCHES: {_EPOCHS} TOTAL TRAIN LOSS: {min(train_losses)} TOTAL DEV LOSS: {min(val_losses)}")
+  _train_logger.log(_train_logger.INFO, f"EPOCHES: {EPOCHS} TOTAL TRAIN LOSS: {min(train_losses)} TOTAL DEV LOSS: {min(val_losses)}")
 
 if __name__ == "__main__":
   EXP_NAME = _train_params['model_name']
