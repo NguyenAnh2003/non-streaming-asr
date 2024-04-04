@@ -52,9 +52,8 @@ class ConformerBlock(nn.Module):
             dropout=dropout)
 
         """ Convolution Module """
-        self.conv_module = ResidualConnection(module=ConvolutionModule(in_channels=encoder_dim,
-                                                                       out_channels=encoder_dim),
-                                              residual_half_step=1.0)
+        self.conv_module = ConvolutionModule(in_channels=encoder_dim,
+                                             out_channels=encoder_dim)
 
         """ 1/2 Feed forward """
         self.ff2 = ResidualConnection(module=FeedForwardNet(in_feats=out_feats, 
@@ -75,10 +74,14 @@ class ConformerBlock(nn.Module):
         out, _ = self.mha(x, x, x) # Q, K, V
         out = identity + (1.*out)
         out = out.transpose(1, 2) # transpose (batch_size, encoder_dim, times)
+        print(f"MHA shape: {out.shape}")
 
         # get last hidden state and feed to conv module
+        conv_identity = out # (batch_size, encoder_dim, times)
         out = self.conv_module(out)
-        out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
+        out += conv_identity # transpose (batch_size, times, encoder_dim)
+
+        print(f"Conv shape: {out.shape}")
 
         # ff module - sandwich
         out = self.ff2(out)
@@ -93,42 +96,42 @@ if __name__ == "__main__":
     encoder_dim = 144
     # batch_size, times, banks*channels
     x = torch.randn(16, 74, 144)
-    batch_size, times, feats = x.size()
+    # batch_size, times, feats = x.size()
 
     # linear
-    ff_net1 = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim)
-    ff_out1 = ff_net1(x)
-    print(f"Feed forward module out: {ff_out1.shape}")
+    # ff_net1 = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim)
+    # ff_out1 = ff_net1(x)
+    # print(f"Feed forward module out: {ff_out1.shape}")
     
     # MHA
-    mha = nn.MultiheadAttention(num_heads=4, 
-                                embed_dim=encoder_dim, 
-                                dropout=0.1, 
-                                batch_first=True)
-    out, _ = mha(ff_out1, ff_out1, ff_out1)
-    print(f"MHA out: {out.shape} Transpose: {out.transpose(1, 2).shape}")
+    # mha = nn.MultiheadAttention(num_heads=4, 
+    #                             embed_dim=encoder_dim, 
+    #                             dropout=0.1, 
+    #                             batch_first=True)
+    # out, _ = mha(ff_out1, ff_out1, ff_out1)
+    # print(f"MHA out: {out.shape} Transpose: {out.transpose(1, 2).shape}")
     
     # Conv module
-    conv_module = ConvolutionModule(in_channels=encoder_dim, 
-                                    out_channels=encoder_dim, 
-                                    stride=1, 
-                                    padding=0, 
-                                    bias=True)
+    # conv_module = ConvolutionModule(in_channels=encoder_dim, 
+    #                                 out_channels=encoder_dim, 
+    #                                 stride=1, 
+    #                                 padding=0, 
+    #                                 bias=True)
 
     # out conv
-    out_conv = conv_module(out.transpose(1, 2))
-    print(f"Conv module out: {out_conv.shape}")
+    # out_conv = conv_module(out.transpose(1, 2))
+    # print(f"Conv module out: {out_conv.shape}")
     
     # ff module 2
-    ff_net2 = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim*2)
-    ff_out2 = ff_net2(out_conv)
-    print(f"FF module 2 out: {ff_out2.shape}")
+    # ff_net2 = FeedForwardNet(in_feats=encoder_dim, out_feats=encoder_dim*2)
+    # ff_out2 = ff_net2(out_conv)
+    # print(f"FF module 2 out: {ff_out2.shape}")
     
     # conformer encoder
-    # embed_dim = 512
-    # encoder = ConformerBlock(in_feats=encoder_dim, 
-    #                          out_feats=encoder_dim,
-    #                          embed_dim=encoder_dim,
-    #                          )
-    # en_out = encoder(x)
-    # print(f"Encoder out: {en_out.shape}")
+    embed_dim = 144
+    encoder = ConformerBlock(in_feats=encoder_dim, 
+                             out_feats=encoder_dim,
+                             embed_dim=encoder_dim,
+                             )
+    en_out = encoder(x)
+    print(f"Encoder out: {en_out.shape}")

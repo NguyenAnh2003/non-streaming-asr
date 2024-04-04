@@ -130,6 +130,7 @@ class ConvolutionModule(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """ the forward will be present as skip connection """
         conv_output = self.conv_module(x)
+        print(f"Conv conv: {conv_output.shape}")
         return conv_output
     
 if __name__ == "__main__":
