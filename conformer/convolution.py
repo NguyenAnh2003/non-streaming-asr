@@ -82,7 +82,7 @@ class ConvolutionModule(nn.Module):
                  out_channels: int,
                  kernel_size: int = 1,
                  stride: int = 1, 
-                 padding: int = 2,
+                 padding: int = 0,
                  bias: bool = True):
         super().__init__()
 
@@ -124,10 +124,10 @@ class ConvolutionModule(nn.Module):
         self.conv_module = nn.Sequential(
             # self.norm_layer, 
             self.point_wise1, 
-            self.glu_activation,
+            # self.glu_activation,
             self.dw_conv, 
-            self.batch_norm, 
-            self.swish, 
+            self.batch_norm,
+            self.swish,
             self.point_wise2,
             self.dropout
         )
@@ -135,13 +135,6 @@ class ConvolutionModule(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """ the forward will be present as skip connection """
         conv_output = self.conv_module(x)
-        # poinwise out 1
-
-        # depthwise out
-
-        # poinwise out 2
-
-
         return conv_output
     
 if __name__ == "__main__":
@@ -157,11 +150,6 @@ if __name__ == "__main__":
                                     out_channels=encoder_dim,
                                     kernel_size=1,
                                     stride=1,
-                                    padding=3)
+                                    padding=0)
     print(f"Input: {x.shape} "
           f"Conv out: {conv_module(x).shape}")
-
-    # conv = nn.Conv1d(in_channels=encoder_dim,
-    #                  out_channels=encoder_dim, padding=0, stride=1, kernel_size=1)
-    # out = conv(x)
-    # print(f"OUT CNN: {out.shape}")
