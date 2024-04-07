@@ -78,7 +78,7 @@ class ConvolutionModule(nn.Module):
     def __init__(self, in_channels: int, 
                  out_channels: int,
                  stride: int = 1, 
-                 padding: int = 0, 
+                 padding: int = 2,
                  bias: bool = True):
         super().__init__()
 

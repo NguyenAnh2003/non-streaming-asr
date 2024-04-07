@@ -36,7 +36,9 @@ class ConformerBlock(nn.Module):
                  out_feats: int,
                  dropout: float = 0.1, 
                  attention_heads: int = 4, 
-                 embed_dim: int = 144):
+                 embed_dim: int = 144,
+                 padding: int = 2,
+                 stride: int = 1):
         super().__init__()
         
         # Feed forward net sanwiching acting like point-wise ff network
@@ -53,7 +55,9 @@ class ConformerBlock(nn.Module):
 
         """ Convolution Module """
         self.conv_module = ConvolutionModule(in_channels=encoder_dim,
-                                             out_channels=encoder_dim)
+                                             out_channels=encoder_dim,
+                                             stride=stride,
+                                             padding=padding)
 
         """ 1/2 Feed forward """
         self.ff2 = ResidualConnection(module=FeedForwardNet(in_feats=out_feats, 
@@ -74,13 +78,11 @@ class ConformerBlock(nn.Module):
         out, _ = self.mha(x, x, x) # Q, K, V
         out = identity + (1.*out)
         out = out.transpose(1, 2) # transpose (batch_size, encoder_dim, times)
-        print(f"MHA shape: {out.shape}")
 
         # get last hidden state and feed to conv module
         conv_identity = out # (batch_size, encoder_dim, times)
-        # downsample the indetity
-        conv_identity = self.conv_module(conv_identity)
-        # 
+        print(f"Conv identity: {conv_identity.shape}")
+
         out = self.conv_module(out)
         out += conv_identity 
 
@@ -136,6 +138,7 @@ if __name__ == "__main__":
     encoder = ConformerBlock(in_feats=encoder_dim, 
                              out_feats=encoder_dim,
                              embed_dim=encoder_dim,
-                             )
+                             stride=1,
+                             padding=2)
     en_out = encoder(x)
     print(f"Encoder out: {en_out.shape}")
