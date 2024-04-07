@@ -84,7 +84,7 @@ class ConformerBlock(nn.Module):
         print(f"Conv identity: {conv_identity.shape}")
 
         out = self.conv_module(out)
-        out += conv_identity 
+        out += conv_identity
 
         print(f"Conv shape: {out.shape}")
 
