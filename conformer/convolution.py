@@ -79,6 +79,7 @@ class ConvolutionModule(nn.Module):
                  out_channels: int,
                  stride: int = 1, 
                  padding: int = 0, 
+                 kernel_size: int = 1,
                  bias: bool = True):
         super().__init__()
 
@@ -86,17 +87,17 @@ class ConvolutionModule(nn.Module):
 
         self.point_wise1 = PointWise1DConv(in_channels=in_channels, 
                                            out_channels=out_channels, 
-                                           kernel_size=1,
+                                           kernel_size=kernel_size,
                                            stride=stride, 
                                            padding=padding, 
                                            bias=bias) # customized Pointwise Conv
 
-        self.glu_activation = nn.GLU()
+        self.glu_activation = nn.GLU(dim=1)
 
         """ Depthwise Conv 1D """
-        self.dw_conv = DepthWise1DConv(in_channels=out_channels, 
+        self.dw_conv = DepthWise1DConv(in_channels=out_channels//2, 
                                        out_channels=out_channels, 
-                                       kernel_size=1, 
+                                       kernel_size=kernel_size, 
                                        padding=padding, 
                                        bias=bias)
 
@@ -108,7 +109,7 @@ class ConvolutionModule(nn.Module):
 
         self.point_wise2 = PointWise1DConv(in_channels=out_channels, 
                                            out_channels=out_channels, 
-                                           kernel_size=1,
+                                           kernel_size=kernel_size,
                                            stride=1, 
                                            padding=0, 
                                            bias=True) #
@@ -130,22 +131,22 @@ class ConvolutionModule(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """ the forward will be present as skip connection """
         conv_output = self.conv_module(x)
-        print(f"Conv conv: {conv_output.shape}")
         return conv_output
     
 if __name__ == "__main__":
     # print(f"Params: {_params}")
     # conv subsampling
     encoder_dim = 144
-    subsampling = ConvSubSampling(in_channels=1, out_channels=encoder_dim,
-                                  kernel_size=3, padding=0, stride=2)
     # batch_size, n_frames, mel bins
     
     # sample input
-    x = torch.randn(16, 81, 300)
-    print(f"In Shape: {x.shape}")
-    sub_result = subsampling(x)
-    print(f"ConvSubsampling result: {sub_result.shape}")
-
-    # sample chain
-    print(f"Reshaped tensor: {sub_result.shape}")
+    x = torch.randn(16, 144, 300)
+    print(f"Input shape: {x.shape}")
+    
+    conv_module = ConvolutionModule(in_channels=encoder_dim,
+                                    out_channels=encoder_dim,
+                                    kernel_size=1,
+                                    padding=0,
+                                    stride=1)
+    conv_out = conv_module(x)
+    print(f"Conv out: {conv_out.shape}")

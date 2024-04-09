@@ -80,7 +80,7 @@ class ConformerBlock(nn.Module):
         conv_identity = out # (batch_size, encoder_dim, times)
         # downsample the indetity
         conv_identity = self.conv_module(conv_identity)
-        # 
+        
         out = self.conv_module(out)
         out += conv_identity 
 
