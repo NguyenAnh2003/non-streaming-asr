@@ -52,8 +52,8 @@ class ConformerBlock(nn.Module):
             dropout=dropout)
 
         """ Convolution Module """
-        self.conv_module = ConvolutionModule(in_channels=encoder_dim,
-                                             out_channels=encoder_dim)
+        self.conv_module = ResidualConnection(module=ConvolutionModule(in_channels=encoder_dim,
+                                             out_channels=encoder_dim), residual_half_step=1.0)
 
         """ 1/2 Feed forward """
         self.ff2 = ResidualConnection(module=FeedForwardNet(in_feats=out_feats, 
@@ -77,12 +77,7 @@ class ConformerBlock(nn.Module):
         print(f"MHA shape: {out.shape}")
 
         # get last hidden state and feed to conv module
-        conv_identity = out # (batch_size, encoder_dim, times)
-        # downsample the indetity
-        conv_identity = self.conv_module(conv_identity)
-        
         out = self.conv_module(out)
-        out += conv_identity 
 
         print(f"Conv shape: {out.shape}")
 
