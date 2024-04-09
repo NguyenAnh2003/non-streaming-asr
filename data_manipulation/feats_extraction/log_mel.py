@@ -59,5 +59,5 @@ if __name__ == "__main__":
     log_mel_plot = torch.squeeze(log_melspec)
 
     # plot log mel and log mel trimmed
-    # plot_melspectrogram(specgram=log_mel_plot, title="Log Mel", ylabel="banks")
-    # plot_melspectrogram(specgram=log_melspec_trimmed, title="Log Mel Trimmed", ylabel="banks")
+    plot_melspectrogram(specgram=log_mel_plot, title="Log Mel", ylabel="banks")
+    plot_melspectrogram(specgram=log_melspec_trimmed, title="Log Mel Trimmed", ylabel="banks")
