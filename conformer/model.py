@@ -64,11 +64,11 @@ class SpeechModel(nn.Module):
     def _forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
         x = self.conv_subsampling(x)
-        x = self.input_projection(x)
+        output = self.input_projection(x)
 
         # output for each conformer block
         for layer in self.conformer_encoder_layers:
-            output = layer(x)
+            output = layer(output)
         
         return output
 
@@ -93,14 +93,3 @@ if __name__ == "__main__":
     print(f"In Shape: {x.shape}")
     sub_result = subsampling(x)
     print(f"ConvSubsampling result: {sub_result.shape}")
-    # dimension extraction
-    batch_size, channels, banks, times = sub_result.size()
-    # sample chain
-    sub_result = sub_result.contiguous().view(batch_size, times, -1)
-    print(f"Reshaped tensor: {sub_result.shape}")
-    
-    # linear
-    linear = nn.Linear(in_features=banks*channels, out_features=encoder_dim, bias=True)
-
-    out = linear(sub_result)
-    print(f"Linear: {out.shape}")
