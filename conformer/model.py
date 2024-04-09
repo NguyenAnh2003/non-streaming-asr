@@ -86,7 +86,7 @@ if __name__ == "__main__":
                                   out_channels=encoder_dim,
                                   kernel_size=3, 
                                   padding=0, 
-                                  stride=2)
+                                  stride=1)
     # batch_size, n_frames, mel bins
     
     # sample input

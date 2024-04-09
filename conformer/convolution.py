@@ -43,7 +43,7 @@ class ConvSubSampling(nn.Module):
         super(ConvSubSampling, self).__init__()
         # stride = 2 -> expirement: using max pooling layer
         self.chain = nn.Sequential(
-            nn.Conv2d(in_channels=in_channels, 
+            nn.Conv2d(in_channels=in_channels,
                       out_channels=out_channels,
                       kernel_size=kernel_size, 
                       stride=stride, 
@@ -148,5 +148,9 @@ if __name__ == "__main__":
                                     kernel_size=1,
                                     padding=0,
                                     stride=1)
+
+    # conv module
     conv_out = conv_module(x)
     print(f"Conv out: {conv_out.shape}")
+
+    # squeeze
