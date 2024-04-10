@@ -14,7 +14,6 @@ class DecoderLSTM(nn.Module):
                             hidden_size=hidden_size,
                             bias=bias, 
                             batch_first=True,
-                            dropout=dropout, 
                             bidirectional=bidirectional)
 
     def forward(self, x):
