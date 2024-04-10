@@ -4,7 +4,8 @@
 kernel_size: "[(5,5), (3,3)]"
 
 # cnn channel for conv subsampling
-channels: "[(1, 16), (16, 64)]"
+#channels: "[(1, 16), (16, 64)]"
+channels: 81
 subsampling_stride: 2 # subsampling stride 2
 normal_stride: 1 # depthwise, pointwise
 

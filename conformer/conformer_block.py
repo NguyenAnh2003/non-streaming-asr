@@ -3,9 +3,9 @@ from torch import Tensor
 from typing import Tuple, Optional
 import torch.nn as nn
 from torch.nn import MultiheadAttention
-from modules import ResidualConnection
-from feed_forward import FeedForwardNet
-from convolution import ConvolutionModule
+from .modules import ResidualConnection
+from .feed_forward import FeedForwardNet
+from .convolution import ConvolutionModule
 
 class RelativeMultiHeadedAttention(MultiheadAttention):
     """ implement MHA with Relative Position """

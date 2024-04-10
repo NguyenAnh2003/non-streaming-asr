@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from convolution import ConvSubSampling
-from conformer_block import ConformerBlock
+from .convolution import ConvSubSampling
+from .conformer_block import ConformerBlock
 import torchaudio.models.conformer
 
 class DecoderLSTM(nn.Module):

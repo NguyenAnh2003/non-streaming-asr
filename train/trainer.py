@@ -1,7 +1,7 @@
 from utils.utils import get_configs
 from data_manipulation.dataloader import DevSet, TrainSet, TrainLoader, DevLoader, LibriSpeechVocabRAW
 from torch.optim import Adam
-from conformer.model import Conformer
+from conformer.model import SpeechModel
 from train_utils import train_one_epoch, eval_one_epoch
 from utils.utils import get_configs
 from jiwer import wer
@@ -15,34 +15,40 @@ from logger.wandb_logger import train_logging
 # train logger
 _train_logger = setup_logger(path="../logs/train.log", location="trainer")
 
+# params
+train_params = get_configs("../configs/train_params.yaml")
+model_params = get_configs("../configs/model_params.yaml")
+
+# model params
+encoder_dim = model_params['encoder_dim']
+in_channels = model_params['channels']
 
 # model conformer
-model = Conformer()
-
-# params
-_train_params = get_configs("../configs/train_params.yaml")
-_model_params = get_configs("../configs/model_params.yaml")
+model = SpeechModel(in_channels=in_channels,
+                    encoder_dim=encoder_dim,
+                    kernel_size=3, padding=0,
+                    stride=1, num_layers=4)
 
 # necess params
-EPOCHS = _train_params['epochs']
-BATCH_SIZE = _train_params['batch_size']
-LR = _train_params['learning_rate']
-DATASET_NAME = _train_params['dataset_name']
-SHUFFLE = _train_params['shuffle']
+EPOCHS = train_params['epochs']
+BATCH_SIZE = train_params['batch_size']
+LR = train_params['learning_rate']
+DATASET_NAME = train_params['dataset_name']
+SHUFFLE = train_params['shuffle']
 
 # optimizer Adam
-optimizer = Adam(model.parameters, lr=LR)
+optimizer = Adam(model.parameters(), lr=LR)
 
 # loss function - ctc-loss 
 criterion = nn.CTCLoss(blank=28) #
 
 # init dataloader
-libri_vocab = LibriSpeechVocabRAW() # librispeech vocab
+libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/vocab.txt") # librispeech vocab
 
-train_dataset = TrainSet(vocab=libri_vocab, csv_file="../metadata-train-clean.csv", root_dir="../librispeech/train-custom-clean")
+train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-train-clean.csv", root_dir="../librispeech/train-custom-clean")
 train_dataloader = TrainLoader(dataset=train_dataset, bactch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
-dev_dataset = DevSet(vocab=libri_vocab, csv_file="../metadata-train-clean.csv", root_dir="../librispeech/train-custom-clean")
+dev_dataset = DevSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-train-clean.csv", root_dir="../librispeech/train-custom-clean")
 dev_dataloader = DevLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
 def trainer(exp_name: str):
@@ -75,32 +81,37 @@ def trainer(exp_name: str):
     model.train(True)
 
     # average loss
-    train_avg_loss = train_one_epoch(train_loader=train_dataloader, 
+    # train_avg_loss = train_one_epoch(train_loader=train_dataloader,
+    #                                  model=model,
+    #                                  optimizer=optimizer,
+    #                                  loss_fn=criterion)
+
+    train_one_epoch(train_loader=train_dataloader,
                                      model=model,
-                                     optimizer=optimizer, 
+                                     optimizer=optimizer,
                                      loss_fn=criterion)
 
     # append avg loss
-    train_losses.append(train_avg_loss)
+    # train_losses.append(train_avg_loss)
 
     # model validation
-    model.eval(True)
-    val_avg_loss = eval_one_epoch(val_loader=dev_dataloader, 
-                                  model=model, 
-                                  loss_fn=criterion)
-
-    val_losses.append(val_avg_loss)
-    
-    # logger
-    _train_logger.log(_train_logger.INFO, f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss}")
-
-    # console log
-    print(f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss} TIME: {get_executing_time(start_time=start_time)}")
-
-    # wandb logging
-    train_logging(model_name=exp_name,
-                  train_loss=train_avg_loss,
-                  dev_loss=val_avg_loss, epoch=epoch)
+    # model.eval()
+    # val_avg_loss = eval_one_epoch(val_loader=dev_dataloader,
+    #                               model=model,
+    #                               loss_fn=criterion)
+    #
+    # val_losses.append(val_avg_loss)
+    #
+    # # logger
+    # _train_logger.log(_train_logger.INFO, f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss}")
+    #
+    # # console log
+    # print(f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss} TIME: {get_executing_time(start_time=start_time)}")
+    #
+    # # wandb logging
+    # train_logging(model_name=exp_name,
+    #               train_loss=train_avg_loss,
+    #               dev_loss=val_avg_loss, epoch=epoch)
 
   # terminate wandb
   wandb.finish()
@@ -111,5 +122,5 @@ def trainer(exp_name: str):
   _train_logger.log(_train_logger.INFO, f"EPOCHES: {EPOCHS} TOTAL TRAIN LOSS: {min(train_losses)} TOTAL DEV LOSS: {min(val_losses)}")
 
 if __name__ == "__main__":
-  EXP_NAME = _train_params['model_name']
+  EXP_NAME = train_params['model_name']
   trainer(EXP_NAME)

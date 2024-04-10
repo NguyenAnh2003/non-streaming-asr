@@ -21,22 +21,22 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
         
         prediction = model(log_mel) # get model prediction per batch
         
-        loss = loss_fn(prediction, transcript) # prediction, transcripts, input_size, transcript_size
+        # loss = loss_fn(prediction, transcript) # prediction, transcripts, input_size, transcript_size
         
         # backward process
-        loss.backward()
+        # loss.backward()
         
         # adjust weights
-        optimizer.step()
+        # optimizer.step()
         
         # batch_loss processing
-        batch_losses.append(loss.item())
+        # batch_losses.append(loss.item())
 
     # append batch_loss
-    epoch_losses.append(sum(batch_losses/len(batch_losses)))
+    # epoch_losses.append(sum(batch_losses/len(batch_losses)))
     
     # return poss per epoch
-    return epoch_losses
+    # return epoch_losses
 
 def eval_one_epoch(val_loader, model, loss_fn):
     """ setup validation data_manipulation loader for 1 epoch

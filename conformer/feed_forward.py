@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from activations import Swish
-from modules import ResidualConnection
+from .activations import Swish
+from .modules import ResidualConnection
 
 class FeedForwardNet(nn.Module):
     def __init__(self, in_feats: int, out_feats: int, 
