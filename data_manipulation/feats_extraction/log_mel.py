@@ -41,7 +41,7 @@ def audio_transforms(array, params):
     # standard output: [bannks, n_frames (times)]
     # the banks can be represent the in channels for CNN can be considered as standard channels, 
     # the n_frames cannot be channels because the data in not consistent in distribution in n_frames (time).
-    return log_melspectrogram.squeeze(0)
+    return log_melspectrogram.squeeze(0).contiguous().transpose(0, 1)
 
 if __name__ == "__main__":
     filepath = "../examples/kkk.flac"
