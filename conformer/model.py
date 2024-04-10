@@ -47,7 +47,9 @@ class SpeechModel(nn.Module):
 
         """ conformer encoder with layers """
         self.conformer_encoder_layers = nn.ModuleList([
-            ConformerBlock() for _ in range(num_layers)]) #
+            ConformerBlock(in_feats=encoder_dim,
+                           out_feats=encoder_dim,
+                           embed_dim=encoder_dim) for _ in range(num_layers)]) #
 
         """ decoder """
         self.decoder = DecoderLSTM(bidirectional=True)  #
@@ -80,16 +82,20 @@ class SpeechModel(nn.Module):
         return self.softmax(output) # normalize output to probability with softmax
 
 if __name__ == "__main__":
-    x = torch.randn(16, 81, 300)    
+    x = torch.randn(16, 144, 300)
     encoder_dim = 144
-    subsampling = ConvSubSampling(in_channels=1, 
+    subsampling = ConvSubSampling(in_channels=encoder_dim,
                                   out_channels=encoder_dim,
                                   kernel_size=3, 
                                   padding=0, 
                                   stride=1)
-    # batch_size, n_frames, mel bins
-    
+
     # sample input
     print(f"In Shape: {x.shape}")
     sub_result = subsampling(x)
     print(f"ConvSubsampling result: {sub_result.shape}")
+    # batch_size, n_frames, mel bins
+
+    linear = nn.Linear(in_features=encoder_dim, out_features=encoder_dim, bias=True)
+    haha = linear(sub_result)
+    print(f"Linear out: {haha.shape}")

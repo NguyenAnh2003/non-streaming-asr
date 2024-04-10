@@ -43,13 +43,13 @@ class ConvSubSampling(nn.Module):
         super(ConvSubSampling, self).__init__()
         # stride = 2 -> expirement: using max pooling layer
         self.chain = nn.Sequential(
-            nn.Conv2d(in_channels=in_channels,
+            nn.Conv1d(in_channels=in_channels,
                       out_channels=out_channels,
                       kernel_size=kernel_size, 
                       stride=stride, 
                       padding=padding),
             nn.ReLU(),
-            nn.Conv2d(in_channels=out_channels,
+            nn.Conv1d(in_channels=out_channels,
                       out_channels=out_channels,
                       kernel_size=kernel_size, 
                       stride=stride, 
@@ -59,17 +59,15 @@ class ConvSubSampling(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # in - (batch_size, channels (1), n_frames, fbanks)
-        x = x.unsqueeze_(1) # add dimension channel
-
         # conv subsampling
         x = self.chain(x) # convovle the input
-        
-        # process product dimension - (batch_size, channels, times, fbanks)
-        batch_size, _, times, _ = x.size() # get ele
-        x = x.permute(0, 2, 1, 3)
+
+        # process product dimension - (batch_size, fbanks, n_frames)
+        batch_size, fbanks, n_frames = x.size() # get ele
+        x = x.permute(0, 2, 1)
         
         # (batch_size, times, channels*fbanks)
-        out = x.contiguous().view(batch_size, times, -1)
+        out = x.contiguous().view(batch_size, n_frames, -1)
         return out
 
 
@@ -86,7 +84,7 @@ class ConvolutionModule(nn.Module):
         self.norm_layer = nn.LayerNorm(normalized_shape=in_channels) # normalize with LayerNorm
 
         self.point_wise1 = PointWise1DConv(in_channels=in_channels, 
-                                           out_channels=out_channels, 
+                                           out_channels=out_channels*2, # duoble out channels
                                            kernel_size=kernel_size,
                                            stride=stride, 
                                            padding=padding, 
@@ -95,7 +93,7 @@ class ConvolutionModule(nn.Module):
         self.glu_activation = nn.GLU(dim=1)
 
         """ Depthwise Conv 1D """
-        self.dw_conv = DepthWise1DConv(in_channels=out_channels//2, 
+        self.dw_conv = DepthWise1DConv(in_channels=out_channels,
                                        out_channels=out_channels, 
                                        kernel_size=kernel_size, 
                                        padding=padding, 
