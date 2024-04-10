@@ -64,8 +64,8 @@ class ConvSubSampling(nn.Module):
         x = self.chain(x) # convovle the input
 
         # process product dimension - (batch_size, fbanks, n_frames)
-        batch_size, n_frames, banks = x.size()
-        x = x.permute(0, 1, 2)
+        batch_size, fbanks, n_frames = x.size()
+        x = x.permute(0, 2, 1)
         
         # (batch_size, times, channels*fbanks)
         out = x.contiguous().view(batch_size, n_frames, -1)

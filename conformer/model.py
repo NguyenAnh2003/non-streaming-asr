@@ -79,12 +79,14 @@ class SpeechModel(nn.Module):
     def _forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
         x = self.conv_subsampling(x)
+        # x = x.transpose(1, 2) # transpose (n_frames, fbanks)
+
         output = self.input_projection(x)
 
         # output for each conformer block
         for layer in self.conformer_encoder_layers:
             output = layer(output)
-        
+
         return output
 
     def forward(self, x):

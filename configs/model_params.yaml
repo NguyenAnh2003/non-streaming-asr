@@ -10,4 +10,4 @@ subsampling_stride: 2 # subsampling stride 2
 normal_stride: 1 # depthwise, pointwise
 
 # define encoder dimension for MHA and model dimension depth
-encoder_dim: 512 #
+encoder_dim: 144 #
