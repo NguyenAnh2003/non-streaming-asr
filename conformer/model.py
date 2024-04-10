@@ -12,9 +12,10 @@ class DecoderLSTM(nn.Module):
         # batch_first -> in & out (batch, seq, feature)
         self.lstm = nn.LSTM(input_size=input_size,
                             hidden_size=hidden_size,
-                            bias=bias, dropout=dropout, 
-                            bidirectional=bidirectional, 
-                            batch_first=True)
+                            bias=bias, 
+                            batch_first=True,
+                            dropout=dropout, 
+                            bidirectional=bidirectional)
 
     def forward(self, x):
         return self.lstm(x) # perform soft max on output
@@ -29,7 +30,8 @@ class SpeechModel(nn.Module):
                  padding: int,
                  dropout: float = 0.1, 
                  num_layers: int = 1,
-                 encoder_dim: int = 144):
+                 encoder_dim: int = 144,
+                 decoder_dim: int = 144):
         super().__init__()
         """ 
         :param encoder_dim: encoder dimension can be used for out_channels output, model output
@@ -61,7 +63,10 @@ class SpeechModel(nn.Module):
                            encoder_dim=encoder_dim) for _ in range(num_layers)]) #
 
         """ decoder """
-        # self.decoder = DecoderLSTM(bidirectional=True) #
+        self.decoder = DecoderLSTM(input_size=decoder_dim,
+                                    hidden_size=decoder_dim,
+                                    bias=True, dropout=0.1,
+                                    bidirectional=True) #
 
         """ softmax """
         self.softmax = nn.Softmax(dim=1)
@@ -87,8 +92,8 @@ class SpeechModel(nn.Module):
         # forward encoder
         hidden_state = self._forward_encoder(x) # get relation ship between audio frame
         # forward decoder
-        # output = self.decoder(hidden_state)
-        return self.softmax(hidden_state) # normalize output to probability with softmax
+        output, _ = self.decoder(hidden_state)
+        return output # normalize output to probability with softmax
 
 if __name__ == "__main__":
     x = torch.randn(16, 81, 300)

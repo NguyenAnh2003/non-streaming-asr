@@ -9,6 +9,7 @@
 8. Downsample ResNet: [link](https://stackoverflow.com/questions/55688645/how-downsample-work-in-resnet-in-pytorch-code)
 9. Downsample ResetNet(tt): [link](https://blog.paperspace.com/writing-resnet-from-scratch-in-pytorch/)
 10. src: [link](https://gitlab.com/nguyentri.alan/conformer)
+11. lstm dimension: [link](https://stackoverflow.com/questions/61632584/understanding-input-shape-to-pytorch-lstm)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
