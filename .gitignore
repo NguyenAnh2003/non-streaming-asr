@@ -170,3 +170,6 @@ saved_model/
 
 # dataset LibriSpeech
 data_manipulation/librispeech
+
+#wandb
+train/wandb

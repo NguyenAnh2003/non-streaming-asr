@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, Dataset # torch Dataset
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
-from feats_extraction.log_mel import audio_transforms
+from .feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
 import torchaudio
 from logger.my_logger import setup_logger
@@ -77,7 +77,7 @@ class TrainSet(Dataset):
 
     @staticmethod
     def __create_huggingface_dataset(csv_path: str):
-        train_csv = pd.read_csv(csv_path, nrows=10000)
+        train_csv = pd.read_csv(csv_path)
         dataset = HuggingFaceDataset.from_pandas(train_csv)
         return dataset
 
@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
     data_loader = TrainLoader(dataset=train_set, batch_size=4, shuffle=False)
     for step, (log_mel, transcript) in tqdm(enumerate(data_loader)):
-        print(f"Audio: {log_mel} Shape{log_mel.shape} "
+        print(f"Audio: {log_mel.shape} "
               f"Transcript: {transcript}")
 
     # logMel = torch.randn([1, 81, 204])

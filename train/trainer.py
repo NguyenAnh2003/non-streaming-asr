@@ -45,10 +45,12 @@ criterion = nn.CTCLoss(blank=28) #
 # init dataloader
 libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/vocab.txt") # librispeech vocab
 
-train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-train-clean.csv", root_dir="../librispeech/train-custom-clean")
-train_dataloader = TrainLoader(dataset=train_dataset, bactch_size=BATCH_SIZE, shuffle=SHUFFLE)
+train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-train-clean.csv",
+                         root_dir="../data_manipulation/librispeech/train-custom-clean")
+train_dataloader = TrainLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
-dev_dataset = DevSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-train-clean.csv", root_dir="../librispeech/train-custom-clean")
+dev_dataset = DevSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-train-clean.csv",
+                     root_dir="../data_manipulation/librispeech/train-custom-clean")
 dev_dataloader = DevLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
 def trainer(exp_name: str):
@@ -67,12 +69,12 @@ def trainer(exp_name: str):
   start_time = time.time()
 
   # wandb init
-  wandb.init(project="S2T", 
-             name=exp_name,
-             config=configs)
+  # wandb.init(project="S2T",
+  #            name=exp_name,
+  #            config=configs)
   
   # wandb watch model grads
-  wandb.watch(models=model, criterion=criterion, log="all", log_freq=10)
+  # wandb.watch(models=model, criterion=criterion, log="all", log_freq=10)
 
   # iterate epochs
   for epoch in range(EPOCHS):
@@ -114,7 +116,7 @@ def trainer(exp_name: str):
     #               dev_loss=val_avg_loss, epoch=epoch)
 
   # terminate wandb
-  wandb.finish()
+  # wandb.finish()
   
   trained_time = get_executing_time(start_time)
   print(f"EPOCHES: {EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
