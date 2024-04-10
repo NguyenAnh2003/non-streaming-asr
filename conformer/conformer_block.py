@@ -36,7 +36,7 @@ class ConformerBlock(nn.Module):
                  out_feats: int,
                  dropout: float = 0.1, 
                  attention_heads: int = 4, 
-                 embed_dim: int = 144):
+                 encoder_dim: int = 144):
         super().__init__()
         
         # Feed forward net sanwiching acting like point-wise ff network
@@ -48,7 +48,7 @@ class ConformerBlock(nn.Module):
         """ Multi-head Attention with APE """
         self.mha = MultiheadAttention(
             num_heads=attention_heads, # default attention heads are 4
-            embed_dim=embed_dim, # embedding dimenssion
+            embed_dim=encoder_dim, # embedding dimenssion
             dropout=dropout)
 
         """ Convolution Module """
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     embed_dim = 144
     encoder = ConformerBlock(in_feats=encoder_dim, 
                              out_feats=encoder_dim,
-                             embed_dim=encoder_dim,
+                             encoder_dim=encoder_dim,
                              )
     en_out = encoder(x)
     print(f"Encoder out: {en_out.shape}")

@@ -8,6 +8,7 @@
 7. Add noises: [link](https://www.linkedin.com/pulse/signal-to-noise-ratio-snr-explained-leonid-ayzenshtat/)
 8. Downsample ResNet: [link](https://stackoverflow.com/questions/55688645/how-downsample-work-in-resnet-in-pytorch-code)
 9. Downsample ResetNet(tt): [link](https://blog.paperspace.com/writing-resnet-from-scratch-in-pytorch/)
+10. src: [link](https://gitlab.com/nguyentri.alan/conformer)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)

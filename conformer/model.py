@@ -16,20 +16,19 @@ class DecoderLSTM(nn.Module):
 
 class SpeechModel(nn.Module):
 
-    def __init__(self, in_channels: int, 
-                 out_channels: int,
+    def __init__(self, 
                  kernel_size: int, 
                  stride: int, 
                  padding: int,
                  dropout: float = 0.1, 
-                 num_layers: int = 1, 
+                 num_layers: int = 1,
                  encoder_dim: int = 144):
         super().__init__()
         """ :param num_layers -> number of conformer encoders. """
         
         # usually audio have only 1 channel -> in_channel : 1
-        self.conv_subsampling = ConvSubSampling(in_channels=in_channels, 
-                                                out_channels=out_channels,
+        self.conv_subsampling = ConvSubSampling(in_channels=encoder_dim, 
+                                                out_channels=encoder_dim,
                                                 kernel_size=kernel_size, 
                                                 stride=stride, 
                                                 padding=padding)  # config
@@ -37,8 +36,8 @@ class SpeechModel(nn.Module):
         # from conv to linear the feature must be flatten
         """ linear """
         # in_feats must be out_channels of CNN, 16 as considered out channels
-        self.linear = nn.Linear(in_features=out_channels, 
-                                out_features=out_channels,
+        self.linear = nn.Linear(in_features=encoder_dim, 
+                                out_features=encoder_dim,
                                 bias=True, 
                                 dtype=torch.float32)
 
@@ -49,10 +48,10 @@ class SpeechModel(nn.Module):
         self.conformer_encoder_layers = nn.ModuleList([
             ConformerBlock(in_feats=encoder_dim,
                            out_feats=encoder_dim,
-                           embed_dim=encoder_dim) for _ in range(num_layers)]) #
+                           encoder_dim=encoder_dim) for _ in range(num_layers)]) #
 
         """ decoder """
-        self.decoder = DecoderLSTM(bidirectional=True)  #
+        # self.decoder = DecoderLSTM(bidirectional=True)  #
 
         """ softmax """
         self.softmax = nn.Softmax()
@@ -78,8 +77,8 @@ class SpeechModel(nn.Module):
         # forward encoder
         hidden_state = self._forward_encoder(x) # get relation ship between audio frame
         # forward decoder
-        output = self.decoder(hidden_state)
-        return self.softmax(output) # normalize output to probability with softmax
+        # output = self.decoder(hidden_state)
+        return self.softmax(hidden_state) # normalize output to probability with softmax
 
 if __name__ == "__main__":
     x = torch.randn(16, 144, 300)
@@ -91,11 +90,15 @@ if __name__ == "__main__":
                                   stride=1)
 
     # sample input
-    print(f"In Shape: {x.shape}")
+    # print(f"In Shape: {x.shape}")
     sub_result = subsampling(x)
-    print(f"ConvSubsampling result: {sub_result.shape}")
+    # print(f"ConvSubsampling result: {sub_result.shape}")
     # batch_size, n_frames, mel bins
 
     linear = nn.Linear(in_features=encoder_dim, out_features=encoder_dim, bias=True)
     haha = linear(sub_result)
-    print(f"Linear out: {haha.shape}")
+    # print(f"Linear out: {haha.shape}")
+    
+    # model
+    speech_model = SpeechModel(encoder_dim=encoder_dim, kernel_size=3, padding=0, stride=1, num_layers=4)
+    print(f"Model out: {speech_model(x).shape}")
