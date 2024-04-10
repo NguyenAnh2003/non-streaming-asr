@@ -41,7 +41,6 @@ class ConvSubSampling(nn.Module):
                 stride: int = 2, 
                 padding: int = 0):
         super(ConvSubSampling, self).__init__()
-        # stride = 2 -> expirement: using max pooling layer
         self.chain = nn.Sequential(
             nn.Conv1d(in_channels=in_channels,
                       out_channels=out_channels,
@@ -63,7 +62,7 @@ class ConvSubSampling(nn.Module):
         x = self.chain(x) # convovle the input
 
         # process product dimension - (batch_size, fbanks, n_frames)
-        batch_size, fbanks, n_frames = x.size() # get ele
+        batch_size, fbanks, n_frames = x.size()
         x = x.permute(0, 2, 1)
         
         # (batch_size, times, channels*fbanks)

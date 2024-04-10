@@ -5,10 +5,16 @@ from conformer_block import ConformerBlock
 import torchaudio.models.conformer
 
 class DecoderLSTM(nn.Module):
-    def __init__(self, bidirectional: bool = True):
+    def __init__(self, input_size: int, hidden_size: int, 
+                 bias: bool, dropout: float,
+                 bidirectional: bool = True):
         super().__init__()
         # batch_first -> in & out (batch, seq, feature)
-        self.lstm = nn.LSTM(bidirectional=bidirectional, batch_first=True) # suggest using MHA -> increase params
+        self.lstm = nn.LSTM(input_size=input_size,
+                            hidden_size=hidden_size,
+                            bias=bias, dropout=dropout, 
+                            bidirectional=bidirectional, 
+                            batch_first=True)
 
     def forward(self, x):
         return self.lstm(x) # perform soft max on output
@@ -17,6 +23,7 @@ class DecoderLSTM(nn.Module):
 class SpeechModel(nn.Module):
 
     def __init__(self, 
+                 in_channels: int, 
                  kernel_size: int, 
                  stride: int, 
                  padding: int,
@@ -24,10 +31,13 @@ class SpeechModel(nn.Module):
                  num_layers: int = 1,
                  encoder_dim: int = 144):
         super().__init__()
-        """ :param num_layers -> number of conformer encoders. """
+        """ 
+        :param encoder_dim: encoder dimension can be used for out_channels output, model output
+        :param in_channels: n_mels channels (default: 81)
+        """
         
         # usually audio have only 1 channel -> in_channel : 1
-        self.conv_subsampling = ConvSubSampling(in_channels=encoder_dim, 
+        self.conv_subsampling = ConvSubSampling(in_channels=in_channels, 
                                                 out_channels=encoder_dim,
                                                 kernel_size=kernel_size, 
                                                 stride=stride, 
@@ -51,10 +61,10 @@ class SpeechModel(nn.Module):
                            encoder_dim=encoder_dim) for _ in range(num_layers)]) #
 
         """ decoder """
-        # self.decoder = DecoderLSTM(bidirectional=True)  #
+        # self.decoder = DecoderLSTM(bidirectional=True) #
 
         """ softmax """
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim=1)
 
         """ log softmax """
         # self.log_softmax = nn.LogSoftmax()
@@ -81,24 +91,14 @@ class SpeechModel(nn.Module):
         return self.softmax(hidden_state) # normalize output to probability with softmax
 
 if __name__ == "__main__":
-    x = torch.randn(16, 144, 300)
-    encoder_dim = 144
-    subsampling = ConvSubSampling(in_channels=encoder_dim,
-                                  out_channels=encoder_dim,
-                                  kernel_size=3, 
-                                  padding=0, 
-                                  stride=1)
+    x = torch.randn(16, 81, 300)
+    in_channels = 81
+    encoder_dim = 512
 
-    # sample input
-    # print(f"In Shape: {x.shape}")
-    sub_result = subsampling(x)
-    # print(f"ConvSubsampling result: {sub_result.shape}")
-    # batch_size, n_frames, mel bins
-
-    linear = nn.Linear(in_features=encoder_dim, out_features=encoder_dim, bias=True)
-    haha = linear(sub_result)
-    # print(f"Linear out: {haha.shape}")
-    
     # model
-    speech_model = SpeechModel(encoder_dim=encoder_dim, kernel_size=3, padding=0, stride=1, num_layers=4)
+    speech_model = SpeechModel(in_channels=in_channels,
+                               encoder_dim=encoder_dim, 
+                               kernel_size=3, padding=0, 
+                               stride=1, num_layers=4)
+    
     print(f"Model out: {speech_model(x).shape}")

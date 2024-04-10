@@ -74,12 +74,9 @@ class ConformerBlock(nn.Module):
         out, _ = self.mha(x, x, x) # Q, K, V
         out = identity + (1.*out)
         out = out.transpose(1, 2) # transpose (batch_size, encoder_dim, times)
-        print(f"MHA shape: {out.shape}")
 
         # get last hidden state and feed to conv module
         out = self.conv_module(out)
-
-        print(f"Conv shape: {out.shape}")
 
         out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
         # ff module - sandwich
