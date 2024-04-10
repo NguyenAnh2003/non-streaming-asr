@@ -1,3 +1,5 @@
+import torch.cuda
+
 from utils.utils import get_configs
 from data_manipulation.dataloader import DevSet, TrainSet, TrainLoader, DevLoader, LibriSpeechVocabRAW
 from torch.optim import Adam
@@ -78,7 +80,11 @@ def trainer(exp_name: str):
 
   # iterate epochs
   for epoch in range(EPOCHS):
-    
+
+    # move model to cuda
+    if torch.cuda.is_available():
+        model.cuda()
+
     # train mode
     model.train(True)
 
