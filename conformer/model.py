@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from .convolution import ConvSubSampling
 from .conformer_block import ConformerBlock
-import torchaudio.models.conformer
 
 class DecoderLSTM(nn.Module):
     def __init__(self, input_size: int, hidden_size: int, 
@@ -17,7 +16,8 @@ class DecoderLSTM(nn.Module):
                             bidirectional=bidirectional)
 
     def forward(self, x):
-        return self.lstm(x) # perform soft max on output
+        out, _ = self.lstm(x)
+        return out
 
 
 class SpeechModel(nn.Module):
@@ -91,7 +91,7 @@ class SpeechModel(nn.Module):
         # forward encoder
         hidden_state = self._forward_encoder(x) # get relation ship between audio frame
         # forward decoder
-        output, _ = self.decoder(hidden_state)
+        output = self.decoder(hidden_state)
         return output # normalize output to probability with softmax
 
 if __name__ == "__main__":
