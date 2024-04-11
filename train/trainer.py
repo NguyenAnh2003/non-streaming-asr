@@ -4,7 +4,7 @@ from utils.utils import get_configs
 from data_manipulation.dataloader import DevSet, TrainSet, TrainLoader, DevLoader, LibriSpeechVocabRAW
 from torch.optim import Adam
 from conformer.model import SpeechModel
-from train_utils import train_one_epoch, eval_one_epoch
+from train_utils import train_one_epoch, eval_one_epoch, setup_speech_model
 from utils.utils import get_configs
 from jiwer import wer
 import torch.nn as nn
@@ -26,10 +26,7 @@ encoder_dim = model_params['encoder_dim']
 in_channels = model_params['channels']
 
 # model conformer
-model = SpeechModel(in_channels=in_channels,
-                    encoder_dim=encoder_dim,
-                    kernel_size=3, padding=0,
-                    stride=1, num_layers=4)
+model = setup_speech_model()
 
 # necess params
 EPOCHS = train_params['epochs']

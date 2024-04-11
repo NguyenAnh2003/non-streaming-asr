@@ -6,13 +6,14 @@ import torchaudio.models.conformer
 
 class DecoderLSTM(nn.Module):
     def __init__(self, input_size: int, hidden_size: int, 
-                 bias: bool, bidirectional: bool = True):
+                 bias: bool, bidirectional: bool = True, 
+                 batch_first: bool = True):
         super().__init__()
         # batch_first -> in & out (batch, seq, feature)
         self.lstm = nn.LSTM(input_size=input_size,
                             hidden_size=hidden_size,
                             bias=bias, 
-                            batch_first=True,
+                            batch_first=batch_first,
                             bidirectional=bidirectional)
 
     def forward(self, x):

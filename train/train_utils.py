@@ -1,4 +1,20 @@
 import torch
+from conformer.model import SpeechModel
+from utils.utils import get_configs
+
+def setup_speech_model():
+    # get params
+    params = get_configs("../configs/model_params.yaml")
+    encoder_dim = params['encoder_dim']
+    in_channels = params['channels']
+
+    # setup model
+    model = SpeechModel(in_channels=in_channels,
+                    encoder_dim=encoder_dim,
+                    kernel_size=3, padding=0,
+                    stride=1, num_layers=4)
+
+    return model
 
 def train_one_epoch(train_loader, model, optimizer, loss_fn):
     """ 
