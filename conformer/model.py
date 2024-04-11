@@ -6,8 +6,7 @@ import torchaudio.models.conformer
 
 class DecoderLSTM(nn.Module):
     def __init__(self, input_size: int, hidden_size: int, 
-                 bias: bool, dropout: float,
-                 bidirectional: bool = True):
+                 bias: bool, bidirectional: bool = True):
         super().__init__()
         # batch_first -> in & out (batch, seq, feature)
         self.lstm = nn.LSTM(input_size=input_size,
@@ -64,11 +63,10 @@ class SpeechModel(nn.Module):
         """ decoder """
         self.decoder = DecoderLSTM(input_size=decoder_dim,
                                     hidden_size=decoder_dim,
-                                    bias=True, dropout=0.1,
-                                    bidirectional=True) #
+                                    bias=True, bidirectional=True) #
 
         """ softmax """
-        self.softmax = nn.Softmax(dim=1)
+        self.softmax = nn.Softmax(dim=1) # softmax on n_frames
 
         """ log softmax """
         # self.log_softmax = nn.LogSoftmax()
@@ -79,7 +77,6 @@ class SpeechModel(nn.Module):
     def _forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
         x = self.conv_subsampling(x)
-        # x = x.transpose(1, 2) # transpose (n_frames, fbanks)
 
         output = self.input_projection(x)
 
