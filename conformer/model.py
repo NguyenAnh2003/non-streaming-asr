@@ -2,6 +2,10 @@ import torch
 import torch.nn as nn
 from .convolution import ConvSubSampling
 from .conformer_block import ConformerBlock
+from logger.my_logger import setup_logger
+
+logger = setup_logger("../logger/logs/tracking.log", 
+                              location="model_file")
 
 class DecoderLSTM(nn.Module):
     def __init__(self, input_size: int, hidden_size: int, 
@@ -17,6 +21,7 @@ class DecoderLSTM(nn.Module):
 
     def forward(self, x):
         out, _ = self.lstm(x)
+        logger.log(logger.INFO, f"Decoder out: {out.shape}")
         return out
 
 
@@ -78,12 +83,16 @@ class SpeechModel(nn.Module):
     def _forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
         x = self.conv_subsampling(x)
+        logger.log(logger.INFO, f"Subsampling out: {x.shape}")
 
         output = self.input_projection(x)
+        logger.log(logger.INFO, f"Input projection: {output.shape}")
 
         # output for each conformer block
         for layer in self.conformer_encoder_layers:
             output = layer(output)
+        
+        logger.log(logger.INFO, f"Conformer out: {output.shape}")
 
         return output
 
