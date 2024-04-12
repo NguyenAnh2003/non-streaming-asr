@@ -1,9 +1,7 @@
 import torch.cuda
-
 from utils.utils import get_configs
 from data_manipulation.dataloader import DevSet, TrainSet, TrainLoader, DevLoader, LibriSpeechVocabRAW
 from torch.optim import Adam
-from conformer.model import SpeechModel
 from train_utils import train_one_epoch, eval_one_epoch, setup_speech_model
 from utils.utils import get_configs
 from jiwer import wer
@@ -11,8 +9,6 @@ import torch.nn as nn
 import time
 from logger.my_logger import setup_logger
 from utils.utils import get_executing_time
-import wandb
-from logger.wandb_logger import train_logging
 
 # train logger
 _train_logger = setup_logger(path="../logs/train.log", location="trainer")
