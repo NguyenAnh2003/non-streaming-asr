@@ -9,9 +9,7 @@ import pandas as pd
 import os
 from typing import Tuple, List
 from tqdm import tqdm
-import numpy as np
 
-from torchtext.vocab import Vocab
 
 logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
 logger.getLogger(__name__)
