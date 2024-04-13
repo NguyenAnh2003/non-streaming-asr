@@ -40,7 +40,7 @@ criterion = nn.CTCLoss(blank=28) #
 # init dataloader
 libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/vocab.txt") # librispeech vocab
 
-train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-dev-clean.csv",
+train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-train-clean.csv",
                          root_dir="../data_manipulation/librispeech/train-custom-clean")
 train_dataloader = TrainLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
