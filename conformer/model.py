@@ -21,8 +21,8 @@ class DecoderLSTM(nn.Module):
                                            bias=bias)
 
     def forward(self, x):
-        out, (hn, cn) = self.lstm(x)
-        output = self.output_projection(out)
+        out, _ = self.lstm(x) # taking output - prediction from LSTM
+        output = self.output_projection(out) # projection the output to num classes
         return output
 
 

@@ -11,6 +11,7 @@
 10. src: [link](https://gitlab.com/nguyentri.alan/conformer)
 11. LSTM dimension: [link](https://stackoverflow.com/questions/61632584/understanding-input-shape-to-pytorch-lstm)
 12. LSTM output: [link](https://stackoverflow.com/questions/48302810/whats-the-difference-between-hidden-and-output-in-pytorch-lstm)
+13. CTC Loss: [link](https://stackoverflow.com/questions/62251289/how-to-correctly-use-ctc-loss-with-gru-in-pytorch)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
