@@ -1,6 +1,7 @@
 import torch
 from conformer.model import SpeechModel
 from utils.utils import get_configs
+import jiwer
 
 def setup_speech_model():
     # get params
@@ -36,7 +37,9 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
         optimizer.zero_grad() # zero grad after batch trained
         
         prediction = model(log_mel) # get model prediction per batch
-        print(prediction.shape)
+        idx = torch.max(prediction, dim=-1)
+        print(f"Preidction: {prediction.shape} "
+              f"idx: {idx}")
         
         # loss = loss_fn(prediction, transcript) # prediction, transcripts, input_size, transcript_size
         
