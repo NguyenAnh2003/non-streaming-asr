@@ -9,7 +9,8 @@
 8. Downsample ResNet: [link](https://stackoverflow.com/questions/55688645/how-downsample-work-in-resnet-in-pytorch-code)
 9. Downsample ResetNet(tt): [link](https://blog.paperspace.com/writing-resnet-from-scratch-in-pytorch/)
 10. src: [link](https://gitlab.com/nguyentri.alan/conformer)
-11. lstm dimension: [link](https://stackoverflow.com/questions/61632584/understanding-input-shape-to-pytorch-lstm)
+11. LSTM dimension: [link](https://stackoverflow.com/questions/61632584/understanding-input-shape-to-pytorch-lstm)
+12. LSTM output: [link](https://stackoverflow.com/questions/48302810/whats-the-difference-between-hidden-and-output-in-pytorch-lstm)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
@@ -17,6 +18,7 @@
 ## Understanding
 1. Convolution Subsampling: used for sampling the input data, with kernel 3x3 abd stride 2
 2. DNN can ignore input topology and resize into column vector, but with the audio feature (mel-spectroram or log mel) these contain low level features that needed to learn so that CNN is suitable for this solution.
+3. LSTM out (out, hn, cn) while hn, cn is used for feed into another NN, output here is prediction.
 
 
 # Development
