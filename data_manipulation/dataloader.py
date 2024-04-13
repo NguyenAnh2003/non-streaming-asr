@@ -25,15 +25,18 @@ class LibriSpeechVocabRAW:
         self.word2index = {"PAD": 0, "UNF": 1} # update code
         self.index2word = {0: "PAD", 1: "UNF"} # update code
         self.index_of_word = 2 # default index for a word
-        self.__process_vocab()
+        self._process_vocab()
 
-    def __process_vocab(self):
+    def _process_vocab(self):
         with open(self.vocab_file, 'r', encoding='utf-8') as vb_file:
             for line in vb_file:
                 # assign word to index and index to word (line.replace("\n", "") represent for a line -> 1 word 1 line)
                 self.word2index[line.replace("\n", "")] = self.index_of_word
                 self.index2word[self.index_of_word] = line.replace("\n", "")
                 self.index_of_word += 1 # increase index
+
+    def _get_num_classes(self):
+        pass
 
 # dataset
 class TrainSet(Dataset):

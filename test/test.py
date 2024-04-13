@@ -1,3 +1,7 @@
-import torch
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(device)
+import jiwer
+
+label = "Hello dit me may"
+prediction = "Hello 1 2 3"
+
+wer = jiwer.wer(label, prediction)
+print(wer)

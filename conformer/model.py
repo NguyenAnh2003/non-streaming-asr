@@ -16,10 +16,14 @@ class DecoderLSTM(nn.Module):
                             batch_first=batch_first,
                             bidirectional=bidirectional)
 
+        self.output_projection = nn.Linear(in_features=d_model*2,
+                                           out_features=50,
+                                           bias=bias)
+
     def forward(self, x):
-        out, _ = self.lstm(x)
-        print(f"Decoder out: {out.shape}")
-        return out
+        out, (hn, cn) = self.lstm(x)
+        output = self.output_projection(out)
+        return output
 
 
 class SpeechModel(nn.Module):
@@ -66,7 +70,8 @@ class SpeechModel(nn.Module):
         """ decoder """
         self.decoder = DecoderLSTM(input_size=decoder_dim,
                                    hidden_size=decoder_dim,
-                                   bias=True, bidirectional=True)  #
+                                   bias=True, bidirectional=True,
+                                   batch_first=True)  #
 
         """ softmax """
         self.softmax = nn.Softmax(dim=1)  # softmax on n_frames
@@ -97,8 +102,8 @@ class SpeechModel(nn.Module):
         # forward encoder
         hidden_state = self._forward_encoder(x)  # get relation ship between audio frame
         # forward decoder
-        output = self.decoder(hidden_state)
-        return output  # normalize output to probability with softmax
+        out= self.decoder(hidden_state)
+        return out  # normalize output to probability with softmax
 
 
 if __name__ == "__main__":
