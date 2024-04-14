@@ -7,12 +7,14 @@ def setup_speech_model():
     # get params
     params = get_configs("../configs/model_params.yaml")
     encoder_dim = params['encoder_dim']
+    decoder_dim = params['decoder_dim']
     in_channels = params['channels']
     num_classes = params['num_classes']
 
     # setup model
     model = SpeechModel(in_channels=in_channels,
                     encoder_dim=encoder_dim,
+                    decoder_dim=decoder_dim,
                     kernel_size=3, padding=0,
                     stride=1, num_layers=16,
                     num_classes = num_classes)
