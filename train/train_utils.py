@@ -14,7 +14,7 @@ def setup_speech_model():
     model = SpeechModel(in_channels=in_channels,
                     encoder_dim=encoder_dim,
                     kernel_size=3, padding=0,
-                    stride=1, num_layers=4,
+                    stride=1, num_layers=16,
                     num_classes = num_classes)
 
     return model

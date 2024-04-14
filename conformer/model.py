@@ -36,7 +36,8 @@ class SpeechModel(nn.Module):
                  padding: int,
                  num_classes: int,
                  dropout: float = 0.1,
-                 num_layers: int = 1,
+                 num_layers: int = 16,
+                 n_heads: int = 4,
                  encoder_dim: int = 144,
                  decoder_dim: int = 144,
                  ):
@@ -68,7 +69,9 @@ class SpeechModel(nn.Module):
         self.conformer_encoder_layers = nn.ModuleList([
             ConformerBlock(in_feats=encoder_dim,
                            out_feats=encoder_dim,
-                           encoder_dim=encoder_dim) for _ in range(num_layers)])  #
+                           encoder_dim=encoder_dim,
+                           attention_heads=n_heads
+                           ) for _ in range(num_layers)])  #
 
         """ decoder """
         self.decoder = DecoderLSTM(input_size=decoder_dim,
