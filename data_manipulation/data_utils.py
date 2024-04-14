@@ -209,7 +209,8 @@ def remove_un_data(csv_path: str):
         for row in reader:
             matches = re.findall(r'\b{}\b'.format(re.escape(word)), row[1])
             if matches:
-                print(f"word: {word} row: {row[1]}")
+                # at least 1 will be moved to another file
+                print(f"Matching word: {word} row: {row[1]}")
 
 if __name__ == "__main__":
     remove_un_data("metadata-train-clean.csv")
