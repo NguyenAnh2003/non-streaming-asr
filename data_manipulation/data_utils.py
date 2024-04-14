@@ -212,6 +212,6 @@ def remove_un_data(csv_path: str):
                 print(f"word: {word} row: {row[1]}")
 
 if __name__ == "__main__":
-    remove_un_data("metadata-train-clean.csv")
+
 
     print("DONE")
