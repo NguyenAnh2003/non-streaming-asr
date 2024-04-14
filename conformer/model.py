@@ -7,7 +7,8 @@ class DecoderLSTM(nn.Module):
     def __init__(self, input_size: int, hidden_size: int,
                  bias: bool, bidirectional: bool = True,
                  batch_first: bool = True,
-                 d_model: int = 144):
+                 d_model: int = 144,
+                 num_classes: int = 0):
         super().__init__()
         # batch_first -> in & out (batch, seq, feature)
         self.lstm = nn.LSTM(input_size=input_size,
@@ -17,7 +18,7 @@ class DecoderLSTM(nn.Module):
                             bidirectional=bidirectional)
 
         self.output_projection = nn.Linear(in_features=d_model*2,
-                                           out_features=50,
+                                           out_features=num_classes,
                                            bias=bias)
 
     def forward(self, x):
@@ -33,10 +34,12 @@ class SpeechModel(nn.Module):
                  kernel_size: int,
                  stride: int,
                  padding: int,
+                 num_classes: int,
                  dropout: float = 0.1,
                  num_layers: int = 1,
                  encoder_dim: int = 144,
-                 decoder_dim: int = 144):
+                 decoder_dim: int = 144,
+                 ):
         super().__init__()
         """ 
         :param encoder_dim: encoder dimension can be used for out_channels output, model output
@@ -70,6 +73,7 @@ class SpeechModel(nn.Module):
         """ decoder """
         self.decoder = DecoderLSTM(input_size=decoder_dim,
                                    hidden_size=decoder_dim,
+                                   num_classes=num_classes,
                                    bias=True, bidirectional=True,
                                    batch_first=True)  #
 
