@@ -16,3 +16,4 @@ encoder_dim: 144 #
 batch_first: True
 # num clases out for linear deocder
 num_classes: 200001
+decoder_dim: 144

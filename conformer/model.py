@@ -17,14 +17,14 @@ class DecoderLSTM(nn.Module):
                             batch_first=batch_first,
                             bidirectional=bidirectional)
 
-        self.output_projection = nn.Linear(in_features=d_model*2,
-                                           out_features=num_classes,
-                                           bias=bias)
+        # self.output_projection = nn.Linear(in_features=d_model*2,
+        #                                    out_features=num_classes,
+        #                                    bias=bias)
 
     def forward(self, x):
         out, _ = self.lstm(x) # taking output - prediction from LSTM
-        output = self.output_projection(out) # projection the output to num classes
-        return output
+        # output = self.output_projection(out) # projection the output to num classes
+        return out
 
 
 class SpeechModel(nn.Module):

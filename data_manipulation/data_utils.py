@@ -25,24 +25,32 @@ FOLDER_IN_ARCHIVE = "LibriSpeech"
 SAMPLE_RATE = 16000
 
 _DATA_SUBSETS = [
-    "dev-clean", #
+    "dev-clean",  #
     "dev-other",
-    "test-clean", #
+    "test-clean",  #
     "test-other",
-    "train-clean-100", #
-    "train-clean-360", #
-    "train-other-500", #
+    "train-clean-100",  #
+    "train-clean-360",  #
+    "train-other-500",  #
 ]
 
 _CHECKSUMS = {
-    "http://www.openslr.org/resources/12/dev-clean.tar.gz": "76f87d090650617fca0cac8f88b9416e0ebf80350acb97b343a85fa903728ab3",  # noqa: E501
-    "http://www.openslr.org/resources/12/dev-other.tar.gz": "12661c48e8c3fe1de2c1caa4c3e135193bfb1811584f11f569dd12645aa84365",  # noqa: E501
-    "http://www.openslr.org/resources/12/test-clean.tar.gz": "39fde525e59672dc6d1551919b1478f724438a95aa55f874b576be21967e6c23",  # noqa: E501
-    "http://www.openslr.org/resources/12/test-other.tar.gz": "d09c181bba5cf717b3dee7d4d592af11a3ee3a09e08ae025c5506f6ebe961c29",  # noqa: E501
-    "http://www.openslr.org/resources/12/train-clean-100.tar.gz": "d4ddd1d5a6ab303066f14971d768ee43278a5f2a0aa43dc716b0e64ecbbbf6e2",  # noqa: E501
-    "http://www.openslr.org/resources/12/train-clean-360.tar.gz": "146a56496217e96c14334a160df97fffedd6e0a04e66b9c5af0d40be3c792ecf",  # noqa: E501
-    "http://www.openslr.org/resources/12/train-other-500.tar.gz": "ddb22f27f96ec163645d53215559df6aa36515f26e01dd70798188350adcb6d2",  # noqa: E501
+    "http://www.openslr.org/resources/12/dev-clean.tar.gz": "76f87d090650617fca0cac8f88b9416e0ebf80350acb97b343a85fa903728ab3",
+    # noqa: E501
+    "http://www.openslr.org/resources/12/dev-other.tar.gz": "12661c48e8c3fe1de2c1caa4c3e135193bfb1811584f11f569dd12645aa84365",
+    # noqa: E501
+    "http://www.openslr.org/resources/12/test-clean.tar.gz": "39fde525e59672dc6d1551919b1478f724438a95aa55f874b576be21967e6c23",
+    # noqa: E501
+    "http://www.openslr.org/resources/12/test-other.tar.gz": "d09c181bba5cf717b3dee7d4d592af11a3ee3a09e08ae025c5506f6ebe961c29",
+    # noqa: E501
+    "http://www.openslr.org/resources/12/train-clean-100.tar.gz": "d4ddd1d5a6ab303066f14971d768ee43278a5f2a0aa43dc716b0e64ecbbbf6e2",
+    # noqa: E501
+    "http://www.openslr.org/resources/12/train-clean-360.tar.gz": "146a56496217e96c14334a160df97fffedd6e0a04e66b9c5af0d40be3c792ecf",
+    # noqa: E501
+    "http://www.openslr.org/resources/12/train-other-500.tar.gz": "ddb22f27f96ec163645d53215559df6aa36515f26e01dd70798188350adcb6d2",
+    # noqa: E501
 }
+
 
 # LibriSpeech data utils
 def download_libirspeech_dataset(root: str = f"D:\\", url: str = URL):
@@ -54,12 +62,13 @@ def download_libirspeech_dataset(root: str = f"D:\\", url: str = URL):
 
     # filename with url(openslr url) + extension file
     filename = url + extension
-    archive = os.path.join(root, filename) # binding archive folder
+    archive = os.path.join(root, filename)  # binding archive folder
     download_url = os.path.join(base_url, filename)
     if not os.path.isfile(archive):
-        checksum = _CHECKSUMS.get(download_url, None) #?
-        download_url_to_file(download_url, archive) # download tar file
-    _extract_tar(archive) # extract archive Libirspeech folder?
+        checksum = _CHECKSUMS.get(download_url, None)  # ?
+        download_url_to_file(download_url, archive)  # download tar file
+    _extract_tar(archive)  # extract archive Libirspeech folder?
+
 
 def _process_librispeech_dataset(metadata_file_path):
     """ metadata from txt to csv
@@ -79,6 +88,7 @@ def _process_librispeech_dataset(metadata_file_path):
     _logger.log(_logger.INFO, "GET METADATA DICT")
     return metadata_dict
 
+
 def write_metadata_txt_2_csv(csv_path: str):
     # define metadata
     _logger.log(_logger.INFO, "DEFINE METADATA")
@@ -94,7 +104,8 @@ def write_metadata_txt_2_csv(csv_path: str):
         for audio_id, transcript in metadata_dict.items():
             csv_writer.writerow([audio_id, transcript])
 
-    _logger.log(_logger.INFO,  "WRITE CSV COMPETE")
+    _logger.log(_logger.INFO, "WRITE CSV COMPETE")
+
 
 def combine_audio_from_folders():
     source_folder_path = "./librispeech/train-clean-100/train-clean-100"
@@ -116,6 +127,7 @@ def combine_audio_from_folders():
                         # copy and move to destination
                         shutil.copy(file_path, destination_folder_path)
 
+
 def get_number_audio_samples():
     source_path = "librispeech/train-custom-clean"
     amounts = []
@@ -126,6 +138,7 @@ def get_number_audio_samples():
                 amounts.append(file_path)
     return len(amounts)
 
+
 # LibriSpeech utils
 def concat_transcripts_txt_file() -> None:
     # source path
@@ -135,7 +148,6 @@ def concat_transcripts_txt_file() -> None:
 
     # open combined file
     with open(combined_txt_path, 'w', encoding='utf-8') as dest_file:
-
         # traverse each file
         for filename in os.listdir(source_path):
             file_path = os.path.join(source_path, filename)
@@ -143,6 +155,7 @@ def concat_transcripts_txt_file() -> None:
             # open file and write to dest_file
             with open(file_path, 'r', encoding='utf-8') as infile:
                 dest_file.write(infile.read())
+
 
 # get longest audio
 def _get_long_audio(source_path: str = "./librispeech/train-custom-clean") -> List[Tuple[torch.Tensor, str]]:
@@ -167,16 +180,18 @@ def _get_long_audio(source_path: str = "./librispeech/train-custom-clean") -> Li
     print("DONE Getting long audio")
     return laus
 
+
 # file process
 def get_noise_files(path: str) -> List[str]:
     # return list of file_path
     result = []
     for filename in os.listdir(path):
-        if(filename.endswith(".wav")):
+        if (filename.endswith(".wav")):
             file_path = os.path.join(path, filename)
             result.append(file_path)
 
     return result
+
 
 # remove unnecessary word
 def remove_un_data(csv_path: str):
@@ -185,15 +200,16 @@ def remove_un_data(csv_path: str):
     reader = csv.reader(csv_file)
 
     # read vocab size
-    with open("vocab.txt", 'r', encoding="utf-8") as file:
-        for line in file:
-            for row in reader:
-                print(f"{line} row: {row[1]}")
-                # if line not in row[1]:
-                    # print(line)
+    vocab_file = open("vocab.txt", 'r', encoding="utf-8")
 
+    for line in vocab_file:
+        word = line.replace("\n", "").strip()
+        csv_file.seek(0)
+        for row in reader:
+            if word not in row[1]:
+                print(f"word: {word} row: {row[1]}")
 
 if __name__ == "__main__":
     remove_un_data("metadata-train-clean.csv")
-    
+
     print("DONE")
