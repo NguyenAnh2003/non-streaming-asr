@@ -178,45 +178,22 @@ def get_noise_files(path: str) -> List[str]:
 
     return result
 
+# remove unnecessary word
+def remove_un_data(csv_path: str):
+    # csv file
+    csv_file = open(csv_path, 'r', encoding="utf-8")
+    reader = csv.reader(csv_file)
+
+    # read vocab size
+    with open("vocab.txt", 'r', encoding="utf-8") as file:
+        for line in file:
+            for row in reader:
+                print(f"{line} row: {row[1]}")
+                # if line not in row[1]:
+                    # print(line)
+
+
 if __name__ == "__main__":
-    # flow process librispeech data folder
-    # 1. combine all file in folder
-    # 2. filter .flac and txt file
-    # 3. combine content of txt file
-    # 4. concat content of txt file
-    # 5. write metadata from txt 2 csv file
-
-    # dev-clean 2703; train-clean 28539
-    # concat_transcripts_txt_file()
-    # print(f"Number of samples in train-custom-clean: {get_number_audio_samples()}")
-    #
-    # source_path = "librispeech/train-transcripts.txt"
-    # amounts = []
-    # with open(source_path, 'r', encoding='utf-8') as file:
-    #     for line in file:
-    #         amounts.append(line)
-    # print(f"Length: {len(amounts)}")
-
-    # write metadata from txt to csv
-    # write_metadata_txt_2_csv("metadata-train-clean.csv")
-
-    # double check csv file
-    # train_df = pd.read_csv("metadata-train-clean.csv")
-    # print(f"NUmber of samples in train-csv: {train_df.shape[0]}")
-    #
-    # source_path = "librispeech/train-custom-clean"
-    # dest_path = "librispeech/train_libri_transcripts"
-    # for filename in os.listdir(source_path):
-    #     if filename.endswith(".txt"):
-    #         file_path = os.path.join(source_path, filename)
-    #         if os.path.isfile(file_path):
-    #             shutil.move(file_path, dest_path)
-
-
-    # write_metadata_txt_2_csv("./metadata-dev-clean.csv")
-
-    # long audios
-    las = _get_long_audio(source_path="./librispeech/train-custom-clean")
-    print(f"List of long audio: {las}")
-
+    remove_un_data("metadata-train-clean.csv")
+    
     print("DONE")

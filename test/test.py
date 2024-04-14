@@ -1,7 +1,11 @@
-import jiwer
+from torchaudio.models import Conformer
+from conformer.model_utils import get_model_params
 
-label = "Hello dit me may"
-prediction = "Hello 1 2 3"
+model = Conformer(input_dim=144,
+                  num_heads=4,
+                  ffn_dim=144,
+                  num_layers=16,
+                  depthwise_conv_kernel_size=31)
 
-wer = jiwer.wer(label, prediction)
-print(wer)
+print(f"{sum(get_model_params(model=model))} "
+      f"{model}")
