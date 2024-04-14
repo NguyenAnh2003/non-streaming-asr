@@ -126,8 +126,8 @@ def trainer(exp_name: str):
 if __name__ == "__main__":
   EXP_NAME = train_params['model_name']
   print(f"Num classes: {libri_vocab.get_num_classes()}")
-  print(f"Model params: {model_utils.get_model_params(model)} \n"
-        f"Sum: {sum(model_utils.get_model_params(model))}")
+  # print(f"Model params: {model_utils.get_model_params(model)} \n"
+  #       f"Sum: {sum(model_utils.get_model_params(model))}")
   # print(model_utils.get_model_params(model))
-  print(f"Model dict: {model}")
-  # trainer(EXP_NAME)
+  # print(f"Model dict: {model}")
+  trainer(EXP_NAME)
