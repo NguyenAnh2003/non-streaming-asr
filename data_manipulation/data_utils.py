@@ -12,6 +12,7 @@ import torchaudio
 import torch
 from tqdm import tqdm
 from utils.utils import get_configs
+import re # RegEx
 
 _params = get_configs("../configs/audio_processing.yaml")
 
@@ -206,7 +207,8 @@ def remove_un_data(csv_path: str):
         word = line.replace("\n", "").strip()
         csv_file.seek(0)
         for row in reader:
-            if word not in row[1]:
+            matches = re.findall(r'\b{}\b'.format(re.escape(word)), row[1])
+            if matches:
                 print(f"word: {word} row: {row[1]}")
 
 if __name__ == "__main__":
