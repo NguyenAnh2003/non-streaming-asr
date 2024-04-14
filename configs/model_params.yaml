@@ -15,5 +15,5 @@ encoder_dim: 144 #
 # LSTM
 batch_first: True
 # num clases out for linear deocder
-num_classes: 200001
+num_classes: 16360
 decoder_dim: 144
