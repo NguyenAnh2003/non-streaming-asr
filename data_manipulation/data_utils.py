@@ -213,6 +213,4 @@ def remove_un_data(csv_path: str):
                 print(f"Matching word: {word} row: {row[1]}")
 
 if __name__ == "__main__":
-
-
     print("DONE")
