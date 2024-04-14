@@ -124,4 +124,5 @@ def trainer(exp_name: str):
 
 if __name__ == "__main__":
   EXP_NAME = train_params['model_name']
+  print(f"Num classes: {libri_vocab.get_num_classes()}")
   trainer(EXP_NAME)

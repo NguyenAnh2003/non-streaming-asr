@@ -11,9 +11,6 @@ from typing import Tuple, List
 from tqdm import tqdm
 
 
-logger = setup_logger(path="../logger/logs/dataset.log", location="dataloader")
-logger.getLogger(__name__)
-
 _FILTER_BANKS = 81
 
 # vocab
@@ -35,8 +32,8 @@ class LibriSpeechVocabRAW:
                 self.index2word[self.index_of_word] = line.replace("\n", "")
                 self.index_of_word += 1 # increase index
 
-    def _get_num_classes(self):
-        pass
+    def get_num_classes(self):
+        return len(self.word2index)
 
 # dataset
 class TrainSet(Dataset):
