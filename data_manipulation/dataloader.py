@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, Dataset # torch Dataset
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
-from .feats_extraction.log_mel import audio_transforms
+from feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
 import torchaudio
 from logger.my_logger import setup_logger
@@ -35,12 +35,10 @@ class LibriSpeechVocabRAW:
     def get_num_classes(self):
         return len(self.word2index)
 
-# dataset
 class TrainSet(Dataset):
 
     def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_processing.yaml"):
         super(TrainSet, self).__init__()
-        """ define init """
         self.params = get_configs(config_path)  # defined params
         self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
         self.root_dir = root_dir  # ./
@@ -93,7 +91,6 @@ class TrainSet(Dataset):
 class DevSet(Dataset):
     def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_processing.yaml"):
         super(DevSet, self).__init__()
-        """ define init """
         self.params = get_configs(config_path)  # defined params
         self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
         self.root_dir = root_dir  # ./
@@ -147,17 +144,15 @@ class DevSet(Dataset):
 # custom dataloader
 class TrainLoader(DataLoader):
     def __init__(self, *args, **kwargs):
-        """ Train loader init """
         super(TrainLoader, self).__init__(*args, **kwargs)
         self.shuffle = kwargs['shuffle']
         self.collate_fn = self.collate_custom_fn
 
     def collate_custom_fn(self, batch):
-
         batch_size = len(batch) # create temp batch_size
 
         # max_frames - each one: tensor([n_frames, banks])
-        max_frames = max(x[0].size(0) for x in batch) # get max n_frames per batch
+        max_frames = max(x[0].size(0) for x in batch)
 
         # max_len_transcript - each one: len(transcript)
         max_len_transcript = max(len(x[1]) for x in batch)
@@ -167,20 +162,25 @@ class TrainLoader(DataLoader):
 
         batch_transcript = torch.zeros(batch_size, max_len_transcript, dtype=torch.int)
 
-        for step, (log_mel, transcript) in enumerate(batch):
-            # process each single sample and add to batch
+        sample_sizes = torch.zeros(batch_size, dtype=torch.int) #
+        sample_trans = torch.zeros(batch_size, dtype=torch.int) #
 
+        for step, (log_mel, transcript) in enumerate(batch):
+            # preprocess batch
             batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
             batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
-            # return log_mel, transcript
 
-        return batch_logmel, batch_transcript
+            # length of sample - logmel (B, L, Fbanks)
+            sample_sizes[step] = log_mel.size(0)
+            # length of target (transcript)
+            sample_trans[step] = len(transcript)
+
+        return batch_logmel, batch_transcript, sample_sizes, sample_trans
 
 
 
 class DevLoader(DataLoader):
     def __init__(self, *args, **kwargs):
-        """ Train loader init """
         super(DevLoader, self).__init__(*args, **kwargs)
         self.shuffle = kwargs['shuffle']
         self.collate_fn = self.collate_custom_fn
@@ -188,25 +188,27 @@ class DevLoader(DataLoader):
     def collate_custom_fn(self, batch):
         batch_size = len(batch)  # create temp batch_size
 
-        # max_frames - each one: tensor([n_frames, banks])
-        max_frames = max(x[0].size(0) for x in batch)  # get max n_frames per batch
+        max_frames = max(x[0].size(0) for x in batch)
 
-        # max_len_transcript - each one: len(transcript)
         max_len_transcript = max(len(x[1]) for x in batch)
 
         # create empty tensor with batch_size, max_frames and banks
         batch_logmel = torch.zeros(batch_size, max_frames, _FILTER_BANKS, dtype=torch.float32)
 
         batch_transcript = torch.zeros(batch_size, max_len_transcript, dtype=torch.int)
+        sample_sizes = torch.zeros(batch_size, dtype=torch.int)  #
+        sample_trans = torch.zeros(batch_size, dtype=torch.int)  #
 
         for step, (log_mel, transcript) in enumerate(batch):
-            # process each single sample and add to batch
-
+            # batch data
             batch_logmel[step].narrow(0, 0, log_mel.size(0)).copy_(log_mel)
             batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
-            # return log_mel, transcript
 
-        return batch_logmel, batch_transcript
+            # length
+            sample_sizes[step] = log_mel.size(0)
+            sample_trans[step] = len(transcript)
+
+        return batch_logmel, batch_transcript, sample_sizes, sample_trans
 
 
 # check
@@ -214,20 +216,13 @@ if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
 
     # aaa
-    train_set = TrainSet(vocab= librispeech_vocab, csv_file="metadata-train-clean.csv", root_dir="librispeech/train-custom-clean")
+    train_set = TrainSet(vocab= librispeech_vocab, csv_file="metadata-dev-clean.csv", root_dir="librispeech/train-custom-clean")
     # for step in range(train_set.__len__()):
     #     print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 
     data_loader = TrainLoader(dataset=train_set, batch_size=4, shuffle=False)
-    for step, (log_mel, transcript) in tqdm(enumerate(data_loader)):
-        print(f"Audio: {log_mel.shape} "
-              f"Transcript: {transcript}")
-
-    # logMel = torch.randn([1, 81, 204])
-    # max_frames = 400
-    # batch_logmel = torch.zeros(4, max_frames, 81, dtype=torch.float32)
-    # # narrow: input, dim, start, length
-    # batch_logmel[2].narrow(0, 0, batch_logmel.size(1)).copy_(logMel)
-    # print(batch_logmel)
+    for step, (log_mel, transcript, sizes, len_target) in tqdm(enumerate(data_loader)):
+        print(f"Audio: {log_mel.shape} Size: {sizes}"
+              f"Transcript: {transcript.shape} Length target: {len_target}")
 
     print("DONE")

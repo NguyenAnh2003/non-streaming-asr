@@ -129,4 +129,4 @@ if __name__ == "__main__":
   print(f"Model params: {model_utils.get_model_params(model)} \n"
         f"Sum: {sum(model_utils.get_model_params(model))}")
   print(model_utils.get_model_params(model))
-  trainer(EXP_NAME)
+  # trainer(EXP_NAME)
