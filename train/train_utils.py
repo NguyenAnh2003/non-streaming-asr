@@ -31,7 +31,7 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
     epoch_losses = []
     batch_losses = []
     """ setup train data_manipulation loader for 1 epoch """
-    for step, (log_mel, transcript) in enumerate(train_loader):
+    for step, (log_mel, transcript, inputs_sizes, target_sizes) in enumerate(train_loader):
         # batch_log_mel, batch transcript
         # get input from batch
 
@@ -43,8 +43,9 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
         prediction = model(log_mel) # get model prediction per batch
         print(f"Preidction: {prediction.shape} "
               f"Transcript: {transcript.shape}")
-        
-        # loss = loss_fn(prediction, transcript) # prediction, transcripts, input_size, transcript_size
+              
+        # prediction, transcripts, input_size, transcript_size
+        loss = loss_fn(prediction, transcript, inputs_sizes, target_sizes) 
         
         # backward process
         # loss.backward()
