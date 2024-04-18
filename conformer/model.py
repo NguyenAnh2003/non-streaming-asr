@@ -33,10 +33,9 @@ class SpeechModel(nn.Module):
                  input_dims: int,
                  in_channels: int,
                  kernel_size: int,
-                 stride: int,
-                 padding: int,
                  num_classes: int,
                  dropout: float = 0.1,
+                 padding: int = 2,
                  num_layers: int = 16,
                  n_heads: int = 4,
                  encoder_dim: int = 144,
@@ -60,7 +59,7 @@ class SpeechModel(nn.Module):
         # from conv to linear the feature must be flatten
         """ linear """
         # in_feats must be out_channels of CNN, 16 as considered out channels
-        self.linear = nn.Linear(in_features=encoder_dim*((input_dims // 4) - 1),
+        self.linear = nn.Linear(in_features=encoder_dim*((input_dims) - 4),
                                 out_features=encoder_dim,
                                 bias=True,
                                 dtype=torch.float32)

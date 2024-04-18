@@ -21,7 +21,7 @@ def setup_speech_model():
                     encoder_dim=encoder_dim,
                     decoder_dim=decoder_dim,
                     kernel_size=3, padding=0,
-                    stride=1, num_layers=16,
+                    num_layers=16,
                     subsample_stride=subsample_stride,
                     normal_stride=conv_module_stride,
                     num_classes = num_classes)
@@ -46,13 +46,13 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
             log_mel, transcript = log_mel.cuda(), transcript.cuda()
         
         optimizer.zero_grad() # zero grad after batch trained
-        
+        print(f"Input: {log_mel.shape}")
         prediction = model(log_mel) # get model prediction per batch
-        print(f"Preidction: {prediction.shape} "
+        print(f"Preidction: {prediction.shape} In size: {inputs_sizes}"
               f"Transcript: {transcript.shape}")
               
         # prediction, transcripts, input_size, transcript_size
-        loss = loss_fn(prediction, transcript, inputs_sizes, target_sizes) 
+        loss = loss_fn(prediction, transcript, inputs_sizes, target_sizes)
         
         # backward process
         # loss.backward()
