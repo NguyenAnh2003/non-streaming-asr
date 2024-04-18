@@ -42,13 +42,13 @@ class ConvSubSampling(nn.Module):
                 padding: int = 0):
         super(ConvSubSampling, self).__init__()
         self.chain = nn.Sequential(
-            nn.Conv1d(in_channels=in_channels,
+            nn.Conv2d(in_channels=in_channels,
                       out_channels=out_channels,
                       kernel_size=kernel_size, 
                       stride=stride, 
                       padding=padding),
             nn.ReLU(),
-            nn.Conv1d(in_channels=out_channels,
+            nn.Conv2d(in_channels=out_channels,
                       out_channels=out_channels,
                       kernel_size=kernel_size, 
                       stride=stride, 
@@ -58,14 +58,13 @@ class ConvSubSampling(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # in - (batch_size, channels (1), n_frames, fbanks)
-        x = x.transpose_(1, 2)
-
+        x = x.unsqueeze(1)
         # conv subsampling
         x = self.chain(x) # convovle the input
 
         # process product dimension - (batch_size, fbanks, n_frames)
-        batch_size, fbanks, n_frames = x.size()
-        x = x.permute(0, 2, 1)
+        batch_size, channel, n_frames, fbanks = x.size()
+        x = x.permute(0, 2, 1, 3)
         
         # (batch_size, times, channels*fbanks)
         out = x.contiguous().view(batch_size, n_frames, -1)

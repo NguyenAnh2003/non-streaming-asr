@@ -36,7 +36,8 @@ class ConformerBlock(nn.Module):
                  out_feats: int,
                  dropout: float = 0.1, 
                  attention_heads: int = 4, 
-                 encoder_dim: int = 144):
+                 encoder_dim: int = 144,
+                 conv_model_stride: int = 1):
         super().__init__()
         
         # Feed forward net sanwiching acting like point-wise ff network
@@ -52,8 +53,12 @@ class ConformerBlock(nn.Module):
             dropout=dropout)
 
         """ Convolution Module """
-        self.conv_module = ResidualConnection(module=ConvolutionModule(in_channels=encoder_dim,
-                                             out_channels=encoder_dim), residual_half_step=1.0)
+        self.conv_module = ResidualConnection(
+            module=ConvolutionModule(
+                in_channels=encoder_dim,
+                out_channels=encoder_dim,
+                stride=conv_model_stride),
+            residual_half_step=1.0)
 
         """ 1/2 Feed forward """
         self.ff2 = ResidualConnection(module=FeedForwardNet(in_feats=out_feats, 

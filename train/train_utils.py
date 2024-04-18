@@ -9,14 +9,21 @@ def setup_speech_model():
     encoder_dim = params['encoder_dim']
     decoder_dim = params['decoder_dim']
     in_channels = params['channels']
+    input_dims = params['input_dims']
     num_classes = params['num_classes']
+    subsample_stride = params['subsampling_stride']
+    conv_module_stride = params['normal_stride']
 
     # setup model
-    model = SpeechModel(in_channels=in_channels,
+    model = SpeechModel(
+                    input_dims=input_dims,
+                    in_channels=in_channels,
                     encoder_dim=encoder_dim,
                     decoder_dim=decoder_dim,
                     kernel_size=3, padding=0,
                     stride=1, num_layers=16,
+                    subsample_stride=subsample_stride,
+                    normal_stride=conv_module_stride,
                     num_classes = num_classes)
 
     return model

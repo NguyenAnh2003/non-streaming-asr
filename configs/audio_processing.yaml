@@ -10,7 +10,7 @@ center: True
 pad_mode: "reflect"
 power: 2.0
 norm: "slaney"
-n_mels: 81 # mel banks default n_mels
+n_mels: 80 # mel banks default n_mels
 mel_scale: "slaney"
 
 # trim audio configs librosa

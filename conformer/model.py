@@ -30,6 +30,7 @@ class DecoderLSTM(nn.Module):
 class SpeechModel(nn.Module):
 
     def __init__(self,
+                 input_dims: int,
                  in_channels: int,
                  kernel_size: int,
                  stride: int,
@@ -40,6 +41,8 @@ class SpeechModel(nn.Module):
                  n_heads: int = 4,
                  encoder_dim: int = 144,
                  decoder_dim: int = 144,
+                 subsample_stride: int = 2,
+                 normal_stride: int = 1,
                  ):
         super().__init__()
         """ 
@@ -51,13 +54,13 @@ class SpeechModel(nn.Module):
         self.conv_subsampling = ConvSubSampling(in_channels=in_channels,
                                                 out_channels=encoder_dim,
                                                 kernel_size=kernel_size,
-                                                stride=stride,
+                                                stride=subsample_stride,
                                                 padding=padding)  # config
 
         # from conv to linear the feature must be flatten
         """ linear """
         # in_feats must be out_channels of CNN, 16 as considered out channels
-        self.linear = nn.Linear(in_features=encoder_dim,
+        self.linear = nn.Linear(in_features=encoder_dim*((input_dims // 4) - 1),
                                 out_features=encoder_dim,
                                 bias=True,
                                 dtype=torch.float32)
@@ -70,7 +73,8 @@ class SpeechModel(nn.Module):
             ConformerBlock(in_feats=encoder_dim,
                            out_feats=encoder_dim,
                            encoder_dim=encoder_dim,
-                           attention_heads=n_heads
+                           attention_heads=n_heads,
+                           conv_model_stride=normal_stride
                            ) for _ in range(num_layers)])  #
 
         """ decoder """
