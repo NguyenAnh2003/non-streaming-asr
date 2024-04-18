@@ -20,7 +20,7 @@ def setup_speech_model():
                     in_channels=in_channels,
                     encoder_dim=encoder_dim,
                     decoder_dim=decoder_dim,
-                    kernel_size=3, padding=0,
+                    kernel_size=3, padding=1,
                     num_layers=16,
                     subsample_stride=subsample_stride,
                     normal_stride=conv_module_stride,

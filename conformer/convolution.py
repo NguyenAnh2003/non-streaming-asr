@@ -39,7 +39,7 @@ class ConvSubSampling(nn.Module):
                  out_channels: int, 
                 kernel_size: int = 3, 
                 stride: int = 1,
-                padding: int = 0):
+                padding: int = 1):
         super(ConvSubSampling, self).__init__()
         self.chain = nn.Sequential(
             nn.Conv2d(in_channels=in_channels,

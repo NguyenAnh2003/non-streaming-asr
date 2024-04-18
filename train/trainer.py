@@ -36,7 +36,7 @@ SHUFFLE = train_params['shuffle']
 optimizer = Adam(model.parameters(), lr=LR)
 
 # loss function - ctc-loss 
-criterion = nn.CTCLoss() #
+criterion = nn.CTCLoss(reduction="sum") #
 
 # init dataloader
 libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/vocab.txt") # librispeech vocab

@@ -59,7 +59,7 @@ class SpeechModel(nn.Module):
         # from conv to linear the feature must be flatten
         """ linear """
         # in_feats must be out_channels of CNN, 16 as considered out channels
-        self.linear = nn.Linear(in_features=encoder_dim*((input_dims) - 4),
+        self.linear = nn.Linear(in_features=encoder_dim*input_dims,
                                 out_features=encoder_dim,
                                 bias=True,
                                 dtype=torch.float32)
@@ -106,7 +106,7 @@ class SpeechModel(nn.Module):
 
         print(f"Conformer block: {output.shape}")
 
-        return output
+        return output.contiguous().transpose(0, 1)
 
     def forward(self, x):
         # forward encoder

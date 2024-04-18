@@ -206,7 +206,7 @@ class DevLoader(DataLoader):
             batch_transcript[step].narrow(0, 0, len(transcript)).copy_(transcript)
 
             # length
-            sample_sizes[step] = log_mel[0].size(0)
+            sample_sizes[step] = log_mel.size(0)
             sample_trans[step] = len(transcript)
 
         return batch_logmel, batch_transcript, sample_sizes, sample_trans
