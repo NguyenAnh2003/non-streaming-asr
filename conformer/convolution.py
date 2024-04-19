@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 from .activations import Swish
-from torchaudio.models import conformer
-
 
 class PointWise1DConv(nn.Module):
     def __init__(self, in_channels: int = 0, out_channels: int = 1, 

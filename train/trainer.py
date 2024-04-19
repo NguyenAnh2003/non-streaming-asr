@@ -119,10 +119,10 @@ def trainer(exp_name: str):
   # terminate wandb
   # wandb.finish()
   
-  trained_time = get_executing_time(start_time)
-  print(f"EPOCHES: {EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
+  # trained_time = get_executing_time(start_time)
+  # print(f"EPOCHES: {EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
   # logging summary
-  _train_logger.log(_train_logger.INFO, f"EPOCHES: {EPOCHS} TOTAL TRAIN LOSS: {min(train_losses)} TOTAL DEV LOSS: {min(val_losses)}")
+  # _train_logger.log(_train_logger.INFO, f"EPOCHES: {EPOCHS} TOTAL TRAIN LOSS: {min(train_losses)} TOTAL DEV LOSS: {min(val_losses)}")
 
 if __name__ == "__main__":
   EXP_NAME = train_params['model_name']
