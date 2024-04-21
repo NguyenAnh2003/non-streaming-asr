@@ -5,9 +5,19 @@ gap_penalty = -1
 match_award = 1
 mismatch_penalty = -1
 
-def compute_wer():
-    pass
+def compute_wer(argmax, target, input_size, target_size):
+    errors = 0
+    tokens = 0
+    for i in range(len(argmax)):
+        label = target[i][:target_size[i]]
+        label = list(filter(lambda x: x!= 1, label))
+        print(label)
+        # preprocessed_pred = collapsing_prediction(argmax[i], input_size[i])
+        # print(preprocessed_pred)
 
+def collapsing_prediction(prediction, in_size):
+    rs = []
+    
 def zeros(rows, cols):
     # Define an empty list
     retval = []
@@ -21,7 +31,6 @@ def zeros(rows, cols):
             retval[-1].append(0)
     # Return the matrix of zeros
     return retval
-
 
 def match_score(alpha, beta):
     if alpha == beta:

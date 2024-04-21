@@ -1,7 +1,7 @@
 import torch
 from conformer.model import SpeechModel
 from utils.utils import get_configs
-import jiwer
+from conformer.metric import compute_wer
 
 def setup_speech_model():
     # get params
@@ -53,6 +53,9 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
               
         # prediction, transcripts, input_size, transcript_size
         loss = loss_fn(prediction, transcript, inputs_sizes, target_sizes)
+
+        # accuracy
+        
         
         # backward process
         # loss.backward()
