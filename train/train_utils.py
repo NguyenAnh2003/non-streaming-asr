@@ -66,9 +66,10 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
 
         # backward process
         loss.backward()
-        
+
         # adjust weights
         optimizer.step()
+
         
         # batch_loss processing
         batch_losses.append(loss.item())
@@ -79,7 +80,7 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
     # append batch_loss
     epoch_losses.append(sum(batch_losses)/len(batch_losses))
     
-    return epoch_losses, 1-WER
+    return sum(epoch_losses)/len(epoch_losses), 1-WER
 
 def eval_one_epoch(val_loader, model, loss_fn):
     """ setup validation data_manipulation loader for 1 epoch
@@ -122,4 +123,4 @@ def eval_one_epoch(val_loader, model, loss_fn):
     # epoch loss
     epoch_losses.append(sum(batch_losses)/len(batch_losses))
 
-    return epoch_losses, 1 - WER
+    return sum(epoch_losses)/len(epoch_losses), 1 - WER

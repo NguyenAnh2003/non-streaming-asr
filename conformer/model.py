@@ -69,9 +69,7 @@ class SpeechModel(nn.Module):
 
         """ conformer encoder with layers """
         self.conformer_encoder_layers = nn.ModuleList([
-            ConformerBlock(in_feats=encoder_dim,
-                           out_feats=encoder_dim,
-                           encoder_dim=encoder_dim,
+            ConformerBlock(encoder_dim=encoder_dim,
                            attention_heads=n_heads,
                            conv_model_stride=normal_stride
                            ) for _ in range(num_layers)])  #
