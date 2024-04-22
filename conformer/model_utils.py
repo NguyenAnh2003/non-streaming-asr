@@ -6,3 +6,7 @@ def get_model_params(model: nn.Module):
     # for i in model.parameters():
     #     print(i.shape)
     return params
+
+if __name__ == "__main__":
+    get_model_params()
+    pass

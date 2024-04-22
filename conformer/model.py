@@ -95,16 +95,13 @@ class SpeechModel(nn.Module):
     def _forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
         x = self.conv_subsampling(x)
-        print(f"Conv subsampling: {x.shape}")
 
         output = self.input_projection(x)
-        print(f"Input projection: {output.shape}")
 
         # output for each conformer block
         for layer in self.conformer_encoder_layers:
             output = layer(output)
 
-        print(f"Conformer block: {output.shape}")
 
         return output.contiguous().transpose(0, 1)
 
@@ -120,11 +117,3 @@ if __name__ == "__main__":
     x = torch.randn(16, 81, 300)
     in_channels = 81
     encoder_dim = 512
-
-    # model
-    speech_model = SpeechModel(in_channels=in_channels,
-                               encoder_dim=encoder_dim,
-                               kernel_size=3, padding=0,
-                               stride=1, num_layers=4)
-
-    print(f"Model out: {speech_model(x).shape}")

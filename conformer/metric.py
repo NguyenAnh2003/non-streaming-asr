@@ -1,22 +1,36 @@
 import jiwer
 
-
 gap_penalty = -1
 match_award = 1
 mismatch_penalty = -1
 
-def compute_wer(argmax, target, input_size, target_size):
-    errors = 0
-    tokens = 0
-    for i in range(len(argmax)):
-        label = target[i][:target_size[i]]
-        label = list(filter(lambda x: x!= 1, label))
-        print(label)
-        # preprocessed_pred = collapsing_prediction(argmax[i], input_size[i])
-        # print(preprocessed_pred)
+def compute_wer(index, input_sizes, targets, target_sizes):
+    batch_errs = 0
+    batch_tokens = 0
+    for i in range(len(index)):
+        label = targets[i][:target_sizes[i]]
+        label = list(filter(lambda x: x != 1, label))
+        pred = preprocess_predict(index[i], input_sizes[i])
+        err, len_ = Accuracy(label, pred)
+        batch_errs += err
+        batch_tokens += len_
 
-def collapsing_prediction(prediction, in_size):
-    rs = []
+    return batch_errs, batch_tokens
+
+
+def preprocess_predict(predict, input_size):
+    pred = []
+    for i in range(len(predict[:input_size])):
+        if predict[i] == 0 or predict[i] == 1:
+            continue
+        if i == 0:
+            pred.append(predict[i])
+        if i > 0 and predict[i] != predict[i - 1]:
+            if len(pred) == 0:
+                pred.append(predict[i])
+            elif predict[i] != pred[-1]:
+                pred.append(predict[i])
+    return pred
     
 def zeros(rows, cols):
     # Define an empty list
@@ -137,6 +151,7 @@ def Correct_Rate(SEQ1, SEQ2):
     ins, d, s = ins_del_sub(Seq1, Seq2)
     cnt = d + s
     return cnt, len(SEQ1)
+
 def Accuracy(SEQ1, SEQ2):
     Seq1, Seq2 = Align(SEQ1, SEQ2)
     ins, d, s = ins_del_sub(Seq1, Seq2)
