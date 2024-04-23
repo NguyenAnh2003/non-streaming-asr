@@ -71,19 +71,23 @@ class ConformerBlock(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # ff module - sandwich
         x = self.ff1(x)
+        print(f"PFF1: {x.shape}")
 
         # MHA process
         identity = x
         out, _ = self.mha(x, x, x) # Q, K, V
         out = identity + (1.*out)
+        print(f"MHA: {out.shape}")
         out = out.transpose(1, 2) # transpose (batch_size, encoder_dim, times)
 
         # get last hidden state and feed to conv module
         out = self.conv_module(out)
+        print(f"Conv module: {out.shape}")
 
         out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
         # ff module - sandwich
         out = self.ff2(out)
+        print(f"PF2: {out.shape}")
         
         # normalize distribution of output
         out = self.layer_norm(out)

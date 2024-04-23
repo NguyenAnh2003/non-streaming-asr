@@ -81,11 +81,8 @@ class SpeechModel(nn.Module):
                                    bias=True, bidirectional=True,
                                    batch_first=True)  #
 
-        """ softmax """
-        self.softmax = nn.Softmax(dim=1)  # softmax on n_frames
-
         """ log softmax """
-        # self.log_softmax = nn.LogSoftmax()
+        self.log_softmax = nn.LogSoftmax(dim=-1)
 
         # encoder chain -> linear -> dropout -> conformer encoder blocks
         self.input_projection = nn.Sequential(self.linear, self.dropout)
