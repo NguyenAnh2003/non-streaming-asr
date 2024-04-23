@@ -50,7 +50,7 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
         optimizer.zero_grad() # zero grad after batch trained
         print(f"Input: {log_mel.shape}")
         prediction = model(log_mel) # get model prediction per batch
-
+        print(f"Out model: {prediction.shape}")
         # prediction, transcripts, input_size, transcript_size
         loss = loss_fn(prediction, transcript, inputs_sizes, target_sizes)
         _, index_max = torch.max(prediction, dim=-1)

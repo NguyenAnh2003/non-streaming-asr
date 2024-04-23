@@ -96,12 +96,3 @@ if __name__ == "__main__":
     # batch_size, times, banks*channels
     x = torch.randn(16, 74, 144)
     # batch_size, times, feats = x.size()
-    
-    # conformer encoder
-    embed_dim = 144
-    encoder = ConformerBlock(in_feats=encoder_dim, 
-                             out_feats=encoder_dim,
-                             encoder_dim=encoder_dim,
-                             )
-    en_out = encoder(x)
-    print(f"Encoder out: {en_out.shape}")

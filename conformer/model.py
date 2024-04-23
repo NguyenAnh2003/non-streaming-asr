@@ -22,6 +22,7 @@ class DecoderLSTM(nn.Module):
                                            bias=bias)
 
     def forward(self, x):
+        print(f"In decoder: {x.shape}")
         out, _ = self.lstm(x) # taking output - prediction from LSTM
         output = self.output_projection(out) # projection the output to num classes
         return output
@@ -97,12 +98,17 @@ class SpeechModel(nn.Module):
         for layer in self.conformer_encoder_layers:
             output = layer(output)
 
+        # reshape encoder out
+        B, L, D = output.size()
+        output = output.permute(1, 0, 2)
+        output = output.view(L, B, -1)
 
-        return output.contiguous().transpose(0, 1)
+        return output
 
     def forward(self, x):
         # forward encoder
         hidden_state = self._forward_encoder(x)  # get relation ship between audio frame
+        print(f"Encoder: {hidden_state.shape}")
         # forward decoder
         out= self.decoder(hidden_state)
         return out  # normalize output to probability with softmax
