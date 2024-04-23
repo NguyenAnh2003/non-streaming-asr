@@ -111,7 +111,7 @@ class SpeechModel(nn.Module):
         print(f"Encoder: {hidden_state.shape}")
         # forward decoder
         out= self.decoder(hidden_state)
-        return out  # normalize output to probability with softmax
+        return self.log_softmax(out)  # normalize output to probability with softmax
 
 
 if __name__ == "__main__":
