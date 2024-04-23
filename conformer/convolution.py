@@ -79,6 +79,7 @@ class ConvolutionModule(nn.Module):
                  bias: bool = True):
         super().__init__()
 
+        # in_channels can be considered as encoder_dim
         self.norm_layer = nn.LayerNorm(normalized_shape=in_channels) # normalize with LayerNorm
 
         self.point_wise1 = PointWise1DConv(in_channels=in_channels, 
@@ -114,8 +115,7 @@ class ConvolutionModule(nn.Module):
 
         """ sequence of entire convolution """
         self.conv_module = nn.Sequential(
-            # self.norm_layer, 
-            self.point_wise1, 
+            self.point_wise1,
             self.glu_activation,
             self.dw_conv, 
             self.batch_norm, 
@@ -125,6 +125,12 @@ class ConvolutionModule(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # transpose input shape (B, D, L)
+        x = x.contiguous().transpose(1, 2)
+        x = self.norm_layer(x)
+
+        # transpose back to (B, L, D)
+        x = x.contiguous().transpose(1, 2)
         """ the forward will be present as skip connection """
         conv_output = self.conv_module(x)
         return conv_output
