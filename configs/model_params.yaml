@@ -12,9 +12,11 @@ normal_stride: 1 # depthwise, pointwise
 
 # define encoder dimension for MHA and model dimension depth
 encoder_dim: 144 #
+num_layers: 8
 
 # LSTM
 batch_first: True
 # num clases out for linear deocder
-num_classes: 16360
+#num_classes: 16360
+num_classes: 200000
 decoder_dim: 144

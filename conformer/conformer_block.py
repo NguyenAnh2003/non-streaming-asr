@@ -83,7 +83,7 @@ class ConformerBlock(nn.Module):
 
         out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
         # ff module - sandwich
-        out = self.ff2(out)
+        out = self.ff2(x)
         
         # normalize distribution of output
         out = self.layer_norm(out)

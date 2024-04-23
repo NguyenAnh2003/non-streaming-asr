@@ -175,10 +175,7 @@ class TrainLoader(DataLoader):
             # length of target (transcript)
             sample_trans[step] = len(transcript)
 
-        print(sample_sizes.shape)
         return batch_logmel, batch_transcript, sample_sizes, sample_trans
-
-
 
 class DevLoader(DataLoader):
     def __init__(self, *args, **kwargs):

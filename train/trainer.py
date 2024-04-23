@@ -2,7 +2,7 @@ import torch.cuda
 from utils.utils import get_configs
 from data_manipulation.dataloader import DevSet, TrainSet, TrainLoader, DevLoader, LibriSpeechVocabRAW
 from torch.optim import Adam
-from train_utils import train_one_epoch, eval_one_epoch, setup_speech_model
+from train_utils import train_one_epoch, eval_one_epoch, setup_speech_model, get_device
 from utils.utils import get_configs
 from conformer import model_utils
 from logger.wandb_logger import train_logging
@@ -42,7 +42,7 @@ optimizer = Adam(model.parameters(), lr=LR)
 criterion = nn.CTCLoss(reduction="sum") #
 
 # init dataloader
-libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/vocab.txt") # librispeech vocab
+libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/backup_vocab.txt") # librispeech vocab
 
 train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata-train-clean.csv",
                          root_dir="../data_manipulation/librispeech/train-custom-clean")
@@ -76,16 +76,17 @@ def trainer(exp_name: str):
   
   # wandb watch model grads
   wandb.watch(models=model, criterion=criterion, log="all", log_freq=10)
+  device = get_device()
+  print(device)
 
   # iterate epochs
   for epoch in range(EPOCHS):
 
     # move model to cuda
-    if torch.cuda.is_available():
-        model.cuda()
+    model.cuda()
 
     # train mode
-    model.train(True)
+    model.train()
 
     # average loss
     train_avg_loss, train_avg_acc = train_one_epoch(train_loader=train_dataloader,
@@ -106,7 +107,7 @@ def trainer(exp_name: str):
 
     # console log
     print(f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss} "
-          f"TRAIN ACC: {train_avg_acc} DEV ACC: {val_avg_acc} "
+          f"TRAIN WER: {train_avg_acc} DEV WER: {val_avg_acc} "
           f"TIME: {get_executing_time(start_time=start_time)}")
 
     # wandb logging
@@ -124,3 +125,4 @@ def trainer(exp_name: str):
 if __name__ == "__main__":
   EXP_NAME = train_params['model_name']
   trainer(EXP_NAME)
+  # print(sum(get_model_params(model)))

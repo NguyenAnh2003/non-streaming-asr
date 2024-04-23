@@ -12,6 +12,10 @@ import torchaudio
 import torch
 from tqdm import tqdm
 from utils.utils import get_configs
+from torch.utils.data import Dataset
+from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
+
+
 import re # RegEx
 
 _params = get_configs("../configs/audio_processing.yaml")
@@ -212,5 +216,28 @@ def remove_un_data(csv_path: str):
                 # at least 1 will be moved to another file
                 print(f"Matching word: {word} row: {row[1]}")
 
+# def process_vocab_from_trainset(path, vocab):
+#     vocab_file = open(vocab, 'r', encoding="utf-8")
+#     word2index = {"PAD": 0, "UNF": 1}
+#     indexofword = 2
+#
+#     for row in vocab_file:
+#         word2index[row.replace("\n", "")] = indexofword
+#         indexofword += 1
+#
+#     def create_temp_dataset(csv_path):
+#         train_csv = pd.read_csv(path)
+#         dataset = HuggingFaceDataset.from_pandas(train_csv)
+#         return dataset
+#
+#     dataset = create_temp_dataset(csv_path=path)
+#
+#     # mapping transcript with index
+#     for sample in dataset:
+#         transcript = sample["transcript"]
+#         print(transcript)
+
 if __name__ == "__main__":
+    # process_vocab_from_trainset("./metadata-train-clean.csv",
+    #                             "./vocab.txt")
     print("DONE")

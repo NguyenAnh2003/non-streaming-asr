@@ -171,5 +171,7 @@ saved_model/
 # dataset LibriSpeech
 data_manipulation/librispeech
 
+data_manipulation/vlsp
+
 #wandb
 train/wandb
