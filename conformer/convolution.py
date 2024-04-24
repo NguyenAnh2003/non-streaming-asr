@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from .activations import Swish
+from .activations import Swish, GLU
 
 class PointWise1DConv(nn.Module):
     def __init__(self, in_channels: int = 0, out_channels: int = 1, 
@@ -89,7 +89,7 @@ class ConvolutionModule(nn.Module):
                                            padding=padding, 
                                            bias=bias) # customized Pointwise Conv
 
-        self.glu_activation = nn.GLU(dim=1)
+        self.glu_activation = GLU(dim=1)
 
         """ Depthwise Conv 1D """
         self.dw_conv = DepthWise1DConv(in_channels=out_channels,
