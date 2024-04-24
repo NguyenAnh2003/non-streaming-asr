@@ -96,12 +96,7 @@ class SpeechModel(nn.Module):
         # output for each conformer block
         for layer in self.conformer_encoder_layers:
             output = layer(output)
-
-        # reshape encoder out
-        # B, L, D = output.size()
-        # output = output.permute(1, 0, 2)
-        # output = output.view(L, B, -1)
-        # output = output.transpose(0, 1)
+            
         return output
 
     def forward(self, x):
