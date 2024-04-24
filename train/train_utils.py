@@ -3,6 +3,7 @@ from conformer.model import SpeechModel
 from utils.utils import get_configs
 from conformer.metric import compute_wer
 from tqdm import tqdm
+import torchaudio.models.conformer
 
 def get_device():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -19,6 +20,7 @@ def setup_speech_model():
     subsample_stride = params['subsampling_stride']
     conv_module_stride = params['normal_stride']
     num_layers = params['num_layers']
+    kernel_size = params['kernel_size']
 
     # setup model
     model = SpeechModel(
@@ -26,7 +28,7 @@ def setup_speech_model():
                     in_channels=in_channels,
                     encoder_dim=encoder_dim,
                     decoder_dim=decoder_dim,
-                    kernel_size=3, padding=1,
+                    kernel_size=kernel_size, padding=1,
                     num_layers=num_layers,
                     subsample_stride=subsample_stride,
                     normal_stride=conv_module_stride,
@@ -59,7 +61,7 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
         # prediction, transcripts, input_size, transcript_size
         loss = loss_fn(prediction, transcripts, inputs_sizes, target_sizes)
         _, index_max = torch.max(prediction, dim=-1)
-
+        # print(f"Index: {index_max.transpose(0, 1)} Target: {transcripts}")
         # needed to transpose prediction
         batch_errs, batch_tokens = compute_wer(index_max.transpose(0, 1),
                                                inputs_sizes, transcripts,
@@ -83,7 +85,8 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
 
     # append batch_loss
     epoch_losses.append(sum(batch_losses)/len(batch_losses))
-    
+    print(f"Train loss: {sum(epoch_losses)/len(epoch_losses)} "
+          f"Train Acc: {WER}")
     return sum(epoch_losses)/len(epoch_losses), WER
 
 def eval_one_epoch(val_loader, model, loss_fn):
@@ -125,7 +128,7 @@ def eval_one_epoch(val_loader, model, loss_fn):
 
     # epoch loss
     epoch_losses.append(sum(batch_losses)/len(batch_losses))
-    print(f"Train los: {sum(epoch_losses)/len(epoch_losses)} "
+    print(f"Dev los: {sum(epoch_losses)/len(epoch_losses)} "
           f"WER Train: {WER}")
 
     return sum(epoch_losses)/len(epoch_losses), WER

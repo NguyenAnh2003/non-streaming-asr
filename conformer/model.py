@@ -8,21 +8,24 @@ class DecoderLSTM(nn.Module):
                  bias: bool, bidirectional: bool = True,
                  batch_first: bool = True,
                  d_model: int = 144,
-                 num_classes: int = 0):
+                 num_classes: int = 0,
+                 dropout: float = 0.1):
         super().__init__()
         # batch_first -> in & out (batch, seq, feature)
-        self.lstm = nn.LSTM(input_size=input_size,
-                            hidden_size=hidden_size,
-                            bias=bias,
-                            batch_first=batch_first,
-                            bidirectional=bidirectional)
+        # self.lstm = nn.LSTM(input_size=input_size,
+        #                     hidden_size=hidden_size,
+        #                     bias=bias,
+        #                     batch_first=batch_first,
+        #                     bidirectional=bidirectional)
 
-        self.output_projection = nn.Linear(in_features=d_model*2,
+        self.dropout = nn.Dropout(p=dropout)
+
+        self.output_projection = nn.Linear(in_features=d_model,
                                            out_features=num_classes,
                                            bias=bias)
 
     def forward(self, x):
-        out, _ = self.lstm(x) # taking output - prediction from LSTM
+        out = self.dropout(x)
         output = self.output_projection(out) # projection the output to num classes
         return output
 
@@ -52,9 +55,9 @@ class SpeechModel(nn.Module):
         # usually audio have only 1 channel -> in_channel : 1
         self.conv_subsampling = ConvSubSampling(in_channels=in_channels,
                                                 out_channels=encoder_dim,
-                                                kernel_size=kernel_size,
+                                                kernel_size=3,
                                                 stride=subsample_stride,
-                                                padding=padding)  # config
+                                                padding=1)  # config
 
         # from conv to linear the feature must be flatten
         """ linear """

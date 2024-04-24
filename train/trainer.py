@@ -70,12 +70,12 @@ def trainer(exp_name: str):
   start_time = time.time()
 
   # wandb init
-  wandb.init(project="S2T",
-             name=exp_name,
-             config=configs)
+  # wandb.init(project="S2T",
+  #            name=exp_name,
+  #            config=configs)
   
   # wandb watch model grads
-  wandb.watch(models=model, criterion=criterion, log="all", log_freq=10)
+  # wandb.watch(models=model, criterion=criterion, log="all", log_freq=10)
   device = get_device()
   print(device)
 
@@ -111,11 +111,11 @@ def trainer(exp_name: str):
           f"TIME: {get_executing_time(start_time=start_time)}")
 
     # wandb logging
-    train_logging(train_loss=train_avg_loss, train_acc=train_avg_acc,
-                  dev_loss=val_avg_loss, dev_acc=val_avg_acc, epoch=epoch)
+    # train_logging(train_loss=train_avg_loss, train_acc=train_avg_acc,
+    #               dev_loss=val_avg_loss, dev_acc=val_avg_acc, epoch=epoch)
 
   # terminate wandb
-  wandb.finish()
+  # wandb.finish()
   
   trained_time = get_executing_time(start_time)
   print(f"EPOCHES: {EPOCHS} TRAIN LOSS: {min(train_losses)} DEV LOSS: {min(val_losses)} Time: {trained_time}")
@@ -124,5 +124,6 @@ def trainer(exp_name: str):
 
 if __name__ == "__main__":
   EXP_NAME = train_params['model_name']
-  # trainer(EXP_NAME)
-  print(sum(get_model_params(model)))
+  print(f"Learning rate: {LR}")
+  trainer(EXP_NAME)
+  # print(sum(get_model_params(model)))

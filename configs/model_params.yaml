@@ -1,7 +1,7 @@
 
 # Convolution
 # kernel size define sequentially
-kernel_size: "[(5,5), (3,3)]"
+kernel_size: 31
 
 # cnn channel for conv subsampling
 #channels: "[(1, 16), (16, 64)]"

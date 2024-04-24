@@ -95,7 +95,7 @@ class ConvolutionModule(nn.Module):
         self.dw_conv = DepthWise1DConv(in_channels=out_channels,
                                        out_channels=out_channels, 
                                        kernel_size=kernel_size, 
-                                       padding=padding, 
+                                       padding=((kernel_size-1) // 2),
                                        bias=bias)
 
         """ this batch norm layer stand behind the depth wise conv (1D) """
@@ -108,7 +108,7 @@ class ConvolutionModule(nn.Module):
                                            out_channels=out_channels, 
                                            kernel_size=kernel_size,
                                            stride=1, 
-                                           padding=0, 
+                                           padding=padding,
                                            bias=True) #
 
         self.dropout = nn.Dropout(p=0.1)
@@ -125,15 +125,11 @@ class ConvolutionModule(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # transpose input shape (B, D, L)
-        x = x.contiguous().transpose(1, 2)
         x = self.norm_layer(x)
-
-        # transpose back to (B, L, D)
-        x = x.contiguous().transpose(1, 2)
+        x = x.contiguous().transpose(1, 2) # transpose (B, D, L)
         """ the forward will be present as skip connection """
         conv_output = self.conv_module(x)
-        return conv_output
+        return conv_output.contiguous().transpose(1, 2)
     
 if __name__ == "__main__":
     # print(f"Params: {_params}")

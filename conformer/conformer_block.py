@@ -74,16 +74,16 @@ class ConformerBlock(nn.Module):
 
         # MHA process
         identity = x
+        x = self.layer_norm(x) # layernorm before MHA
         out, _ = self.mha(x, x, x) # Q, K, V
         out = identity + (1.*out)
-        out = out.transpose(1, 2) # transpose (batch_size, encoder_dim, times)
 
         # get last hidden state and feed to conv module
         out = self.conv_module(out)
+        # out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
 
-        out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
         # ff module - sandwich
-        out = self.ff2(x)
+        out = self.ff2(out)
         
         # normalize distribution of output
         out = self.layer_norm(out)
