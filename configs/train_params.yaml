@@ -1,5 +1,5 @@
-epochs: 10
-batch_size: 4
+epochs: 100
+batch_size: 3
 shuffle: True
 model_name: "conformer-144-dim"
 learning_rate: 0.001

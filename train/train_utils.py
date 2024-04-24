@@ -2,6 +2,7 @@ import torch
 from conformer.model import SpeechModel
 from utils.utils import get_configs
 from conformer.metric import compute_wer
+from tqdm import tqdm
 
 def get_device():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -45,7 +46,7 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
     total_errs = 0
     total_tokens = 0
     """ setup train data_manipulation loader for 1 epoch """
-    for step, (log_mel, transcripts, inputs_sizes, target_sizes) in enumerate(train_loader):
+    for step, (log_mel, transcripts, inputs_sizes, target_sizes) in tqdm(enumerate(train_loader)):
         # batch_log_mel, batch transcript
         # get input from batch
 
@@ -96,7 +97,7 @@ def eval_one_epoch(val_loader, model, loss_fn):
     total_errs = 0
     total_tokens = 0
     with torch.no_grad():
-        for step, (log_mel, transcripts, inputs_sizes, target_sizes) in enumerate(val_loader):
+        for step, (log_mel, transcripts, inputs_sizes, target_sizes) in tqdm(enumerate(val_loader)):
             # get inputs from batch
             log_mel, transcripts = log_mel.cuda(), transcripts.cuda()
             inputs_sizes, target_sizes = inputs_sizes.cuda(), target_sizes.cuda()
@@ -124,5 +125,7 @@ def eval_one_epoch(val_loader, model, loss_fn):
 
     # epoch loss
     epoch_losses.append(sum(batch_losses)/len(batch_losses))
+    print(f"Train los: {sum(epoch_losses)/len(epoch_losses)} "
+          f"WER Train: {WER}")
 
     return sum(epoch_losses)/len(epoch_losses), WER

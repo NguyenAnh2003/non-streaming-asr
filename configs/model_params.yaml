@@ -12,7 +12,7 @@ normal_stride: 1 # depthwise, pointwise
 
 # define encoder dimension for MHA and model dimension depth
 encoder_dim: 144 #
-num_layers: 8
+num_layers: 16
 
 # LSTM
 batch_first: True

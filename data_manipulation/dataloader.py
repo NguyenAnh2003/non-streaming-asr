@@ -40,7 +40,7 @@ class TrainSet(Dataset):
     def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_processing.yaml"):
         super(TrainSet, self).__init__()
         self.params = get_configs(config_path)  # defined params
-        self.audio_samples = pd.read_csv(csv_file, nrows=10000)  # dataset defined as csv file
+        self.audio_samples = pd.read_csv(csv_file, nrows=6000)  # dataset defined as csv file
         self.root_dir = root_dir  # ./
         self.vocab = vocab
         # init hugging face dataset
@@ -73,7 +73,7 @@ class TrainSet(Dataset):
 
     @staticmethod
     def __create_huggingface_dataset(csv_path: str):
-        train_csv = pd.read_csv(csv_path, nrows=10000)
+        train_csv = pd.read_csv(csv_path, nrows=6000)
         dataset = HuggingFaceDataset.from_pandas(train_csv)
         return dataset
 
