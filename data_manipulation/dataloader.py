@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, Dataset # torch Dataset
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
-from feats_extraction.log_mel import audio_transforms
+from .feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
 import torchaudio
 from logger.my_logger import setup_logger
@@ -16,7 +16,7 @@ _FILTER_BANKS = 80
 # vocab
 class LibriSpeechVocabRAW:
 
-    def __init__(self, vocab_file_path: str = "./meno.txt"):
+    def __init__(self, vocab_file_path: str = "./vocab.txt"):
         # vocab file
         self.vocab_file = vocab_file_path
         self.word2index = {"PAD": 0, "UNF": 1} # update code
@@ -58,7 +58,7 @@ class TrainSet(Dataset):
         log_mel = audio_transforms(array=array, params=self.params)
 
         # return log_mel and transcript
-        return log_mel, sample_transcript
+        return log_mel, torch.tensor(sample_transcript)
 
     def __get_audio_sample(self, index) -> Tuple[str, List[int]]:
         """ process audio path
@@ -81,7 +81,7 @@ class TrainSet(Dataset):
         """ function receive batch and mapp each transcript to index in Vocab """
         batch["transcript"] = batch["transcript"].split()
         batch["transcript"] = [*map(self.vocab.word2index.get, batch["transcript"])]
-        # batch["transcript"] = [int(1 if value is None else value) for value in batch["transcript"]] # update code
+        batch["transcript"] = [int(1 if value is None else value) for value in batch["transcript"]] # update code
         return batch
 
     def __len__(self) -> int:
@@ -214,7 +214,8 @@ if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
 
     # aaa
-    train_set = TrainSet(vocab= librispeech_vocab, csv_file="metadata-train-clean.csv", root_dir="librispeech/train-custom-clean")
+    train_set = TrainSet(vocab= librispeech_vocab, csv_file="metadata-dev-clean.csv",
+                         root_dir="librispeech/dev-custom-clean")
     for step in range(train_set.__len__()):
         print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 

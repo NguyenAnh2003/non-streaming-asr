@@ -240,5 +240,5 @@ def collapsing_words(path: str, dest: str):
             outf.write(w + '\n')
 
 if __name__ == "__main__":
-    collapsing_words("./ccc.txt", "meno.txt")
+    # collapsing_words("./vocab.txt", "./meno.txt")
     print("DONE")
