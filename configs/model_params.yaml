@@ -18,5 +18,5 @@ num_layers: 16
 batch_first: True
 # num clases out for linear deocder
 #num_classes: 16360
-num_classes: 33494
+num_classes: 33919
 decoder_dim: 144
