@@ -216,12 +216,29 @@ def remove_un_data(csv_path: str):
                 # at least 1 will be moved to another file
                 print(f"Matching word: {word} row: {row[1]}")
 
-def process_vocab(path: str):
+def process_vocab(path: str, out_path: str):
     csv_file = open(path, 'r', encoding='utf-8')
     reader = csv.reader(csv_file)
-    for row in reader:
-        print(row)
+
+    with open(out_path, 'a', encoding="utf-8") as outfile:
+        for row in reader:
+            transcript = row[1]
+            words = transcript.split(" ")
+            for word in words:
+                outfile.write(word + "\n")
+
+def collapsing_words(path: str, dest: str):
+    src = open(path, 'r', encoding='utf-8')
+    meno = set()
+    for word in src:
+        word = word.replace("\n", "")
+        if word not in meno:
+            meno.add(word)
+
+    with open(dest, 'a', encoding='utf-8') as outf:
+        for w in meno:
+            outf.write(w + '\n')
 
 if __name__ == "__main__":
-    process_vocab("./metadata-train-clean.csv")
+    collapsing_words("./ccc.txt", "meno.txt")
     print("DONE")
