@@ -6,6 +6,7 @@ import librosa
 from utils.visualizer import plot_melspectrogram, plot_waveform
 from utils.utils import get_configs
 from pydub import AudioSegment
+import librosa
 import transformers
 
 # including preprocessing and post-processing
@@ -78,6 +79,34 @@ def _audio_segmentation(path: str):
     segmented_audio = AudioSegment.from_wav(file=path)
 
     return segmented_audio
+
+# preprocessing with huggingface dataset
+def _tolower(point):
+    point['sentence'] = point['sentence'].lower()
+    return point
+
+def _get_duration(point):
+    # audio path process
+    def _process_audio_path(point):
+        path = "./" + point['audio']['path']
+        return path
+    
+    # ttt
+    audio_path = _process_audio_path(point)
+    point['duration'] = librosa.core.get_duration(path=audio_path)
+    return point
+
+def preprocess_ds(dataset):
+    # process each sample
+    def _inner_func(point):
+        point = _tolower(point)
+        point = _get_duration(point)
+        return point
+    
+    # mapping each sample to be processed
+    dataset = dataset.map(lambda x: _inner_func(x))
+    return dataset
+
 
 if __name__ == "__main__":
 
