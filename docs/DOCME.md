@@ -15,6 +15,7 @@
 14. Approaches to S2T: [link](https://theaisummer.com/speech-recognition/)
 15. Special: [link](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/asr/models.html#conformer-ctc)
 16. Special: [link](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/asr/api.html#nemo.collections.asr.models.EncDecCTCModelBPE)
+17. Intuition: [link](https://www.youtube.com/watch?v=co1ny5ztYCI)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
