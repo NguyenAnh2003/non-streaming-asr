@@ -6,6 +6,7 @@ import librosa
 from utils.visualizer import plot_melspectrogram, plot_waveform
 from utils.utils import get_configs
 from pydub import AudioSegment
+from datasets import load_dataset
 import librosa
 import transformers
 
@@ -109,22 +110,5 @@ def preprocess_ds(dataset):
 
 
 if __name__ == "__main__":
-
-    # audio processing Trim
-    array, sr = torchaudio.load("./examples/kkk.flac")
-    # trimmed_array = _trim_audio(audio_array=array, params=_params)
-
-    # print(f"Shape before trimmed: {array.shape} After trimmed: {trimmed_array.shape}")
-
-    # adding noise
-    # n_array, _ = torchaudio.load("./noises/re_tam.wav")
-    # print(n_array.shape)
-    
-    # augmented = _add_noise2audio(sample_array=array, noise_array=n_array) #
-    # print(augmented.shape)
-    
-    ps_audio = _audio_pitch_shift(array, _params)
-    print(ps_audio.shape)
-    
-
+    dataset = load_dataset('vivos')
     print("DONE")
