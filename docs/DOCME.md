@@ -13,6 +13,8 @@
 12. LSTM output: [link](https://stackoverflow.com/questions/48302810/whats-the-difference-between-hidden-and-output-in-pytorch-lstm)
 13. CTC Loss: [link](https://stackoverflow.com/questions/62251289/how-to-correctly-use-ctc-loss-with-gru-in-pytorch)
 14. Approaches to S2T: [link](https://theaisummer.com/speech-recognition/)
+15. Special: [link](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/asr/models.html#conformer-ctc)
+16. Special: [link](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/asr/api.html#nemo.collections.asr.models.EncDecCTCModelBPE)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
