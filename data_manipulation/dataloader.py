@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, Dataset # torch Dataset
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
-from .feats_extraction.log_mel import audio_transforms
+from feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
 import torchaudio
 from logger.my_logger import setup_logger

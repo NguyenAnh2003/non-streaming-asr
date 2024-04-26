@@ -254,5 +254,5 @@ def build_data_manifest(path: str, outpath: str):
 
 if __name__ == "__main__":
     build_data_manifest("./dev-clean.csv",
-                        "./dev-clean.json")
+                        "./dev-manifest.json")
     print("DONE")

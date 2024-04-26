@@ -1,6 +1,7 @@
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 import nemo.collections.asr as nemo_asr
+from pytorch_lightning.loggers import TensorBoardLogger
 from utils.utils import get_configs
 
 def main(MODEL_NAME: str, params):
@@ -13,8 +14,17 @@ def main(MODEL_NAME: str, params):
   conformer_large.setup_training_data(train_data_config=params['model']['train_ds'])
   conformer_large.setup_validation_data(val_data_config=params['model']['validation_ds'])
 
-  trainer = pl.Trainer(accelerator="gpu", max_epochs=50, logger=True)
+  # logger setup
+  logger = TensorBoardLogger(save_dir="../logger/logs", version=1, name=MODEL_NAME)
+
+  trainer = pl.Trainer(accelerator="gpu", max_epochs=50, 
+                       logger=logger, log_every_n_steps=10, 
+                       enable_checkpointing=True, 
+                       inference_mode=False)
   trainer.fit(conformer_large)
+  
+  # save model
+  conformer_large.save_to(f"../saved_model/{MODEL_NAME}")
 
 
 
