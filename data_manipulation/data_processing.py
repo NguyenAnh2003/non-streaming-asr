@@ -97,11 +97,14 @@ def preprocess_ds(path):
 
     # preprocess durations
     durations = []
+    audio_paths = []
     for audio in df["audio_id"]:
         audio_path = root_dir + audio + ".flac"
         duration = _get_duration(audio_path)
         durations.append(duration)
+        audio_paths.append(audio_path)
     df["duration"] = durations
+    df["path"] = audio_paths
 
     # preprocess audio transcripts
     lower_transcripts = []
@@ -112,5 +115,5 @@ def preprocess_ds(path):
 
 
 if __name__ == "__main__":
-    # preprocess_ds("./metadata-dev-clean.csv")
+    preprocess_ds("./metadata-dev-clean.csv")
     print("DONE")

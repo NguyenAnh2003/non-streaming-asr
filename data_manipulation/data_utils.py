@@ -13,6 +13,7 @@ import torch
 from tqdm import tqdm
 from utils.utils import get_configs
 from torch.utils.data import Dataset
+import json
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
 
 
@@ -239,9 +240,19 @@ def collapsing_words(path: str, dest: str):
         for w in meno:
             outf.write(w + '\n')
 
-def build_data_manifest(path: str):
-    pass
+def build_data_manifest(path: str, outpath: str):
+    reader = csv.reader(open(path, "r", encoding="utf-8"))
+    with open(outpath, 'w') as fout:
+        for line in reader:
+            meta_data = {
+                "audio_id": line[0],
+                "duration": line[2],
+                "transcript": line[1],
+            }
+            json.dump(meta_data, fout)
+            fout.write("\n")
 
 if __name__ == "__main__":
-    # collapsing_words("./vocab.txt", "./meno.txt")
+    build_data_manifest("./dev-clean.csv",
+                        "./dev-clean.json")
     print("DONE")
