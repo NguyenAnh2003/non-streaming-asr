@@ -13,7 +13,7 @@ def main(MODEL_NAME: str, params):
   conformer_large.setup_training_data(train_data_config=params['model']['train_ds'])
   conformer_large.setup_validation_data(val_data_config=params['model']['validation_ds'])
 
-  trainer = pl.Trainer(accelerator="gpu", max_epochs=50)
+  trainer = pl.Trainer(accelerator="gpu", max_epochs=50, logger=True)
   trainer.fit(conformer_large)
 
 
