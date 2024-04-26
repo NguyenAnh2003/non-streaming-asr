@@ -245,7 +245,7 @@ def build_data_manifest(path: str, outpath: str):
     with open(outpath, 'w') as fout:
         for line in reader:
             meta_data = {
-                "audio_id": line[0],
+                "audio_filepath": line[0],
                 "duration": line[2],
                 "transcript": line[1],
             }
