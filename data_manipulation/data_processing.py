@@ -108,9 +108,9 @@ def preprocess_ds(path):
     for audio_transcript in df["transcript"]:
         lower_transcripts.append(audio_transcript.lower())
     df["transcript"] = lower_transcripts
-    df.to_csv("./train-100-clean.csv", index=False)
+    df.to_csv("./dev-clean.csv", index=False)
 
 
 if __name__ == "__main__":
-    preprocess_ds("./metadata-train-clean.csv")
+    # preprocess_ds("./metadata-dev-clean.csv")
     print("DONE")
