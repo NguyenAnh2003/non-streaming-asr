@@ -93,6 +93,7 @@ def _get_duration(path):
 def preprocess_ds(path):
     # process each sample
     root_dir = "./librispeech/dev-custom-clean/"
+    r2 = "../data_manipulation/librispeech/train-custom-clean"
     df = pd.read_csv(path)
 
     # preprocess durations
@@ -100,9 +101,10 @@ def preprocess_ds(path):
     audio_paths = []
     for audio in df["audio_id"]:
         audio_path = root_dir + audio + ".flac"
+        a2 = r2 + audio + ".flac"
         duration = _get_duration(audio_path)
         durations.append(duration)
-        audio_paths.append(audio_path)
+        audio_paths.append(a2)
     df["duration"] = durations
     df["path"] = audio_paths
 
