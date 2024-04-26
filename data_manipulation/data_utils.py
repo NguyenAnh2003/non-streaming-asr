@@ -239,6 +239,9 @@ def collapsing_words(path: str, dest: str):
         for w in meno:
             outf.write(w + '\n')
 
+def build_data_manifest(path: str):
+    pass
+
 if __name__ == "__main__":
     # collapsing_words("./vocab.txt", "./meno.txt")
     print("DONE")

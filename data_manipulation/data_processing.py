@@ -7,7 +7,7 @@ from utils.visualizer import plot_melspectrogram, plot_waveform
 from utils.utils import get_configs
 from pydub import AudioSegment
 from datasets import load_dataset
-import librosa
+import pandas as pd
 import transformers
 
 # including preprocessing and post-processing
@@ -82,33 +82,35 @@ def _audio_segmentation(path: str):
     return segmented_audio
 
 # preprocessing with huggingface dataset
-def _tolower(point):
-    point['sentence'] = point['sentence'].lower()
-    return point
+def _tolower(transcript):
+    transcript = transcript.lower()    
+    return transcript
 
-def _get_duration(point):
-    # audio path process
-    def _process_audio_path(point):
-        path = "./" + point['audio']['path']
-        return path
-    
-    # ttt
-    audio_path = _process_audio_path(point)
-    point['duration'] = librosa.core.get_duration(path=audio_path)
-    return point
+def _get_duration(path):
+    duration = librosa.core.get_duration(path=path, sr=16000)
+    return duration
 
-def preprocess_ds(dataset):
+def preprocess_ds(path):
     # process each sample
-    def _inner_func(point):
-        point = _tolower(point)
-        point = _get_duration(point)
-        return point
-    
-    # mapping each sample to be processed
-    dataset = dataset.map(lambda x: _inner_func(x))
-    return dataset
+    root_dir = "./librispeech/dev-custom-clean/"
+    df = pd.read_csv(path)
+
+    # preprocess durations
+    durations = []
+    for audio in df["audio_id"]:
+        audio_path = root_dir + audio + ".flac"
+        duration = _get_duration(audio_path)
+        durations.append(duration)
+    df["duration"] = durations
+
+    # preprocess audio transcripts
+    lower_transcripts = []
+    for audio_transcript in df["transcript"]:
+        lower_transcripts.append(audio_transcript.lower())
+    df["transcript"] = lower_transcripts
+    df.to_csv("./train-100-clean.csv", index=False)
 
 
 if __name__ == "__main__":
-    dataset = load_dataset('vivos')
+    preprocess_ds("./metadata-train-clean.csv")
     print("DONE")
