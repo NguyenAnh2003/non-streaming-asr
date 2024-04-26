@@ -93,7 +93,7 @@ def _get_duration(path):
 def preprocess_ds(path):
     # process each sample
     root_dir = "./librispeech/dev-custom-clean/"
-    r2 = "../data_manipulation/librispeech/train-custom-clean"
+    r2 = "../data_manipulation/librispeech/train-custom-clean" # used for fine tuning file location
     df = pd.read_csv(path)
 
     # preprocess durations
