@@ -34,9 +34,9 @@ if __name__ == "__main__":
   MODEL_LARGE = "nvidia/stt_en_conformer_ctc_large"
 
   # dataloader
-  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/"
-  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/"
-  params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/"
+  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/train-manifest.json"
+  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/dev-manifest.json"
+  params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/test-manifest.json"
 
   main(MODEL_NAME=MODEL_LARGE, params=params)
 
