@@ -249,7 +249,7 @@ def build_data_manifest(path: str, outpath: str):
                 meta_data = {
                     "audio_filepath": line[-1],
                     "duration": duration,
-                    "transcript": line[1],
+                    "text": line[1],
                 }
                 json.dump(meta_data, fout)
                 fout.write("\n")

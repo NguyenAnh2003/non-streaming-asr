@@ -174,7 +174,7 @@ model:
 
   optim:
     name: adamw
-    lr: 0.001
+    lr: 0.01
     # optimizer arguments
     betas: [0.9, 0.98]
     # less necessity for weight_decay as we already have large augmentations with SpecAug

@@ -22,11 +22,13 @@ def main(MODEL_NAME: str, params):
 
   print("Prepare trainer")
   trainer = pl.Trainer(accelerator="gpu", max_epochs=50, 
-                       logger=logger, log_every_n_steps=10, 
+                       logger=logger, log_every_n_steps=100,
                        enable_checkpointing=True, 
                        inference_mode=False)
   print("Training....")
   trainer.fit(conformer_large)
+
+  # trainer.validate(model=conformer_large,)
   
   # save model
   conformer_large.save_to(f"../saved_model/{MODEL_NAME}")
@@ -38,7 +40,7 @@ if __name__ == "__main__":
   SAMPLE_RATE = 16000
   path = "../data_manipulation/librispeech/train-custom-clean"
   params = get_configs("../configs/conformer_ctc_bpe.yaml")
-  MODEL_LARGE = "nvidia/stt_en_conformer_ctc_large"
+  MODEL_LARGE = "stt_en_conformer_ctc_large_ls"
 
   # dataloader
   params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
