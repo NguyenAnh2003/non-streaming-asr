@@ -244,15 +244,24 @@ def build_data_manifest(path: str, outpath: str):
     reader = csv.reader(open(path, "r", encoding="utf-8"))
     with open(outpath, 'w') as fout:
         for line in reader:
-            meta_data = {
-                "audio_filepath": line[-1],
-                "duration": line[2],
-                "transcript": line[1],
-            }
-            json.dump(meta_data, fout)
-            fout.write("\n")
+            try:
+                duration = float(line[2])
+                meta_data = {
+                    "audio_filepath": line[-1],
+                    "duration": duration,
+                    "transcript": line[1],
+                }
+                json.dump(meta_data, fout)
+                fout.write("\n")
+            except ValueError:
+                pass
+
+def get_mnmx_value_df(path, col = "duration"):
+    df = pd.read_csv(path)
+    min_val = df[col].min()
+    max_val = df[col].max()
+    print(f"Min val: {min_val} Max val: {max_val}")
 
 if __name__ == "__main__":
-    build_data_manifest("./dev-clean.csv",
-                        "./dev-manifest.json")
+    build_data_manifest("./dev-clean.csv", "dev-manifest.json")
     print("DONE")

@@ -56,8 +56,8 @@ model:
     shuffle: true
     num_workers: 8
     pin_memory: true
-    max_duration: 16.7 # it is set for LibriSpeech, you may need to update it for your dataset
-    min_duration: 0.1
+    max_duration: 19.985 # it is set for LibriSpeech, you may need to update it for your dataset
+    min_duration: 1.41
     # tarred datasets
     is_tarred: false
     tarred_audio_filepaths: null
