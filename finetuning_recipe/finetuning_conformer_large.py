@@ -35,11 +35,14 @@ def main(MODEL_NAME: str, params):
 
 
 if __name__ == "__main__":
+  SAMPLE_RATE = 16000
   path = "../data_manipulation/librispeech/train-custom-clean"
   params = get_configs("../configs/conformer_ctc_bpe.yaml")
   MODEL_LARGE = "nvidia/stt_en_conformer_ctc_large"
 
   # dataloader
+  params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
+  params['model']['validation_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/train-manifest.json"
   params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/dev-manifest.json"
   # params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/test-manifest.json"
