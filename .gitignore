@@ -175,3 +175,5 @@ data_manipulation/vlsp
 
 #wandb
 train/wandb
+
+logger/logs
