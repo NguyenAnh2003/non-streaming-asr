@@ -257,7 +257,7 @@ def create_noise(path: str):
     duration = 20  # Duration of the audio clip in seconds
     sample_rate = 16000  # Sample rate in Hz
     mean = 0
-    std_dev = 0.008
+    std_dev = 0.002
 
     # Generate noise array
     array_size = duration * sample_rate
