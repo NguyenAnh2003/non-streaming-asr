@@ -8,7 +8,7 @@ import os
 import csv
 import pandas as pd
 import shutil
-from .feats_extraction.log_mel import audio_transforms
+from feats_extraction.log_mel import audio_transforms
 from typing import List, Tuple
 import torchaudio
 import torch
@@ -257,7 +257,7 @@ def create_noise(path: str):
     duration = 20  # Duration of the audio clip in seconds
     sample_rate = 16000  # Sample rate in Hz
     mean = 0
-    std_dev = 0.002
+    std_dev = 0.008
 
     # Generate noise array
     array_size = duration * sample_rate
@@ -278,10 +278,10 @@ def get_mnmx_value_df(path, col = "duration"):
 def create_aug_audio(path: str):
     # path -> ref to metadata train, dev
     # dest dir
-    dest_dir = "./librispeech/augmented-dev"
+    dest_dir = "./librispeech/augmented-train"
 
     # get noise data
-    noise_path = "./noises/re_radio.wav" # radio noise
+    noise_path = "./noises/my_noise0.wav" # radio noise
     noise_array, _ = torchaudio.load(noise_path)
 
     # root dir
@@ -304,16 +304,6 @@ def create_aug_audio(path: str):
         torchaudio.save(dest_path, augmented_audio, 16000)
 
 if __name__ == "__main__":
-    # aug dataset
-    # path = "./examples/kkk.flac"
-    # noise_path = "./noises/re_radio.wav"
-    # array, _ = torchaudio.load(path)
-    # noise_array, _ = torchaudio.load(noise_path)
-    # augmented_audio = _add_noise2audio(array, noise_array)
-    # augmented_audio = augmented_audio.mean(0).unsqueeze(0)
-    # path = f"./examples/aug2.flac"
-    # torchaudio.save(path, augmented_audio, 16000)
-    
-    create_aug_audio("./metadata-dev-clean.csv")
+    create_aug_audio("./metadata-train-clean.csv")
     
     print("DONE")
