@@ -278,14 +278,14 @@ def get_mnmx_value_df(path, col = "duration"):
 def create_aug_audio(path: str):
     # path -> ref to metadata train, dev
     # dest dir
-    dest_dir = "./librispeech/augmented-train"
+    dest_dir = "./librispeech/augmented-dev"
 
     # get noise data
     noise_path = "./noises/my_noise0.wav" # radio noise
     noise_array, _ = torchaudio.load(noise_path)
 
     # root dir
-    root_dir = "./librispeech/train-custom-clean/"
+    root_dir = "./librispeech/dev-custom-clean/"
     reader = csv.reader(open(path, 'r', encoding="utf-8"))
 
     next((reader))
@@ -304,6 +304,6 @@ def create_aug_audio(path: str):
         torchaudio.save(dest_path, augmented_audio, 16000)
 
 if __name__ == "__main__":
-    create_aug_audio("./metadata-train-clean.csv")
+    create_aug_audio("./metadata-dev-clean.csv")
     
     print("DONE")
