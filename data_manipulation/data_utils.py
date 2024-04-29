@@ -1,10 +1,11 @@
+import tempfile
+from functools import cache
 import torch
 from torchaudio._internal import download_url_to_file
 from torchaudio.datasets.utils import _extract_tar
 import os
 import csv
 import pandas as pd
-from logger.my_logger import setup_logger
 import shutil
 from feats_extraction.log_mel import audio_transforms
 from typing import List, Tuple
@@ -14,15 +15,11 @@ from tqdm import tqdm
 from utils.utils import get_configs
 from torch.utils.data import Dataset
 import json
+from data_manipulation.data_processing import _add_noise2audio
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
 
 
 import re # RegEx
-
-_params = get_configs("../configs/audio_processing.yaml")
-
-_logger = setup_logger("../logger/logs/data_utls.log", location="data utils")
-_logger.getLogger(__name__)
 
 URL = "dev-clean"
 
@@ -91,13 +88,11 @@ def _process_librispeech_dataset(metadata_file_path):
                 audio_id, transcript = parts
                 metadata_dict[audio_id] = transcript
     # logging
-    _logger.log(_logger.INFO, "GET METADATA DICT")
     return metadata_dict
 
 
 def write_metadata_txt_2_csv(csv_path: str):
     # define metadata
-    _logger.log(_logger.INFO, "DEFINE METADATA")
     metadata_dict = _process_librispeech_dataset("librispeech/train-transcripts.txt")
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as csv_file:
@@ -110,7 +105,6 @@ def write_metadata_txt_2_csv(csv_path: str):
         for audio_id, transcript in metadata_dict.items():
             csv_writer.writerow([audio_id, transcript])
 
-    _logger.log(_logger.INFO, "WRITE CSV COMPETE")
 
 
 def combine_audio_from_folders():
@@ -164,7 +158,7 @@ def concat_transcripts_txt_file() -> None:
 
 
 # get longest audio
-def _get_long_audio(source_path: str = "./librispeech/train-custom-clean") -> List[Tuple[torch.Tensor, str]]:
+def _get_long_audio(source_path: str = "./librispeech/train-custom-clean", params = None) -> List[Tuple[torch.Tensor, str]]:
     # shape [n_frames, banks] get long audio from 900 n_frames
     laus = []
     print("Getting long audio")
@@ -176,12 +170,11 @@ def _get_long_audio(source_path: str = "./librispeech/train-custom-clean") -> Li
         audio_array, _ = torchaudio.load(file_path)
 
         # get log mel shape
-        logmel_sample = audio_transforms(array=audio_array, params=_params)
+        logmel_sample = audio_transforms(array=audio_array, params=params)
 
         # log mel shape [n_frames, banks]
         if logmel_sample.size(0) > 900:
             laus.append((logmel_sample.shape, file_path))
-            _logger.log(_logger.INFO, f"Long audio frames: {logmel_sample.shape} Path: {file_path}")
 
     print("DONE Getting long audio")
     return laus
@@ -262,6 +255,43 @@ def get_mnmx_value_df(path, col = "duration"):
     max_val = df[col].max()
     print(f"Min val: {min_val} Max val: {max_val}")
 
+def create_aug_audio(path: str):
+    # path -> ref to metadata train, dev
+    # dest dir
+    dest_dir = "./librispeech/augmented-train"
+
+    # get noise data
+    noise_path = "./noises/re_radio.wav" # radio noise
+    noise_array, _ = torchaudio.load(noise_path)
+
+    # root dir
+    root_dir = "./librispeech/train-custom-clean/"
+    reader = csv.reader(open(path, 'r', encoding="utf-8"))
+
+    # preprocessing audio
+    for row in reader:
+        print(f"Processing with: {row[0]}")
+        sample_path = os.path.join(root_dir, row[0])
+        array, _ = torchaudio.load(sample_path)
+        augmented_audio = _add_noise2audio(array, noise_array)
+        augmented_audio = augmented_audio.mean(0).unsqueeze(0)
+
+        # ./librispeech/augmented-train/111.00.flac
+        dest_path = os.path.join(dest_dir, row[0] + ".flac")
+        print(f"Saving augmneted audio: {row[0]}")
+        torchaudio.save(dest_path, augmented_audio, 16000)
+
 if __name__ == "__main__":
-    build_data_manifest("./dev-clean.csv", "dev-manifest.json")
+    # aug dataset
+    # path = "./examples/kkk.flac"
+    # noise_path = "./noises/re_radio.wav"
+    # array, _ = torchaudio.load(path)
+    # noise_array, _ = torchaudio.load(noise_path)
+    # augmented_audio = _add_noise2audio(array, noise_array)
+    # augmented_audio = augmented_audio.mean(0).unsqueeze(0)
+    # path = f"./examples/aug2.flac"
+    # torchaudio.save(path, augmented_audio, 16000)
+    
+    create_aug_audio("./metadata-train-clean.csv")
+    
     print("DONE")
