@@ -1,13 +1,14 @@
 import tempfile
 from functools import cache
 import torch
+import numpy as np
 from torchaudio._internal import download_url_to_file
 from torchaudio.datasets.utils import _extract_tar
 import os
 import csv
 import pandas as pd
 import shutil
-from feats_extraction.log_mel import audio_transforms
+from .feats_extraction.log_mel import audio_transforms
 from typing import List, Tuple
 import torchaudio
 import torch
@@ -15,6 +16,7 @@ from tqdm import tqdm
 from utils.utils import get_configs
 from torch.utils.data import Dataset
 import json
+from scipy.io import wavfile
 from data_manipulation.data_processing import _add_noise2audio
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
 
@@ -249,6 +251,24 @@ def build_data_manifest(path: str, outpath: str):
             except ValueError:
                 pass
 
+# create noise (normal distribution)
+def create_noise(path: str):
+    # Define parameters
+    duration = 20  # Duration of the audio clip in seconds
+    sample_rate = 16000  # Sample rate in Hz
+    mean = 0
+    std_dev = 0.008
+
+    # Generate noise array
+    array_size = duration * sample_rate
+    noise_array = np.random.normal(mean, std_dev, size=array_size).astype(np.float32)
+
+    # Clip values to be within the range [-0.2, 0.2]
+    noise_array = np.clip(noise_array, -0.2, 0.2)
+
+    wavfile.write(path, sample_rate, noise_array)
+
+
 def get_mnmx_value_df(path, col = "duration"):
     df = pd.read_csv(path)
     min_val = df[col].min()
@@ -258,7 +278,7 @@ def get_mnmx_value_df(path, col = "duration"):
 def create_aug_audio(path: str):
     # path -> ref to metadata train, dev
     # dest dir
-    dest_dir = "./librispeech/augmented-train"
+    dest_dir = "./librispeech/augmented-dev"
 
     # get noise data
     noise_path = "./noises/re_radio.wav" # radio noise
@@ -294,6 +314,6 @@ if __name__ == "__main__":
     # path = f"./examples/aug2.flac"
     # torchaudio.save(path, augmented_audio, 16000)
     
-    create_aug_audio("./metadata-train-clean.csv")
+    create_aug_audio("./metadata-dev-clean.csv")
     
     print("DONE")
