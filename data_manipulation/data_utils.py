@@ -268,10 +268,12 @@ def create_aug_audio(path: str):
     root_dir = "./librispeech/train-custom-clean/"
     reader = csv.reader(open(path, 'r', encoding="utf-8"))
 
+    next((reader))
+
     # preprocessing audio
     for row in reader:
         print(f"Processing with: {row[0]}")
-        sample_path = os.path.join(root_dir, row[0])
+        sample_path = os.path.join(root_dir, row[0] + ".flac")
         array, _ = torchaudio.load(sample_path)
         augmented_audio = _add_noise2audio(array, noise_array)
         augmented_audio = augmented_audio.mean(0).unsqueeze(0)
