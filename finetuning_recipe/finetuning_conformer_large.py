@@ -45,9 +45,9 @@ if __name__ == "__main__":
   # dataloader
   params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['validation_ds']['sample_rate'] = SAMPLE_RATE
-  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/train-manifest.json"
-  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/dev-manifest.json"
-  # params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/test-manifest.json"
+  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/metadata/train-aug-manifest.json"
+  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/dev-aug-manifest.json"
+  params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/test-aug-manifest.json"
 
   main(MODEL_NAME=MODEL_LARGE, params=params)
 

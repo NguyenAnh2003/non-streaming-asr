@@ -201,7 +201,7 @@ def remove_un_data(csv_path: str):
     reader = csv.reader(csv_file)
 
     # read vocab size
-    vocab_file = open("vocab.txt", 'r', encoding="utf-8")
+    vocab_file = open("metadata/vocab.txt", 'r', encoding="utf-8")
 
     for line in vocab_file:
         word = line.replace("\n", "").strip()
@@ -305,6 +305,5 @@ def create_aug_audio(path: str):
         torchaudio.save(dest_path, augmented_audio, 16000)
 
 if __name__ == "__main__":
-    create_aug_audio("./metadata-dev-clean.csv")
-    
+    build_data_manifest("metadata/test-aug.csv", "metadata/test-aug-manifest.json")
     print("DONE")

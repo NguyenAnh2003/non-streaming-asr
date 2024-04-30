@@ -117,5 +117,5 @@ def preprocess_ds(path):
 
 
 if __name__ == "__main__":
-    preprocess_ds("./metadata-dev-clean.csv")
+    preprocess_ds("metadata/metadata-dev-clean.csv")
     print("DONE")
