@@ -42,7 +42,7 @@ optimizer = Adam(model.parameters(), lr=LR)
 criterion = nn.CTCLoss(reduction="sum") #
 
 # init dataloader
-libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/metadata/vocab.txt") # librispeech vocab
+libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/dictionary.txt") # librispeech vocab
 
 train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata/metadata-train-clean.csv",
                          root_dir="../data_manipulation/librispeech/train-custom-clean")
