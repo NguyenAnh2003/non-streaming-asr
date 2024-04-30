@@ -38,17 +38,16 @@ def main(MODEL_NAME: str, params):
 
 if __name__ == "__main__":
   SAMPLE_RATE = 16000
-  path = "../data_manipulation/librispeech/train-custom-clean"
+  path = "../data_manipulation/librispeech/augmented-train"
   params = get_configs("../configs/conformer_ctc_bpe.yaml")
   MODEL_LARGE = "stt_en_conformer_ctc_large_ls"
 
   # dataloader
   params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['validation_ds']['sample_rate'] = SAMPLE_RATE
+  params['model']['test_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/metadata/train-aug-manifest.json"
   params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/dev-aug-manifest.json"
   params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/test-aug-manifest.json"
 
   main(MODEL_NAME=MODEL_LARGE, params=params)
-
-
