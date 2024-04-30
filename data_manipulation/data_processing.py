@@ -92,9 +92,9 @@ def _get_duration(path):
 
 def preprocess_ds(path):
     # process each sample
-    root_dir = "./librispeech/dev-custom-clean/"
-    r2 = "../data_manipulation/librispeech/dev-custom-clean/" # used for fine tuning file location
-    df = pd.read_csv(path)
+    root_dir = "./librispeech/augmented-train/"
+    r2 = "../data_manipulation/librispeech/augmented-train/" # used for fine tuning file location
+    df = pd.read_csv(path, nrows=24000)
 
     # preprocess durations
     durations = []
@@ -113,9 +113,9 @@ def preprocess_ds(path):
     for audio_transcript in df["transcript"]:
         lower_transcripts.append(audio_transcript.lower())
     df["transcript"] = lower_transcripts
-    df.to_csv("./dev-clean.csv", index=False)
+    df.to_csv("./train-aug.csv", index=False)
 
 
 if __name__ == "__main__":
-    preprocess_ds("./metadata-dev-clean.csv")
+    preprocess_ds("./metadata-train-clean.csv")
     print("DONE")

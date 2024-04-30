@@ -237,6 +237,7 @@ def collapsing_words(path: str, dest: str):
 
 def build_data_manifest(path: str, outpath: str):
     reader = csv.reader(open(path, "r", encoding="utf-8"))
+    next(reader)
     with open(outpath, 'w') as fout:
         for line in reader:
             try:
