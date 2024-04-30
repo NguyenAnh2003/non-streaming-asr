@@ -125,5 +125,5 @@ def trainer(exp_name: str):
 if __name__ == "__main__":
   EXP_NAME = train_params['model_name']
   print(f"Learning rate: {LR}")
-  trainer(EXP_NAME)
-  # print(sum(get_model_params(model)))
+  # trainer(EXP_NAME)
+  print(sum(get_model_params(model)))

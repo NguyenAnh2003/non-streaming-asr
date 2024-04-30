@@ -12,11 +12,11 @@ class DecoderLSTM(nn.Module):
                  dropout: float = 0.1):
         super().__init__()
         # batch_first -> in & out (batch, seq, feature)
-        # self.lstm = nn.LSTM(input_size=input_size,
-        #                     hidden_size=hidden_size,
-        #                     bias=bias,
-        #                     batch_first=batch_first,
-        #                     bidirectional=bidirectional)
+        self.lstm = nn.LSTM(input_size=input_size,
+                            hidden_size=hidden_size,
+                            bias=bias,
+                            batch_first=batch_first,
+                            bidirectional=bidirectional)
 
         self.dropout = nn.Dropout(p=dropout)
 
