@@ -2,6 +2,7 @@ import torch
 from typing import List
 
 class GreedyCTCDecoder(torch.nn.Module):
+    # inference
     def __init__(self, labels, blank=0):
         super().__init__()
         self.labels = labels
