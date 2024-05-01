@@ -51,8 +51,8 @@ def test(model, params):
     targets_size = test_batch[3] #
     in_size = test_batch[1] #
     
-    print(f"Targets length: {targets_size} 
-          In size: {in_size}")
+    print(f"Targets length: {targets_size} "
+          f" In size: {in_size}")
     
     log_probs, encoded_len, greedy_predictions = model(
       input_signal=test_batch[0], input_signal_length=test_batch[1]
