@@ -77,13 +77,12 @@ def trainer(exp_name: str):
   # wandb watch model grads
   # wandb.watch(models=model, criterion=criterion, log="all", log_freq=10)
   device = get_device()
-  print(device)
 
   # iterate epochs
   for epoch in range(EPOCHS):
 
     # move model to cuda
-    model.cuda()
+    model.to(device)
 
     # train mode
     model.train()
@@ -124,6 +123,6 @@ def trainer(exp_name: str):
 
 if __name__ == "__main__":
   EXP_NAME = train_params['model_name']
-  print(f"Learning rate: {LR}")
-  # trainer(EXP_NAME)
-  print(sum(get_model_params(model)))
+  print(f"Learning rate: {LR} Batch size: {BATCH_SIZE}")
+  trainer(EXP_NAME)
+  # print(sum(get_model_params(model)))
