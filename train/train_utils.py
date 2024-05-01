@@ -57,14 +57,12 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
             inputs_sizes, target_sizes = inputs_sizes.cuda(), target_sizes.cuda()
 
         optimizer.zero_grad() # zero grad after batch trained
-        log_probs, lengths = model(log_mel, inputs_sizes) # get model log_probs per batch
+        log_probs, prediction, lengths = model(log_mel, inputs_sizes) # get model log_probs per batch
 
         # log_probs, transcripts, input_size, transcript_size
         loss = loss_fn(log_probs, transcripts, lengths, target_sizes)
-        _, index_max = torch.max(log_probs, dim=-1)
-        # print(f"Index: {index_max.transpose(0, 1)} Target: {transcripts}")
         # needed to transpose log_probs
-        batch_errs, batch_tokens = compute_wer(index_max.transpose(0, 1),
+        batch_errs, batch_tokens = compute_wer(prediction.transpose(0, 1),
                                                inputs_sizes, transcripts,
                                                target_sizes)
     
@@ -106,13 +104,11 @@ def eval_one_epoch(val_loader, model, loss_fn):
                 log_mel, transcripts = log_mel.cuda(), transcripts.cuda()
                 inputs_sizes, target_sizes = inputs_sizes.cuda(), target_sizes.cuda()
 
-            log_probs, lengths = model(log_mel, inputs_sizes)
-            # get index max
-            _, index_max = torch.max(log_probs, dim=-1)
+            log_probs, prediction, lengths = model(log_mel, inputs_sizes)
 
             # ctc loss
             loss = loss_fn(log_probs, transcripts, lengths, target_sizes) # log_probs, transcripts, input_size, transcript_size
-            batch_errs, batch_tokens = compute_wer(index_max.transpose(0, 1),
+            batch_errs, batch_tokens = compute_wer(prediction.transpose(0, 1),
                                                    inputs_sizes,
                                                    transcripts,
                                                    target_sizes)

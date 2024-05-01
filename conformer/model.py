@@ -125,7 +125,11 @@ class SpeechModel(nn.Module):
         # forward decoder
         out= self.decoder(hidden_state)
         out = out.contiguous().transpose(0, 1)
-        return self.log_softmax(out), lengths  # normalize output to probability with softmax
+
+        # output (log_probs, prediction(argmax), lengths)
+        log_probs = self.log_softmax(out)
+        prediction = torch.max(log_probs, dim=-1)
+        return log_probs, prediction, lengths  # normalize output to probability with softmax
 
 
 if __name__ == "__main__":
