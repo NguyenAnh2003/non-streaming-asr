@@ -34,7 +34,32 @@ def main(MODEL_NAME: str, params):
   conformer_large.save_to(f"../saved_model/{MODEL_NAME}")
   print("Saved model ... DONE")
 
-
+def test(model, params):
+  # prepare model
+  print(f"Prepare testing model: {model}")
+  model.setup_test_data(test_data_config=params['model']['test_ds'])
+  model.cuda()
+  model.eval()
+  
+  error_tokens = []
+  tokens = [] # label tokens
+  
+  for test_batch in model.test_dataloader():
+    test_batch = [x.cuda() for x in test_batch]
+    print(f"Test batch: {test_batch}")
+    targets = test_batch[2] #
+    targets_size = test_batch[3] #
+    in_size = test_batch[1] #
+    
+    print(f"Targets length: {targets_size} 
+          In size: {in_size}")
+    
+    log_probs, encoded_len, greedy_predictions = model(
+      input_signal=test_batch[0], input_signal_length=test_batch[1]
+    )
+    
+    print(f"Prediction: {log_probs.shape} Encoded len: {encoded_len} 
+          Greedy prediction: {greedy_predictions}")
 
 if __name__ == "__main__":
   SAMPLE_RATE = 16000
