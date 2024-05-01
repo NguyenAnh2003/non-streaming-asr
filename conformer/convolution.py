@@ -132,23 +132,9 @@ class ConvolutionModule(nn.Module):
         return conv_output.contiguous().transpose(1, 2)
     
 if __name__ == "__main__":
-    # print(f"Params: {_params}")
-    # conv subsampling
-    encoder_dim = 144
-    # batch_size, n_frames, mel bins
-    
-    # sample input
-    x = torch.randn(16, 144, 300)
-    print(f"Input shape: {x.shape}")
-    
-    conv_module = ConvolutionModule(in_channels=encoder_dim,
-                                    out_channels=encoder_dim,
-                                    kernel_size=1,
-                                    padding=0,
-                                    stride=1)
-
-    # conv module
-    conv_out = conv_module(x)
-    print(f"Conv out: {conv_out.shape}")
-
-    # squeeze
+    subsampling = ConvSubSampling(in_channels=1, out_channels=144, 
+                                  stride=2, kernel_size=3,
+                                  padding=1)
+    x = torch.randn(16, 786, 80)
+    supsampled_out = subsampling(x)
+    print(f"{supsampled_out.shape}")

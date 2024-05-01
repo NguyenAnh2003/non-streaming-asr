@@ -62,7 +62,9 @@ class SpeechModel(nn.Module):
         # from conv to linear the feature must be flatten
         """ linear """
         # in_feats must be out_channels of CNN, 16 as considered out channels
-        self.linear = nn.Linear(in_features=encoder_dim*input_dims,
+        self.linear = nn.Linear(
+                                # in_features=encoder_dim*input_dims,
+                                in_features=2880,
                                 out_features=encoder_dim,
                                 bias=True,
                                 dtype=torch.float32)
@@ -89,8 +91,23 @@ class SpeechModel(nn.Module):
 
         # encoder chain -> linear -> dropout -> conformer encoder blocks
         self.input_projection = nn.Sequential(self.linear, self.dropout)
+    
+    def calc_length(self, lengths, all_paddings, kernel_size, stride, ceil_mode, repeat_num=1):
+        add_pad: float = all_paddings - kernel_size
+        one: float = 1.0
+        for i in range(repeat_num):
+            lengths = torch.div(lengths.to(dtype=torch.float) + add_pad, stride) + one
+            if ceil_mode:
+                lengths = torch.ceil(lengths)
+            else:
+                lengths = torch.floor(lengths)
+        return lengths.to(dtype=torch.int)
 
-    def _forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward_encoder(self, x: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
+        # calculate lengths
+        out_lengths = self.calc_length(lengths, all_paddings=2, kernel_size=3,
+                                   stride=2, ceil_mode=False, repeat_num=2)
+
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
         x = self.conv_subsampling(x)
 
@@ -100,15 +117,15 @@ class SpeechModel(nn.Module):
         for layer in self.conformer_encoder_layers:
             output = layer(output)
             
-        return output
+        return output, out_lengths
 
-    def forward(self, x):
+    def forward(self, x, lengths):
         # forward encoder
-        hidden_state = self._forward_encoder(x)  # get relation ship between audio frame
+        hidden_state, lengths = self._forward_encoder(x, lengths)  # get relation ship between audio frame
         # forward decoder
         out= self.decoder(hidden_state)
         out = out.contiguous().transpose(0, 1)
-        return self.log_softmax(out)  # normalize output to probability with softmax
+        return self.log_softmax(out), lengths  # normalize output to probability with softmax
 
 
 if __name__ == "__main__":

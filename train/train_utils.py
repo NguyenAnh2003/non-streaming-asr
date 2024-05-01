@@ -52,38 +52,38 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
         # batch_log_mel, batch transcript
         # get input from batch
 
-        log_mel, transcripts = log_mel.cuda(), transcripts.cuda()
-        inputs_sizes, target_sizes = inputs_sizes.cuda(), target_sizes.cuda()
-        
-        optimizer.zero_grad() # zero grad after batch trained
-        prediction = model(log_mel) # get model prediction per batch
+        if torch.cuda.is_available():
+            log_mel, transcripts = log_mel.cuda(), transcripts.cuda()
+            inputs_sizes, target_sizes = inputs_sizes.cuda(), target_sizes.cuda()
 
-        # prediction, transcripts, input_size, transcript_size
-        loss = loss_fn(prediction, transcripts, inputs_sizes, target_sizes)
-        _, index_max = torch.max(prediction, dim=-1)
+        optimizer.zero_grad() # zero grad after batch trained
+        log_probs, lengths = model(log_mel, inputs_sizes) # get model log_probs per batch
+
+        # log_probs, transcripts, input_size, transcript_size
+        loss = loss_fn(log_probs, transcripts, lengths, target_sizes)
+        _, index_max = torch.max(log_probs, dim=-1)
         # print(f"Index: {index_max.transpose(0, 1)} Target: {transcripts}")
-        # needed to transpose prediction
+        # needed to transpose log_probs
         batch_errs, batch_tokens = compute_wer(index_max.transpose(0, 1),
                                                inputs_sizes, transcripts,
                                                target_sizes)
-
+    
         # accuracy
         total_errs += batch_errs
         total_tokens += batch_tokens
-
+    
         # backward process
         loss.backward()
-
+    
         # adjust weights
         optimizer.step()
-        
+    
         # batch_loss processing
         batch_losses.append(loss.item())
-
+    
     # metric WER
     WER = total_errs / total_tokens
 
-    # append batch_loss
     epoch_losses.append(sum(batch_losses)/len(batch_losses))
     print(f"Train loss: {sum(epoch_losses)/len(epoch_losses)} "
           f"Train Acc: {WER}")
@@ -105,12 +105,12 @@ def eval_one_epoch(val_loader, model, loss_fn):
             log_mel, transcripts = log_mel.cuda(), transcripts.cuda()
             inputs_sizes, target_sizes = inputs_sizes.cuda(), target_sizes.cuda()
 
-            prediction = model(log_mel)
+            log_probs = model(log_mel)
             # get index max
-            _, index_max = torch.max(prediction, dim=-1)
+            _, index_max = torch.max(log_probs, dim=-1)
 
             # ctc loss
-            loss = loss_fn(prediction, transcripts, inputs_sizes, target_sizes) # prediction, transcripts, input_size, transcript_size
+            loss = loss_fn(log_probs, transcripts, inputs_sizes, target_sizes) # log_probs, transcripts, input_size, transcript_size
             batch_errs, batch_tokens = compute_wer(index_max.transpose(0, 1),
                                                    inputs_sizes,
                                                    transcripts,
