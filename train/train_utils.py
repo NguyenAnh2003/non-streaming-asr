@@ -102,15 +102,16 @@ def eval_one_epoch(val_loader, model, loss_fn):
     with torch.no_grad():
         for step, (log_mel, transcripts, inputs_sizes, target_sizes) in tqdm(enumerate(val_loader)):
             # get inputs from batch
-            log_mel, transcripts = log_mel.cuda(), transcripts.cuda()
-            inputs_sizes, target_sizes = inputs_sizes.cuda(), target_sizes.cuda()
+            if torch.cuda.is_available():
+                log_mel, transcripts = log_mel.cuda(), transcripts.cuda()
+                inputs_sizes, target_sizes = inputs_sizes.cuda(), target_sizes.cuda()
 
-            log_probs = model(log_mel)
+            log_probs, lengths = model(log_mel, inputs_sizes)
             # get index max
             _, index_max = torch.max(log_probs, dim=-1)
 
             # ctc loss
-            loss = loss_fn(log_probs, transcripts, inputs_sizes, target_sizes) # log_probs, transcripts, input_size, transcript_size
+            loss = loss_fn(log_probs, transcripts, lengths, target_sizes) # log_probs, transcripts, input_size, transcript_size
             batch_errs, batch_tokens = compute_wer(index_max.transpose(0, 1),
                                                    inputs_sizes,
                                                    transcripts,

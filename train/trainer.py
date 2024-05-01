@@ -89,18 +89,18 @@ def trainer(exp_name: str):
     model.train()
 
     # average loss
-    # train_avg_loss, train_avg_acc = train_one_epoch(train_loader=train_dataloader,
-    #                                  model=model,
-    #                                  optimizer=optimizer,
-    #                                  loss_fn=criterion)
+    train_avg_loss, train_avg_acc = train_one_epoch(train_loader=train_dataloader,
+                                     model=model,
+                                     optimizer=optimizer,
+                                     loss_fn=criterion)
 
-    train_one_epoch(train_loader=train_dataloader,
-                    model=model,
-                    optimizer=optimizer,
-                    loss_fn=criterion)
+    # train_one_epoch(train_loader=train_dataloader,
+    #                 model=model,
+    #                 optimizer=optimizer,
+    #                 loss_fn=criterion)
 
     # append avg loss
-    # train_losses.append(train_avg_loss)
+    train_losses.append(train_avg_loss)
 
     # model validation
     model.eval()
@@ -111,11 +111,10 @@ def trainer(exp_name: str):
     val_losses.append(val_avg_loss)
 
     # console log
-    # print(f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss} "
-    #       f"TRAIN WER: {train_avg_acc} DEV WER: {val_avg_acc} "
-    #       f"TIME: {get_executing_time(start_time=start_time)}")
+    print(f"EPOCH: {epoch+1} TRAIN LOSS: {train_avg_loss} DEV LOSS: {val_avg_loss} "
+          f"TRAIN WER: {train_avg_acc} DEV WER: {val_avg_acc} "
+          f"TIME: {get_executing_time(start_time=start_time)}")
 
-    # wandb logging
     # train_logging(train_loss=train_avg_loss, train_acc=train_avg_acc,
     #               dev_loss=val_avg_loss, dev_acc=val_avg_acc, epoch=epoch)
 
