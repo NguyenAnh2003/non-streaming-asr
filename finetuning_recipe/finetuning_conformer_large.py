@@ -58,8 +58,8 @@ def test(model, params):
       input_signal=test_batch[0], input_signal_length=test_batch[1]
     )
     
-    print(f"Prediction: {log_probs.shape} Encoded len: {encoded_len} 
-          Greedy prediction: {greedy_predictions}")
+    print(f"Prediction: {log_probs.shape} Encoded len: {encoded_len} "
+          f" Greedy prediction: {greedy_predictions}")
 
 if __name__ == "__main__":
   SAMPLE_RATE = 16000
