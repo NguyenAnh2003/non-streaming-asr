@@ -36,53 +36,53 @@ def main(MODEL_NAME: str, params):
 
 def test(MODEL_NAME, params):
   # prepare model
-  first_asr_model = nemo_asr.models.EncDecCTCModelBPE.restore_from(
+  conformer_large = nemo_asr.models.EncDecCTCModelBPE.restore_from(
     restore_path=f"../saved_model/{MODEL_NAME}")
 
   print(f"Prepare testing model: {MODEL_NAME}")
-  first_asr_model.setup_test_data(test_data_config=params['model']['test_ds'])
-  first_asr_model.cuda()
-  first_asr_model.eval()
+  conformer_large.setup_test_data(test_data_config=params['model']['test_ds'])
+  conformer_large.cuda()
+  conformer_large.eval()
   
   wer_nums = []
   wer_denoms = [] # label tokens
   
+  for test_batch in conformer_large.test_dataloader():
+    test_batch = [x.cuda() for x in test_batch]
+    targets = test_batch[2] #
+    targets_size = test_batch[3] #
+    in_size = test_batch[1] #
+
+    print(f"Targets length: {targets_size} "
+          f" In size: {in_size}")
+
+    log_probs, encoded_len, greedy_predictions = conformer_large(
+      input_signal=test_batch[0], input_signal_length=test_batch[1]
+    )
+
+    print(f"Prediction: {log_probs.shape} Encoded len: {encoded_len} "
+          f" Greedy prediction: {greedy_predictions}")
+
   # for test_batch in conformer_large.test_dataloader():
   #   test_batch = [x.cuda() for x in test_batch]
-  #   targets = test_batch[2] #
-  #   targets_size = test_batch[3] #
-  #   in_size = test_batch[1] #
-  #
-  #   print(f"Targets length: {targets_size} "
-  #         f" In size: {in_size}")
-  #
+  #   targets = test_batch[2]
+  #   targets_lengths = test_batch[3]
   #   log_probs, encoded_len, greedy_predictions = conformer_large(
   #     input_signal=test_batch[0], input_signal_length=test_batch[1]
   #   )
+  #   # Notice the model has a helper object to compute WER
+  #   conformer_large.wer.update(predictions=greedy_predictions, predictions_lengths=None, targets=targets,
+  #                              targets_lengths=targets_lengths)
+  #   _, wer_num, wer_denom = conformer_large.wer.compute()
+  #   conformer_large.wer.reset()
+  #   wer_nums.append(wer_num.detach().cpu().numpy())
+  #   wer_denoms.append(wer_denom.detach().cpu().numpy())
   #
-  #   print(f"Prediction: {log_probs.shape} Encoded len: {encoded_len} "
-  #         f" Greedy prediction: {greedy_predictions}")
-
-  for test_batch in first_asr_model.test_dataloader():
-    test_batch = [x.cuda() for x in test_batch]
-    targets = test_batch[2]
-    targets_lengths = test_batch[3]
-    log_probs, encoded_len, greedy_predictions = first_asr_model(
-      input_signal=test_batch[0], input_signal_length=test_batch[1]
-    )
-    # Notice the model has a helper object to compute WER
-    first_asr_model.wer.update(predictions=greedy_predictions, predictions_lengths=None, targets=targets,
-                               targets_lengths=targets_lengths)
-    _, wer_num, wer_denom = first_asr_model.wer.compute()
-    first_asr_model.wer.reset()
-    wer_nums.append(wer_num.detach().cpu().numpy())
-    wer_denoms.append(wer_denom.detach().cpu().numpy())
-
-    # Release tensors from GPU memory
-    del test_batch, log_probs, targets, targets_lengths, encoded_len, greedy_predictions
-
-  # We need to sum all numerators and denominators first. Then divide.
-  print(f"WER = {sum(wer_nums) / sum(wer_denoms)}")
+  #   # Release tensors from GPU memory
+  #   del test_batch, log_probs, targets, targets_lengths, encoded_len, greedy_predictions
+  #
+  # # We need to sum all numerators and denominators first. Then divide.
+  # print(f"WER = {sum(wer_nums) / sum(wer_denoms)}")
 
 if __name__ == "__main__":
   SAMPLE_RATE = 16000

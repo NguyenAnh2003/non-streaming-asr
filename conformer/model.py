@@ -103,7 +103,7 @@ class SpeechModel(nn.Module):
                 lengths = torch.floor(lengths)
         return lengths.to(dtype=torch.int)
 
-    def _forward_encoder(self, x: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
+    def _forward_encoder(self, x: torch.Tensor, lengths: torch.Tensor):
         # calculate lengths
         out_lengths = self.calc_length(lengths, all_paddings=2, kernel_size=3,
                                    stride=2, ceil_mode=False, repeat_num=2)
