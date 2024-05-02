@@ -60,8 +60,7 @@ def test(MODEL_NAME, params):
       input_signal=test_batch[0], input_signal_length=test_batch[1]
     )
 
-    print(f"Prediction: {log_probs.shape} Encoded len: {encoded_len} "
-          f" Greedy prediction: {greedy_predictions}")
+    print(f"Prediction: {log_probs.shape} Encoded len: {encoded_len} ")
 
   # for test_batch in conformer_large.test_dataloader():
   #   test_batch = [x.cuda() for x in test_batch]
@@ -96,16 +95,18 @@ if __name__ == "__main__":
   path = "../data_manipulation/librispeech/augmented-train"
   params = get_configs("../configs/conformer_ctc_bpe.yaml")
   MODEL_LARGE = "stt_en_conformer_ctc_large_ls"
+  SAVED_MODEL = "stt_en_conformer_ctc_large_customs_ls.nemo"
+
 
   # dataloader
   params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['validation_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['test_ds']['sample_rate'] = SAMPLE_RATE
-  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/metadata/train-aug-manifest.json"
-  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/dev-aug-manifest.json"
-  params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/test-aug-manifest.json"
+  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/train-aug-manifest.json"
+  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/dev-aug-manifest.json"
+  params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/test-aug-manifest.json"
 
-  main(MODEL_NAME=MODEL_LARGE, params=params)
-  # test(MODEL_LARGE, params)
+  # main(MODEL_NAME=MODEL_LARGE, params=params)
+  test(SAVED_MODEL, params)
   # inference("../data_manipulation/librispeech/augmented-dev/84-121123-0000.flac", MODEL_LARGE)
 
