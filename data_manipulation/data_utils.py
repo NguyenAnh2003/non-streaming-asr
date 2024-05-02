@@ -13,7 +13,6 @@ from typing import List, Tuple
 import torchaudio
 import torch
 from tqdm import tqdm
-from utils.utils import get_configs
 from torch.utils.data import Dataset
 import json
 from scipy.io import wavfile
@@ -95,7 +94,7 @@ def _process_librispeech_dataset(metadata_file_path):
 
 def write_metadata_txt_2_csv(csv_path: str):
     # define metadata
-    metadata_dict = _process_librispeech_dataset("librispeech/train-transcripts.txt")
+    metadata_dict = _process_librispeech_dataset("librispeech/test-transcripts.txt")
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as csv_file:
         # define csv writer
@@ -110,8 +109,8 @@ def write_metadata_txt_2_csv(csv_path: str):
 
 
 def combine_audio_from_folders():
-    source_folder_path = "./librispeech/train-clean-100/train-clean-100"
-    destination_folder_path = "librispeech/train-custom-clean"
+    source_folder_path = "./librispeech/test-clean/test-clean"
+    destination_folder_path = "librispeech/test-custom-clean"
 
     # list all child folder in parent
     for folder_name in os.listdir(source_folder_path):
@@ -144,9 +143,9 @@ def get_number_audio_samples():
 # LibriSpeech utils
 def concat_transcripts_txt_file() -> None:
     # source path
-    source_path = "./librispeech/train_libri_transcripts"
+    source_path = "./librispeech/lb-test-transcripts"
     # combined transcript txt file
-    combined_txt_path = "librispeech/train-transcripts.txt"
+    combined_txt_path = "librispeech/test-transcripts.txt"
 
     # open combined file
     with open(combined_txt_path, 'w', encoding='utf-8') as dest_file:
@@ -305,5 +304,5 @@ def create_aug_audio(path: str):
         torchaudio.save(dest_path, augmented_audio, 16000)
 
 if __name__ == "__main__":
-    build_data_manifest("metadata/test-aug.csv", "metadata/test-aug-manifest.json")
+    write_metadata_txt_2_csv("./metadata/metadata-test-clean.csv")
     print("DONE")
