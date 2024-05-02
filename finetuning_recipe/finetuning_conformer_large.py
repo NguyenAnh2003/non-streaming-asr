@@ -106,7 +106,7 @@ if __name__ == "__main__":
   params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/dev-aug-manifest.json"
   params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/test-aug-manifest.json"
 
-  # main(MODEL_NAME=MODEL_LARGE, params=params)
-  test(SAVED_MODEL, params)
+  main(MODEL_NAME=MODEL_LARGE, params=params)
+  # test(SAVED_MODEL, params)
   # inference("../data_manipulation/librispeech/augmented-dev/84-121123-0000.flac", MODEL_LARGE)
 
