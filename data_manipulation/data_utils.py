@@ -250,7 +250,7 @@ def build_data_manifest(path: str, outpath: str):
                 json.dump(meta_data, fout)
                 fout.write("\n")
             except ValueError:
-                pass
+                raise ValueError("Cannot convert str to float")
 
 # create noise (normal distribution)
 def create_noise(path: str):

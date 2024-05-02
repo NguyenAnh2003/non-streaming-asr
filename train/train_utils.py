@@ -63,7 +63,7 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
         loss = loss_fn(log_probs, transcripts, lengths, target_sizes)
         # needed to transpose log_probs
         batch_errs, batch_tokens = compute_wer(prediction.transpose(0, 1),
-                                               inputs_sizes, transcripts,
+                                               lengths, transcripts,
                                                target_sizes)
     
         # accuracy
@@ -109,7 +109,7 @@ def eval_one_epoch(val_loader, model, loss_fn):
             # ctc loss
             loss = loss_fn(log_probs, transcripts, lengths, target_sizes) # log_probs, transcripts, input_size, transcript_size
             batch_errs, batch_tokens = compute_wer(prediction.transpose(0, 1),
-                                                   inputs_sizes,
+                                                   lengths,
                                                    transcripts,
                                                    target_sizes)
 
