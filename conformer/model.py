@@ -26,6 +26,7 @@ class DecoderLSTM(nn.Module):
 class SpeechModel(nn.Module):
 
     def __init__(self,
+                 input_dims: int,
                  in_channels: int,
                  sub_kernel_size: int,
                  pw_kernel_size: int,
@@ -58,7 +59,7 @@ class SpeechModel(nn.Module):
         # in_feats must be out_channels of CNN, 16 as considered out channels
         self.linear = nn.Linear(
                                 # in_features=encoder_dim*input_dims,
-                                in_features=encoder_dim // 4,
+                                in_features=((input_dims // 4) * encoder_dim),
                                 out_features=encoder_dim,
                                 bias=True,
                                 dtype=torch.float32)

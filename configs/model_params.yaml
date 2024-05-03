@@ -4,7 +4,7 @@
 depthwise_kernel_size: 31
 subsampling_kernel_size: 3
 pointwise_kernel_size: 1
-
+input_dims: 80
 # cnn channel for conv subsampling
 #channels: "[(1, 16), (16, 64)]"
 channels: 1
