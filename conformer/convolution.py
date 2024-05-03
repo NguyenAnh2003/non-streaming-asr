@@ -75,7 +75,8 @@ class ConvolutionModule(nn.Module):
                  out_channels: int,
                  stride: int = 1, 
                  padding: int = 0, 
-                 kernel_size: int = 1,
+                 pointwise_kernel_size: int = 1,
+                 depthwise_kernel_size: int = 31,
                  bias: bool = True):
         super().__init__()
 
@@ -84,7 +85,7 @@ class ConvolutionModule(nn.Module):
 
         self.point_wise1 = PointWise1DConv(in_channels=in_channels, 
                                            out_channels=out_channels*2, # duoble out channels
-                                           kernel_size=kernel_size,
+                                           kernel_size=pointwise_kernel_size,
                                            stride=stride, 
                                            padding=padding, 
                                            bias=bias) # customized Pointwise Conv
@@ -94,6 +95,8 @@ class ConvolutionModule(nn.Module):
         """ Depthwise Conv 1D """
         self.dw_conv = DepthWise1DConv(in_channels=out_channels,
                                        out_channels=out_channels, 
+                                       kernel_size=depthwise_kernel_size,
+                                       padding=((depthwise_kernel_size - 1) // 2)
                                        bias=bias)
 
         """ this batch norm layer stand behind the depth wise conv (1D) """
@@ -104,7 +107,7 @@ class ConvolutionModule(nn.Module):
 
         self.point_wise2 = PointWise1DConv(in_channels=out_channels, 
                                            out_channels=out_channels, 
-                                           kernel_size=kernel_size,
+                                           kernel_size=pointwise_kernel_size,
                                            stride=1, 
                                            padding=padding,
                                            bias=True) #

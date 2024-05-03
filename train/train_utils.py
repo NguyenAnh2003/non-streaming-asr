@@ -14,20 +14,23 @@ def setup_speech_model():
     encoder_dim = params['encoder_dim']
     decoder_dim = params['decoder_dim']
     in_channels = params['channels']
-    input_dims = params['input_dims']
     num_classes = params['num_classes']
     subsample_stride = params['subsampling_stride']
     conv_module_stride = params['normal_stride']
     num_layers = params['num_layers']
-    kernel_size = params['kernel_size']
+    dw_kernel_size = params['depthwise_kernel_size']
+    sub_kernel_size = params['subsampling_kernel_size']
+    pw_kernel_size = params['pointwise_kernel_size']
 
     # setup model
     model = SpeechModel(
-                    input_dims=input_dims,
                     in_channels=in_channels,
                     encoder_dim=encoder_dim,
                     decoder_dim=decoder_dim,
-                    kernel_size=kernel_size, padding=1,
+                    padding=1,
+                    sub_kernel_size=sub_kernel_size,
+                    dw_kernel_size=dw_kernel_size,
+                    pw_kernel_size=pw_kernel_size, 
                     num_layers=num_layers,
                     subsample_stride=subsample_stride,
                     normal_stride=conv_module_stride,

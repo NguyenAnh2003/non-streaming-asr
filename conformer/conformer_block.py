@@ -35,6 +35,8 @@ class ConformerBlock(nn.Module):
                  dropout: float = 0.1, 
                  attention_heads: int = 4, 
                  encoder_dim: int = 144,
+                 pw_ksize: int = 1,
+                 dw_ksize: int = 31,
                  conv_model_stride: int = 1):
         super().__init__()
         
@@ -55,6 +57,8 @@ class ConformerBlock(nn.Module):
             module=ConvolutionModule(
                 in_channels=encoder_dim,
                 out_channels=encoder_dim,
+                pointwise_kernel_size=pw_ksize,
+                depthwise_kernel_size=dw_ksize,
                 stride=conv_model_stride),
             residual_half_step=1.0)
 

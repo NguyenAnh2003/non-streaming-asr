@@ -11,13 +11,6 @@ class DecoderLSTM(nn.Module):
                  num_classes: int = 0,
                  dropout: float = 0.1):
         super().__init__()
-        # batch_first -> in & out (batch, seq, feature)
-        # self.lstm = nn.LSTM(input_size=input_size,
-        #                     hidden_size=hidden_size,
-        #                     bias=bias,
-        #                     batch_first=batch_first,
-        #                     bidirectional=bidirectional)
-
         self.dropout = nn.Dropout(p=dropout)
 
         self.output_projection = nn.Linear(in_features=d_model,
@@ -33,12 +26,13 @@ class DecoderLSTM(nn.Module):
 class SpeechModel(nn.Module):
 
     def __init__(self,
-                 input_dims: int,
                  in_channels: int,
-                 kernel_size: int,
+                 sub_kernel_size: int,
+                 pw_kernel_size: int,
+                 dw_kernel_size: int,
                  num_classes: int,
                  dropout: float = 0.1,
-                 padding: int = 2,
+                 padding: int = 1,
                  num_layers: int = 16,
                  n_heads: int = 4,
                  encoder_dim: int = 144,
@@ -55,16 +49,16 @@ class SpeechModel(nn.Module):
         # usually audio have only 1 channel -> in_channel : 1
         self.conv_subsampling = ConvSubSampling(in_channels=in_channels,
                                                 out_channels=encoder_dim,
-                                                kernel_size=3,
+                                                kernel_size=sub_kernel_size,
                                                 stride=subsample_stride,
-                                                padding=1)  # config
+                                                padding=padding)  # config
 
         # from conv to linear the feature must be flatten
         """ linear """
         # in_feats must be out_channels of CNN, 16 as considered out channels
         self.linear = nn.Linear(
                                 # in_features=encoder_dim*input_dims,
-                                in_features=2880,
+                                in_features=encoder_dim // 4,
                                 out_features=encoder_dim,
                                 bias=True,
                                 dtype=torch.float32)
@@ -76,6 +70,8 @@ class SpeechModel(nn.Module):
         self.conformer_encoder_layers = nn.ModuleList([
             ConformerBlock(encoder_dim=encoder_dim,
                            attention_heads=n_heads,
+                           pw_ksize = pw_kernel_size,
+                           dw_ksize = dw_kernel_size,
                            conv_model_stride=normal_stride
                            ) for _ in range(num_layers)])  #
 
