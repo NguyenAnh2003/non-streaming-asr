@@ -1,7 +1,9 @@
 
 # Convolution
 # kernel size define sequentially
-kernel_size: 31
+depthwise_kernel_size: 31
+subsampling_kernel_size: 3
+pointwise_kernel_size: 1
 
 # cnn channel for conv subsampling
 #channels: "[(1, 16), (16, 64)]"
@@ -17,6 +19,5 @@ num_layers: 16
 # LSTM
 batch_first: True
 # num clases out for linear deocder
-#num_classes: 16360
-num_classes: 16360   # number of characters
+num_classes: 29   # number of characters
 decoder_dim: 144

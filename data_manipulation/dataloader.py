@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, Dataset # torch Dataset
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
-from .feats_extraction.log_mel import audio_transforms
+from feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
 import torchaudio
 from logger.my_logger import setup_logger
@@ -9,6 +9,7 @@ import pandas as pd
 import os
 from typing import Tuple, List
 from tqdm import tqdm
+import json
 
 
 _FILTER_BANKS = 80
@@ -16,21 +17,23 @@ _FILTER_BANKS = 80
 # vocab
 class LibriSpeechVocabRAW:
 
-    def __init__(self, vocab_file_path: str = "./vocab.txt"):
+    def __init__(self, vocab_file_path: str = "./vocab.json"):
         # vocab file
         self.vocab_file = vocab_file_path
-        self.word2index = {"PAD": 0, "UNF": 1} # update code
-        self.index2word = {0: "PAD", 1: "UNF"} # update code
+        self.word2index = {" ": 30} # update code
+        self.index2word = {30: " "} # update code
         self.index_of_word = 2 # default index for a word
+        self.vocab = {}
         self._process_vocab()
 
     def _process_vocab(self):
         with open(self.vocab_file, 'r', encoding='utf-8') as vb_file:
-            for line in vb_file:
-                # assign word to index and index to word (line.replace("\n", "") represent for a line -> 1 word 1 line)
-                self.word2index[line.replace("\n", "")] = self.index_of_word
-                self.index2word[self.index_of_word] = line.replace("\n", "")
-                self.index_of_word += 1 # increase index
+            vocab_data = json.load(vb_file)
+            for word, index in vocab_data.items():
+                self.word2index[word] = index
+                self.index2word[index] = word
+                self.index_of_word = max(self.index_of_word, index + 1)
+                
 
     def get_num_classes(self):
         return len(self.word2index)
@@ -79,9 +82,19 @@ class TrainSet(Dataset):
 
     def __process_sample_transcript(self, batch: Dataset):
         """ function receive batch and mapp each transcript to index in Vocab """
-        batch["transcript"] = batch["transcript"].split()
-        batch["transcript"] = [*map(self.vocab.word2index.get, batch["transcript"])]
-        batch["transcript"] = [int(1 if value is None else value) for value in batch["transcript"]] # update code
+        index2word_list = []
+        for i, transcript in enumerate(batch["transcript"]):
+            # Split the transcript into characters
+            characters = list(transcript)
+
+            # Map each character to its index in the vocab
+            for char in characters:
+                if char == " ":  # Assuming space is represented by index 30
+                    char = 30
+                else:
+                    char = self.vocab.word2index.get(char, self.vocab.word2index["<unk>"])
+                index2word_list.append(char)
+        batch["transcript"] = index2word_list
         return batch
 
     def __len__(self) -> int:
@@ -132,9 +145,19 @@ class DevSet(Dataset):
 
     def __process_sample_transcript(self, batch: Dataset):
         """ function receive batch and mapp each transcript to index in Vocab """
-        batch["transcript"] = batch["transcript"].split()
-        batch["transcript"] = [*map(self.vocab.word2index.get, batch["transcript"])]
-        batch["transcript"] = [int(1 if value is None else value) for value in batch["transcript"]]  # update code
+        index2word_list = []
+        for i, transcript in enumerate(batch["transcript"]):
+            # Split the transcript into characters
+            characters = list(transcript)
+
+            # Map each character to its index in the vocab
+            for char in characters:
+                if char == " ":  # Assuming space is represented by index 30
+                    char = 30
+                else:
+                    char = self.vocab.word2index.get(char, self.vocab.word2index["<unk>"])
+                index2word_list.append(char)
+        batch["transcript"] = index2word_list
         return batch
 
     def __len__(self) -> int:
@@ -212,10 +235,11 @@ class DevLoader(DataLoader):
 # check
 if __name__ == "__main__":
     librispeech_vocab = LibriSpeechVocabRAW()
+    print(librispeech_vocab.index2word)
 
     # aaa
     train_set = TrainSet(vocab= librispeech_vocab, csv_file="metadata/metadata-dev-clean.csv",
-                         root_dir="librispeech/dev-custom-clean")
+                         root_dir="librispeech/train-custom-clean")
     for step in range(train_set.__len__()):
         print(f"Audio: {train_set[step][0].shape} Transcript: {train_set[step][1]}")
 

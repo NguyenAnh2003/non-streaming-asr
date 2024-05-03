@@ -19,7 +19,7 @@ class DepthWise1DConv(nn.Module):
     
     # audio just have 1 channel
     def __init__(self, in_channels: int = 1, out_channels: int = 1,
-                kernel_size: int = 1, stride: int = 1, padding: int = 1,
+                kernel_size: int = 31, stride: int = 1, padding: int = 1,
                 bias: bool = True):
         super(DepthWise1DConv, self).__init__()
         # depth wise -> groups
@@ -94,8 +94,6 @@ class ConvolutionModule(nn.Module):
         """ Depthwise Conv 1D """
         self.dw_conv = DepthWise1DConv(in_channels=out_channels,
                                        out_channels=out_channels, 
-                                       kernel_size=kernel_size, 
-                                       padding=((kernel_size-1) // 2),
                                        bias=bias)
 
         """ this batch norm layer stand behind the depth wise conv (1D) """
