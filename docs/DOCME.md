@@ -20,6 +20,7 @@
 19. Discussion LibriSpeech vocab: [link](https://discourse.mozilla.org/t/building-lm-noticed-vocab-txt-and-librispeech-lm-norm-txt-have-a-lot-of-low-quality-words/33261/4)
 20. ASR Decoder Inference: [link](https://pytorch.org/audio/main/tutorials/asr_inference_with_ctc_decoder_tutorial.html#beam-search-decoder)
 21. Process asr text: [link](https://github.com/NVIDIA/NeMo/blob/main/scripts/tokenizers/process_asr_text_tokenizer.py)
+22. Prepare DS: [link](https://wenet.org.cn/wenet/tutorial_librispeech.html)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)

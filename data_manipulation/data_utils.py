@@ -254,7 +254,7 @@ def build_data_manifest(path: str, outpath: str):
 # create noise (normal distribution)
 def create_noise(path: str):
     # Define parameters
-    duration = 20  # Duration of the audio clip in seconds
+    duration = 36  # Duration of the audio clip in seconds
     sample_rate = 16000  # Sample rate in Hz
     mean = 0
     std_dev = 0.008
@@ -278,14 +278,14 @@ def get_mnmx_value_df(path, col = "duration"):
 def create_aug_audio(path: str):
     # path -> ref to metadata train, dev
     # dest dir
-    dest_dir = "./librispeech/augmented-dev"
+    dest_dir = "./librispeech/augmented-test"
 
     # get noise data
-    noise_path = "./noises/my_noise0.wav" # radio noise
+    noise_path = "./noises/my_noise2.wav" # radio noise
     noise_array, _ = torchaudio.load(noise_path)
 
     # root dir
-    root_dir = "./librispeech/dev-custom-clean/"
+    root_dir = "./librispeech/test-custom-clean/"
     reader = csv.reader(open(path, 'r', encoding="utf-8"))
 
     next((reader))
@@ -304,5 +304,5 @@ def create_aug_audio(path: str):
         torchaudio.save(dest_path, augmented_audio, 16000)
 
 if __name__ == "__main__":
-    write_metadata_txt_2_csv("./metadata/metadata-test-clean.csv")
+    build_data_manifest("./metadata/test-clean.csv", "./metadata/test-aug-manifest.json")
     print("DONE")

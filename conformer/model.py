@@ -128,7 +128,7 @@ class SpeechModel(nn.Module):
 
         # output (log_probs, prediction(argmax), lengths)
         log_probs = self.log_softmax(out)
-        prediction = torch.max(log_probs, dim=-1)
+        _, prediction = torch.max(log_probs, dim=-1)
         return log_probs, prediction, lengths  # normalize output to probability with softmax
 
 
