@@ -96,7 +96,7 @@ class ConvolutionModule(nn.Module):
         self.dw_conv = DepthWise1DConv(in_channels=out_channels,
                                        out_channels=out_channels, 
                                        kernel_size=depthwise_kernel_size,
-                                       padding=((depthwise_kernel_size - 1) // 2)
+                                       padding=((depthwise_kernel_size - 1) // 2),
                                        bias=bias)
 
         """ this batch norm layer stand behind the depth wise conv (1D) """
