@@ -37,7 +37,7 @@ def setup_speech_model():
         num_layers=num_layers,
         subsample_stride=subsample_stride,
         normal_stride=conv_module_stride,
-        expansion_factor=expansion_factor
+        expansion_factor=expansion_factor,
         num_classes = num_classes)
 
     return model

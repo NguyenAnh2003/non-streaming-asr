@@ -44,7 +44,7 @@ class ConformerBlock(nn.Module):
         # Feed forward net sanwiching acting like point-wise ff network
         """ 1/2 Feed forward """
         self.ff1 = ResidualConnection(module=FeedForwardNet(in_feats=encoder_dim, 
-                                                            expansion_factor=expansion_factor
+                                                            expansion_factor=expansion_factor,
                                                             out_feats=encoder_dim),
                                       residual_half_step=0.5)
 
