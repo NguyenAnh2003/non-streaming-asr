@@ -61,7 +61,7 @@ class SpeechModel(nn.Module):
         # in_feats must be out_channels of CNN, 16 as considered out channels
         self.linear = nn.Linear(
                                 # in_features=encoder_dim*input_dims,
-                                in_features=((input_dims // 4) * encoder_dim),
+                                in_features=input_dims,
                                 out_features=encoder_dim,
                                 bias=True,
                                 dtype=torch.float32)
@@ -110,7 +110,7 @@ class SpeechModel(nn.Module):
                                    stride=2, ceil_mode=False, repeat_num=2)
 
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
-        x = self.conv_subsampling(x)
+        # x = self.conv_subsampling(x)
 
         output = self.input_projection(x)
 

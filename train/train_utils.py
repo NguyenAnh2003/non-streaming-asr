@@ -70,7 +70,7 @@ def train_one_epoch(train_loader, model, optimizer, loss_fn):
         batch_errs, batch_tokens = compute_wer(prediction.transpose(0, 1),
                                                inputs_sizes, transcripts,
                                                target_sizes)
-    
+        # print(f"errors: {batch_errs} tokens: {batch_tokens}")
         # accuracy
         total_errs += batch_errs
         total_tokens += batch_tokens
@@ -130,6 +130,6 @@ def eval_one_epoch(val_loader, model, loss_fn):
     # epoch loss
     epoch_losses.append(sum(batch_losses)/len(batch_losses))
     print(f"Dev los: {sum(epoch_losses)/len(epoch_losses)} "
-          f"WER Train: {WER}")
+          f"WER Dev: {WER}")
 
     return sum(epoch_losses)/len(epoch_losses), WER
