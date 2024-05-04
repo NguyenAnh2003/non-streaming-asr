@@ -5,6 +5,7 @@ from .modules import ResidualConnection
 
 class FeedForwardNet(nn.Module):
     def __init__(self, in_feats: int, out_feats: int, 
+                 expansion_factor: int = 4,
                  dropout: float = 0.1, 
                  bias: bool = True):
         super().__init__() # inherit Module
@@ -21,17 +22,20 @@ class FeedForwardNet(nn.Module):
 
         # Alternative activation
         self.relu = nn.ReLU() # alternative for Swish
+        
+        # silu
+        self.silu = nn.SiLU()
 
         # -- --- ---- --- --- ---- -- PointWise FeedForward appear in Transformer https://arxiv.org/abs/1706.03762
         # config in feats and out feats of sub-linear 1 network
         self.sub_linear1 = nn.Linear(in_features=in_feats,
-                                     out_features=out_feats*4, bias=bias)
+                                     out_features=out_feats*expansion_factor, bias=bias)
 
         # config dropout for common usage in FF block
         self.dropout = nn.Dropout(p=dropout)  # common dropout
 
         # config in feats and out feats of sub-linear 2 network
-        self.sub_linear2 = nn.Linear(in_features=out_feats*4,
+        self.sub_linear2 = nn.Linear(in_features=out_feats*expansion_factor,
                                      out_features=in_feats,
                                      bias=bias)  # final Linear layer
         # -- --- ---- --- --- ---- -- PointWise FeedForward
@@ -40,7 +44,7 @@ class FeedForwardNet(nn.Module):
         self.chain = nn.Sequential(
             self.norm_layer,
             self.sub_linear1,
-            self.swish,
+            self.silu,
             self.dropout,
             self.sub_linear2,
             self.dropout

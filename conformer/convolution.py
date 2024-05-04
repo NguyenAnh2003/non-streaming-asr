@@ -104,6 +104,9 @@ class ConvolutionModule(nn.Module):
 
         """ Swish activation """
         self.swish = Swish()
+        
+        # silu
+        self.silu = nn.SiLU()
 
         self.point_wise2 = PointWise1DConv(in_channels=out_channels, 
                                            out_channels=out_channels, 
@@ -120,7 +123,7 @@ class ConvolutionModule(nn.Module):
             self.glu_activation,
             self.dw_conv, 
             self.batch_norm, 
-            self.swish, 
+            self.silu, 
             self.point_wise2,
             self.dropout
         )

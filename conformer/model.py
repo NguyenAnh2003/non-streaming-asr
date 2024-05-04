@@ -40,6 +40,7 @@ class SpeechModel(nn.Module):
                  decoder_dim: int = 144,
                  subsample_stride: int = 2,
                  normal_stride: int = 1,
+                 expansion_factor: int = 4,
                  ):
         super().__init__()
         """ 

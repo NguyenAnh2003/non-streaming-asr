@@ -37,12 +37,14 @@ class ConformerBlock(nn.Module):
                  encoder_dim: int = 144,
                  pw_ksize: int = 1,
                  dw_ksize: int = 31,
+                 expansion_factor: int = 4,
                  conv_model_stride: int = 1):
         super().__init__()
         
         # Feed forward net sanwiching acting like point-wise ff network
         """ 1/2 Feed forward """
         self.ff1 = ResidualConnection(module=FeedForwardNet(in_feats=encoder_dim, 
+                                                            expansion_factor=expansion_factor
                                                             out_feats=encoder_dim),
                                       residual_half_step=0.5)
 
@@ -51,6 +53,7 @@ class ConformerBlock(nn.Module):
             num_heads=attention_heads, # default attention heads are 4
             embed_dim=encoder_dim, # embedding dimenssion
             dropout=dropout)
+        self.dropout = nn.Dropout(p=dropout)
 
         """ Convolution Module """
         self.conv_module = ResidualConnection(
@@ -63,9 +66,12 @@ class ConformerBlock(nn.Module):
             residual_half_step=1.0)
 
         """ 1/2 Feed forward """
-        self.ff2 = ResidualConnection(module=FeedForwardNet(in_feats=encoder_dim, 
-                                                            out_feats=encoder_dim),
-                                      residual_half_step=0.5)
+        self.ff2 = ResidualConnection(
+            module=FeedForwardNet(
+                in_feats=encoder_dim, 
+                out_feats=encoder_dim,
+                expansion_factor=expansion_factor),
+            residual_half_step=0.5)
 
         """ LayerNorm """
         self.layer_norm = nn.LayerNorm(normalized_shape=encoder_dim)
@@ -80,6 +86,7 @@ class ConformerBlock(nn.Module):
         identity = x
         x = self.layer_norm(x) # layernorm before MHA
         out, _ = self.mha(x, x, x) # Q, K, V
+        out = self.dropout(out)
         out = identity + (1.*out)
 
         # get last hidden state and feed to conv module

@@ -22,6 +22,7 @@ def setup_speech_model():
     dw_kernel_size = params['depthwise_kernel_size']
     sub_kernel_size = params['subsampling_kernel_size']
     pw_kernel_size = params['pointwise_kernel_size']
+    expansion_factor = params['expansion_factor']
 
     # setup model
     model = SpeechModel(
@@ -36,6 +37,7 @@ def setup_speech_model():
         num_layers=num_layers,
         subsample_stride=subsample_stride,
         normal_stride=conv_module_stride,
+        expansion_factor=expansion_factor
         num_classes = num_classes)
 
     return model

@@ -291,3 +291,6 @@ class Conformer(torch.nn.Module):
         for layer in self.conformer_layers:
             x = layer(x, encoder_padding_mask)
         return x.transpose(0, 1), lengths
+
+if __name__ == "__main__":
+    conformer = Conformer(input_dim=80, num_heads=)

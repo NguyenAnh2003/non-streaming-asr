@@ -10,6 +10,7 @@ input_dims: 80
 channels: 1
 subsampling_stride: 2 # subsampling stride 2
 normal_stride: 1 # depthwise, pointwise
+expansion_factor: 2
 
 # define encoder dimension for MHA and model dimension depth
 encoder_dim: 144 #
