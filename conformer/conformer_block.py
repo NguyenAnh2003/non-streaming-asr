@@ -99,7 +99,7 @@ class ConformerBlock(nn.Module):
         # get last hidden state and feed to conv module
         if not self.conv_first:
             out = self.conv_module(out)
-        # out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
+        # (batch_size, times, encoder_dim)
 
         # ff module - sandwich
         out = self.ff2(out)
