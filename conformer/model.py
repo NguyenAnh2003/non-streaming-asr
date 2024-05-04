@@ -76,7 +76,8 @@ class SpeechModel(nn.Module):
                            pw_ksize = pw_kernel_size,
                            dw_ksize = dw_kernel_size,
                            conv_model_stride=normal_stride,
-                           expansion_factor=expansion_factor
+                           expansion_factor=expansion_factor,
+                           apply_conv_first=apply_conv_first
                            ) for _ in range(num_layers)])  #
 
         """ decoder """

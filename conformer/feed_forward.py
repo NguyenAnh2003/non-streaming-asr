@@ -29,13 +29,14 @@ class FeedForwardNet(nn.Module):
         # -- --- ---- --- --- ---- -- PointWise FeedForward appear in Transformer https://arxiv.org/abs/1706.03762
         # config in feats and out feats of sub-linear 1 network
         self.sub_linear1 = nn.Linear(in_features=in_feats,
-                                     out_features=out_feats*expansion_factor, bias=bias)
+                                     out_features=out_feats*4,
+                                     bias=bias, dtype=torch.float32)
 
         # config dropout for common usage in FF block
         self.dropout = nn.Dropout(p=dropout)  # common dropout
 
         # config in feats and out feats of sub-linear 2 network
-        self.sub_linear2 = nn.Linear(in_features=out_feats*expansion_factor,
+        self.sub_linear2 = nn.Linear(in_features=out_feats*4,
                                      out_features=in_feats,
                                      bias=bias)  # final Linear layer
         # -- --- ---- --- --- ---- -- PointWise FeedForward

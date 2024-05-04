@@ -121,7 +121,7 @@ class ConvolutionModule(nn.Module):
         """ sequence of entire convolution """
         self.conv_module = nn.Sequential(
             self.point_wise1,
-            # self.glu_activation,
+            self.glu_activation,
             self.dw_conv, 
             self.batch_norm, 
             self.silu, 

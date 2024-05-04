@@ -44,13 +44,13 @@ criterion = nn.CTCLoss(reduction="sum") #
 # init dataloader
 libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/vocab.json") # librispeech vocab
 
-train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata/metadata-train-clean.csv",
+train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata/metadata-dev-clean.csv",
                          root_dir="../data_manipulation/librispeech/train-custom-clean")
 
 train_dataloader = TrainLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
 dev_dataset = DevSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata/metadata-dev-clean.csv",
-                     root_dir="../data_manipulation/librispeech/dev-custom-clean")
+                     root_dir="../data_manipulation/librispeech/train-custom-clean")
                      
 dev_dataloader = DevLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
