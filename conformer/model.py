@@ -41,6 +41,7 @@ class SpeechModel(nn.Module):
                  subsample_stride: int = 2,
                  normal_stride: int = 1,
                  expansion_factor: int = 4,
+                 apply_conv_first: bool = True,
                  ):
         super().__init__()
         """ 

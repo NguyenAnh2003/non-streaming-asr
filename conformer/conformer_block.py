@@ -38,8 +38,11 @@ class ConformerBlock(nn.Module):
                  pw_ksize: int = 1,
                  dw_ksize: int = 31,
                  expansion_factor: int = 4,
-                 conv_model_stride: int = 1):
+                 conv_model_stride: int = 1,
+                 apply_conv_first: bool = True):
         super().__init__()
+        
+        self.conv_first = apply_conv_first
         
         # Feed forward net sanwiching acting like point-wise ff network
         """ 1/2 Feed forward """
@@ -74,13 +77,17 @@ class ConformerBlock(nn.Module):
             residual_half_step=0.5)
 
         """ LayerNorm """
-        self.layer_norm = nn.LayerNorm(normalized_shape=encoder_dim)
+        self.layer_norm = nn.LayerNorm(normalized_shape=encoder_dim, 
+                                       eps=1e-05)
         
         self.chain = nn.Sequential(self.ff1, self.ff2)
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # ff module - sandwich
         x = self.ff1(x)
+        
+        if self.conv_first:
+            x = self.conv_module(x)
 
         # MHA process
         identity = x
@@ -90,7 +97,8 @@ class ConformerBlock(nn.Module):
         out = identity + (1.*out)
 
         # get last hidden state and feed to conv module
-        out = self.conv_module(out)
+        if not self.conv_first:
+            out = self.conv_module(out)
         # out = out.transpose(1, 2) # transpose (batch_size, times, encoder_dim)
 
         # ff module - sandwich
