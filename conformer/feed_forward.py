@@ -15,7 +15,8 @@ class FeedForwardNet(nn.Module):
         This FF network consists of LayerNorm -> Linear -> Dropout -> Linear -> Swish
         """
         # layer norm
-        self.norm_layer = nn.LayerNorm(normalized_shape=in_feats) # config LayerNorm
+        self.norm_layer = nn.LayerNorm(normalized_shape=in_feats, 
+                                       eps=1e-05) # config LayerNorm
 
         # Swish activation function
         self.swish = Swish() #
