@@ -39,18 +39,18 @@ SHUFFLE = train_params['shuffle']
 optimizer = Adam(model.parameters(), lr=LR)
 
 # loss function - ctc-loss 
-criterion = nn.CTCLoss(reduction="sum") #
+criterion = nn.CTCLoss(reduction="sum", zero_infinity=True, blank=0) #
 
 # init dataloader
 libri_vocab = LibriSpeechVocabRAW(vocab_file_path="../data_manipulation/vocab.json") # librispeech vocab
 
-train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata/metadata-dev-clean.csv",
+train_dataset = TrainSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata/metadata-train-clean.csv",
                          root_dir="../data_manipulation/librispeech/train-custom-clean")
 
 train_dataloader = TrainLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
 dev_dataset = DevSet(vocab=libri_vocab, csv_file="../data_manipulation/metadata/metadata-dev-clean.csv",
-                     root_dir="../data_manipulation/librispeech/train-custom-clean")
+                     root_dir="../data_manipulation/librispeech/dev-custom-clean")
                      
 dev_dataloader = DevLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
