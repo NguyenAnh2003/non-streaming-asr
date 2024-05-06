@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from .convolution import ConvSubSampling
 from .conformer_block import ConformerBlock
+from torchaudio.models import Conformer
 
 class DecoderLSTM(nn.Module):
     def __init__(self, input_size: int, hidden_size: int,
@@ -60,11 +61,16 @@ class SpeechModel(nn.Module):
         """ linear """
         # in_feats must be out_channels of CNN, 16 as considered out channels
         self.linear = nn.Linear(
-                                # in_features=encoder_dim*input_dims,
-                                in_features=input_dims,
-                                out_features=encoder_dim,
-                                bias=True,
-                                dtype=torch.float32)
+            # in_features=encoder_dim*input_dims,
+            in_features=(input_dims  * encoder_dim),
+            out_features=encoder_dim,
+            bias=True,
+            dtype=torch.float32)
+
+        # encoder chain -> linear -> dropout -> conformer encoder blocks
+        self.input_projection = nn.Sequential(self.linear, nn.Dropout(p=0.1))
+
+
 
         """ dropout """
         self.dropout = nn.Dropout(p=dropout)
@@ -80,18 +86,24 @@ class SpeechModel(nn.Module):
                            apply_conv_first=apply_conv_first
                            ) for _ in range(num_layers)])  #
 
+        self.conformer_torchaudio = Conformer(input_dim=144, num_heads=4,
+                                              ffn_dim=144*4, num_layers=16,
+                                              depthwise_conv_kernel_size=31,
+                                              convolution_first=True)
+
         """ decoder """
-        self.decoder = DecoderLSTM(input_size=decoder_dim,
-                                   hidden_size=decoder_dim,
-                                   num_classes=num_classes,
-                                   bias=True, bidirectional=True,
-                                   batch_first=True)  #
+        # self.decoder = DecoderLSTM(input_size=decoder_dim,
+        #                            hidden_size=decoder_dim,
+        #                            num_classes=num_classes,
+        #                            bias=True, bidirectional=True,
+        #                            batch_first=True)  #
+
+        self.last_linear = nn.Linear(in_features=encoder_dim, out_features=num_classes)
+
+        self.classifier = nn.Sequential(self.last_linear, self.dropout)
 
         """ log softmax """
         self.log_softmax = nn.LogSoftmax(dim=-1)
-
-        # encoder chain -> linear -> dropout -> conformer encoder blocks
-        self.input_projection = nn.Sequential(self.linear, self.dropout)
     
     def calc_length(self, lengths, all_paddings, kernel_size, stride, ceil_mode, repeat_num=1):
         add_pad: float = all_paddings - kernel_size
@@ -114,25 +126,27 @@ class SpeechModel(nn.Module):
 
     def _forward_encoder(self, x: torch.Tensor, lengths: torch.Tensor):
         # calculate lengths
-        out_lengths = self.calc_length(lengths, all_paddings=2, kernel_size=3,
-                                   stride=2, ceil_mode=False, repeat_num=2)
+        # out_lengths = self.calc_length(lengths, all_paddings=2, kernel_size=3,
+        #                            stride=2, ceil_mode=False, repeat_num=2)
 
         # pipeline -> conv_subsampling -> flatten -> linear -> dropout -> conformer encoder
-        # x = self.conv_subsampling(x)
+        x = self.conv_subsampling(x)
 
         output = self.input_projection(x)
+
+        # output, lengths = self.conformer_torchaudio(output, lengths)
 
         # output for each conformer block
         for layer in self.conformer_encoder_layers:
             output = layer(output)
             
-        return output, out_lengths
+        return output, lengths
 
     def forward(self, x, lengths):
         # forward encoder
         hidden_state, lengths = self._forward_encoder(x, lengths)  # get relation ship between audio frame
         # forward decoder
-        out= self.decoder(hidden_state)
+        out = self.classifier(hidden_state)
         out = out.contiguous().transpose(0, 1)
 
         # output (log_probs, prediction(argmax), lengths)
