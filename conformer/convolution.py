@@ -81,7 +81,8 @@ class ConvolutionModule(nn.Module):
         super().__init__()
 
         # in_channels can be considered as encoder_dim
-        self.norm_layer = nn.LayerNorm(normalized_shape=in_channels, eps=1e-05) # normalize with LayerNorm
+        self.norm_layer = nn.LayerNorm(normalized_shape=in_channels, 
+                                       eps=1e-05) # normalize with LayerNorm
 
         self.point_wise1 = PointWise1DConv(in_channels=in_channels, 
                                            out_channels=out_channels*2, # duoble out channels
@@ -101,7 +102,9 @@ class ConvolutionModule(nn.Module):
 
         """ this batch norm layer stand behind the depth wise conv (1D) """
         self.batch_norm = nn.BatchNorm1d(num_features=out_channels, 
-                                         eps=1e-05, momentum=0.1, affine=True)
+                                         eps=1e-05, momentum=0.1, 
+                                         affine=True, 
+                                         track_running_stats=True)
 
         """ Swish activation """
         self.swish = Swish()

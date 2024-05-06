@@ -293,4 +293,4 @@ class Conformer(torch.nn.Module):
         return x.transpose(0, 1), lengths
 
 if __name__ == "__main__":
-    conformer = Conformer(input_dim=80, num_heads=)
+    pass
