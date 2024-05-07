@@ -1,5 +1,7 @@
 import torch
 import torch.nn.functional as F
+import torchaudio
+from utils.visualizer import plot_waveform
 
-x = torch.randn(16, 30, 80)
-print(x[0].shape)
+array, rate = torchaudio.load("../data_manipulation/noises/my_noise0.wav")
+plot_waveform(waveform=array, sr=rate)

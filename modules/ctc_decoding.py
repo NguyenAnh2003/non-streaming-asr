@@ -1,11 +1,11 @@
 from typing import List
 # from tokenizers import
 
-class CTCDecoding():
+class CTCTokenizerDecoding():
   # init function
-  def __init__(self, label):
+  def __init__(self, label, tokenizer):
     self.label = label
-    pass
+    self.tokenizer = tokenizer # dir
   
   # decode tokens2str
   def decode_tokens2str(self, tokens: List[int]) -> str:

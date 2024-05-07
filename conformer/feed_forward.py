@@ -49,7 +49,6 @@ class FeedForwardNet(nn.Module):
             self.silu,
             self.dropout,
             self.sub_linear2,
-            self.dropout
         )
 
     def forward(self, x):

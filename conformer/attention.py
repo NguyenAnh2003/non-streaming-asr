@@ -250,7 +250,7 @@ class RelPositionMultiHeadAttentionLongformer(RelPositionMultiHeadAttention):
         max_cache_len=0,
         global_tokens=0,
         global_tokens_spacing=1,
-        global_attn_separate=False,
+        global_attn_separate=True,
     ):
         """Construct an RelPositionMultiHeadAttentionLongformer object."""
         super().__init__(
@@ -313,7 +313,7 @@ class RelPositionMultiHeadAttentionLongformer(RelPositionMultiHeadAttention):
 
             # add relative positional embedding
 
-            n_batch_pos = pos_emb.size(0)
+            n_batch_pos = pos_emb.size(0) # batch size
             p = self.linear_pos(pos_emb).view(n_batch_pos, -1, self.h, self.d_k).transpose(1, 2)
             # (batch, head, 2w, size)
             diagonal_matrix_bd = torch.matmul(q_with_bias_v, p.transpose(-2, -1))
