@@ -177,3 +177,6 @@ data_manipulation/vlsp
 train/wandb
 
 logger/logs
+
+# .idea
+.idea

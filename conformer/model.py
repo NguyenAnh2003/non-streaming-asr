@@ -117,6 +117,7 @@ class SpeechModel(nn.Module):
         return lengths.to(dtype=torch.int)
     
     def _lengths_to_padding_mask(lengths: torch.Tensor) -> torch.Tensor:
+        # mask padding for not computing attention
         batch_size = lengths.shape[0]
         max_length = int(torch.max(lengths).item())
         padding_mask = torch.arange(max_length, device=lengths.device, dtype=lengths.dtype).expand(

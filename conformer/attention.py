@@ -746,7 +746,7 @@ class RelPositionMultiHeadAttentionLongformer(RelPositionMultiHeadAttention):
         Args:
             q (torch.Tensor): (batch, head, time, size)
             k (torch.Tensor): (batch, head, time, size)
-            w (int): Chunk overlap size
+            w (int): Chunk overlap size - (fixed window size)
             padding_value (float): Value to pad with
 
         Returns:
