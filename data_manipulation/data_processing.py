@@ -81,6 +81,10 @@ def _audio_segmentation(path: str):
 
     return segmented_audio
 
+# tokenizer test
+def tokenize_transcript():
+    pass
+
 # preprocessing with huggingface dataset
 def _tolower(transcript):
     transcript = transcript.lower()    

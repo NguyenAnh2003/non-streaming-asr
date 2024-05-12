@@ -83,11 +83,11 @@ def test(MODEL_NAME, params):
   # # We need to sum all numerators and denominators first. Then divide.
   # print(f"WER = {sum(wer_nums) / sum(wer_denoms)}")
 
-def inference(path, MODEL_NAME):
+def inference(array, MODEL_NAME):
   conformer_large = nemo_asr.models.EncDecCTCModelBPE.restore_from(
     restore_path=f"../saved_model/{MODEL_NAME}")
   conformer_large.cuda()
-  result = conformer_large.transcribe([path])
+  result = conformer_large.transcribe([array])
   print(result)
 
 if __name__ == "__main__":
