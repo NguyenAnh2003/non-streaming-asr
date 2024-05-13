@@ -4,13 +4,13 @@ from data_manipulation.dataloader import DevSet, TrainSet, TrainLoader, DevLoade
 from torch.optim import Adam
 from train_utils import train_one_epoch, eval_one_epoch, setup_speech_model, get_device
 from utils.utils import get_configs
-from conformer import model_utils
+from modules import model_utils
 from logger.wandb_logger import train_logging
 from jiwer import wer
 import torch.nn as nn
 import time
 from logger.my_logger import setup_logger
-from conformer.model_utils import get_model_params
+from modules.model_utils import get_model_params
 from utils.utils import get_executing_time
 import wandb
 
