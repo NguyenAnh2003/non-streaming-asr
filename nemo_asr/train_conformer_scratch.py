@@ -18,7 +18,7 @@ def main(MODEL_NAME: str, params):
                        enable_checkpointing=True, 
                        inference_mode=False)
   
-  conformer_large = nemo_asr.models.EncDecCTCModelBPE(cfg=DictConfig(params['model']), trainer=trainer)
+  conformer_large = nemo_asr.models.EncDecCTCModel(cfg=DictConfig(params['model']), trainer=trainer)
 
   print("Setup dataset")
   # dataloader
@@ -35,12 +35,22 @@ def main(MODEL_NAME: str, params):
 if __name__ == "__main__":
   SAMPLE_RATE = 16000
   path = "../data_manipulation/librispeech/augmented-train"
-  params = get_configs("../configs/conformer_ctc_bpe.yaml")
+  params = get_configs("../configs/conformer_ctc_char.yaml")
   MODEL_LARGE = "stt_en_conformer_ctc_large_ls"
   SAVED_MODEL = "stt_en_conformer_ctc_large_customs_ls.nemo"
 
 
   # dataloader
+  params['model']['preprocessor']['sample_rate'] = SAMPLE_RATE
+  params['model']['encoder']['feat_in'] = 80
+  params['model']['optim']['sched']['d_model'] = 512
+  params['model']['train_ds']['labels'] = params['model']['labels']
+  params['model']['validation_ds']['labels'] = params['model']['labels']
+  params['model']['test_ds']['labels'] = params['model']['labels']
+  params['model']['decoder']['vocabulary'] = params['model']['labels']
+  params['model']['decoder']['num_classes'] = 28
+  params['model']['decoder']['feat_in'] = 512
+  params['model']['optim']['weight_decay'] = 1e-3
   params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['validation_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['test_ds']['sample_rate'] = SAMPLE_RATE

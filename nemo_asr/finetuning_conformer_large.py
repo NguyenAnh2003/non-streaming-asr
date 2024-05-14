@@ -108,4 +108,4 @@ if __name__ == "__main__":
 
   # main(MODEL_NAME=MODEL_LARGE, params=params)
   # test(SAVED_MODEL, params)
-  inference("../data_manipulation/examples/kkk.flac", MODEL_LARGE)
+  inference("../data_manipulation/examples/kkk.flac", SAVED_MODEL)
