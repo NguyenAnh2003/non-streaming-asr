@@ -51,6 +51,7 @@ if __name__ == "__main__":
   params['model']['decoder']['num_classes'] = 28
   params['model']['decoder']['feat_in'] = 512
   params['model']['optim']['weight_decay'] = 1e-3
+  params['model']['optim']['sched']['min_lr'] = 1e-6
   params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['validation_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['test_ds']['sample_rate'] = SAMPLE_RATE
