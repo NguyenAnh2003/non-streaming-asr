@@ -43,6 +43,7 @@ if __name__ == "__main__":
   # dataloader
   params['model']['preprocessor']['sample_rate'] = SAMPLE_RATE
   params['model']['encoder']['feat_in'] = 80
+  params['model']['encoder']['d_model'] = 512
   params['model']['optim']['sched']['d_model'] = 512
   params['model']['train_ds']['labels'] = params['model']['labels']
   params['model']['validation_ds']['labels'] = params['model']['labels']
