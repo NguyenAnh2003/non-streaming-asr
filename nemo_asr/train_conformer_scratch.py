@@ -13,7 +13,7 @@ def main(MODEL_NAME: str, params):
 
 
   print(f"Prepare trainer")
-  trainer = pl.Trainer(accelerator="gpu", max_epochs=50, 
+  trainer = pl.Trainer(accelerator="gpu", max_epochs=1000,
                        logger=logger, log_every_n_steps=100,
                        enable_checkpointing=True, 
                        inference_mode=False)

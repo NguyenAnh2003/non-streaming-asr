@@ -1,7 +1,7 @@
 import pytorch_lightning as pl
-from omegaconf import DictConfig
 import nemo.collections.asr as nemo_asr
 from pytorch_lightning.loggers import TensorBoardLogger
+from nemo.collections.asr.metrics.wer import WER
 from utils.utils import get_configs
 
 def main(MODEL_NAME: str, params):
@@ -26,7 +26,7 @@ def main(MODEL_NAME: str, params):
                        enable_checkpointing=True, 
                        inference_mode=False)
   print("Training....")
-  # trainer.fit(conformer_large)
+  trainer.fit(conformer_large)
 
   # trainer.validate(model=conformer_large,)
   
@@ -46,42 +46,28 @@ def test(MODEL_NAME, params):
   
   wer_nums = []
   wer_denoms = [] # label tokens
-  
+
+
   for test_batch in conformer_large.test_dataloader():
     test_batch = [x.cuda() for x in test_batch]
-    targets = test_batch[2] #
-    targets_size = test_batch[3] #
-    in_size = test_batch[1] #
-
-    print(f"Targets length: {targets_size} "
-          f" In size: {in_size}")
-
+    targets = test_batch[2]
+    targets_lengths = test_batch[3]
     log_probs, encoded_len, greedy_predictions = conformer_large(
       input_signal=test_batch[0], input_signal_length=test_batch[1]
     )
+    # Notice the model has a helper object to compute WER
+    conformer_large.wer.update(predictions=greedy_predictions, predictions_lengths=None, targets=targets,
+                               targets_lengths=targets_lengths)
+    _, wer_num, wer_denom = conformer_large.wer.compute()
+    conformer_large.wer.reset()
+    wer_nums.append(wer_num.detach().cpu().numpy())
+    wer_denoms.append(wer_denom.detach().cpu().numpy())
 
-    print(f"Prediction: {log_probs.shape} Encoded len: {encoded_len} ")
+    # Release tensors from GPU memory
+    del test_batch, log_probs, targets, targets_lengths, encoded_len, greedy_predictions
 
-  # for test_batch in conformer_large.test_dataloader():
-  #   test_batch = [x.cuda() for x in test_batch]
-  #   targets = test_batch[2]
-  #   targets_lengths = test_batch[3]
-  #   log_probs, encoded_len, greedy_predictions = conformer_large(
-  #     input_signal=test_batch[0], input_signal_length=test_batch[1]
-  #   )
-  #   # Notice the model has a helper object to compute WER
-  #   conformer_large.wer.update(predictions=greedy_predictions, predictions_lengths=None, targets=targets,
-  #                              targets_lengths=targets_lengths)
-  #   _, wer_num, wer_denom = conformer_large.wer.compute()
-  #   conformer_large.wer.reset()
-  #   wer_nums.append(wer_num.detach().cpu().numpy())
-  #   wer_denoms.append(wer_denom.detach().cpu().numpy())
-  #
-  #   # Release tensors from GPU memory
-  #   del test_batch, log_probs, targets, targets_lengths, encoded_len, greedy_predictions
-  #
-  # # We need to sum all numerators and denominators first. Then divide.
-  # print(f"WER = {sum(wer_nums) / sum(wer_denoms)}")
+  # We need to sum all numerators and denominators first. Then divide.
+  print(f"WER = {sum(wer_nums) / sum(wer_denoms)}")
 
 def inference(array, MODEL_NAME):
   conformer_large = nemo_asr.models.EncDecCTCModelBPE.restore_from(
@@ -94,18 +80,18 @@ if __name__ == "__main__":
   SAMPLE_RATE = 16000
   path = "../data_manipulation/librispeech/augmented-train"
   params = get_configs("../configs/conformer_ctc_bpe.yaml")
-  MODEL_LARGE = "stt_en_conformer_ctc_large_ls"
+  MODEL_LARGE = "nvidia/stt_en_conformer_ctc_large"
   SAVED_MODEL = "stt_en_conformer_ctc_large_customs_ls.nemo"
-
+  FCONFORMER_LARGE = "nvidia/stt_en_fastconformer_ctc_large"
 
   # dataloader
   params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['validation_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['test_ds']['sample_rate'] = SAMPLE_RATE
-  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/train-aug-manifest.json"
-  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/dev-aug-manifest.json"
+  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/train-clean-manifest.json"
+  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/dev-clean-manifest.json"
   params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/test-aug-manifest.json"
 
   # main(MODEL_NAME=MODEL_LARGE, params=params)
-  # test(SAVED_MODEL, params)
-  inference("../data_manipulation/examples/kkk.flac", SAVED_MODEL)
+  test(SAVED_MODEL, params)
+  # inference("../data_manipulation/examples/kkk.flac", SAVED_MODEL)
