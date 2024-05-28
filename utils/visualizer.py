@@ -1,6 +1,56 @@
 import matplotlib.pyplot as plt
 import torch
 import librosa
+import numpy as np
+import json
+
+def plot_bar(data):
+    """
+    :param data: dictionary with keys as labels and values as corresponding values
+    :type data: dict
+    """
+    barWidth = 0.25
+    fig = plt.subplots(figsize=(12, 8))
+
+    # set
+    WER = []
+    CER = []
+    MODEL_NAMES = []
+
+    for item in data:
+        for model_name, metrics in item.items():
+            wer = metrics["WER"] * 100
+            cer = metrics["CER"] * 100
+            WER.append(wer)
+            CER.append(cer)
+            MODEL_NAMES.append(model_name)
+
+    # Set position of bar on X axis
+    br1 = np.arange(len(WER))
+    br2 = [x + barWidth for x in br1]
+
+    # Make the plot
+    bars1 = plt.bar(br1, WER, color='blue', width=barWidth,
+                    edgecolor='grey', label='WER')
+    bars2 = plt.bar(br2, CER, color='orange', width=barWidth,
+                    edgecolor='grey', label='CER')
+
+    # Adding annotations
+    for bar in bars1:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2.0, yval, round(yval, 3), ha='center', va='bottom')
+
+    for bar in bars2:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2.0, yval, round(yval, 3), ha='center', va='bottom')
+
+    # Adding Xticks
+    plt.xlabel('Model', fontweight='bold', fontsize=15)
+    plt.ylabel('Error rate', fontweight='bold', fontsize=15)
+    plt.xticks([r + barWidth for r in range(len(WER))], MODEL_NAMES)
+
+    plt.legend()
+    plt.show()
 
 # Plot waveform
 def plot_waveform(waveform, sr, title="Waveform"):
@@ -28,3 +78,10 @@ def plot_melspectrogram(specgram, title=None, ylabel=None):
     im = axs.imshow(librosa.power_to_db(specgram), origin="lower", aspect="auto")
     fig.colorbar(im, ax=axs)
     plt.show(block=False)
+
+if __name__ == "__main__":
+    data = [{"Fast Conformer": {"WER": 0.02068779708638839, "CER": 0.0062368567679781444}},
+            {"Finetuned Model": {"WER": 0.021803975905933068, "CER": 0.00599960457968618}},
+            {"Conformer ctc small": {"WER": 0.03694936781940997, "CER": 0.011884177795352014}}]
+
+    plot_bar(data)

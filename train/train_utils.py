@@ -1,7 +1,7 @@
 import torch
 from conformer.model import SpeechModel
 from utils.utils import get_configs
-from conformer.metric import compute_wer
+from core.wer import compute_wer
 from tqdm import tqdm
 
 def get_device():
