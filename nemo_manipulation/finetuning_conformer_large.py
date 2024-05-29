@@ -2,6 +2,7 @@ import pytorch_lightning as pl
 import nemo.collections.asr as nemo_asr
 from pytorch_lightning.loggers import TensorBoardLogger
 from nemo.collections.asr.metrics.wer import WER
+import torchaudio
 from utils.utils import get_configs
 
 def main(MODEL_NAME: str, params):
@@ -77,8 +78,7 @@ def test(MODEL_NAME, params):
   print(f"WER = {sum(wer_nums) / sum(wer_denoms)}")
 
 def inference(array, MODEL_NAME):
-  asr_model = nemo_asr.models.EncDecCTCModelBPE.restore_from(
-    restore_path=f"../saved_model/{MODEL_NAME}")
+  asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name=MODEL_NAME)
   asr_model.cuda()
   result = asr_model.transcribe(array)
   print(result)
@@ -88,7 +88,6 @@ if __name__ == "__main__":
   path = "../data_manipulation/librispeech/augmented-train"
   params = get_configs("../configs/conformer_ctc_bpe.yaml")
   MODEL_LARGE = "nvidia/stt_en_conformer_ctc_large"
-  SAVED_MODEL = "stt_en_conformer_ctc_large_customs_ls.nemo"
   FCONFORMER_LARGE = "nvidia/stt_en_fastconformer_ctc_large"
 
   # dataloader
@@ -99,6 +98,8 @@ if __name__ == "__main__":
   params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/dev-clean-manifest.json"
   params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/test-aug-manifest.json"
 
-  main(MODEL_NAME=MODEL_LARGE, params=params)
+  # main(MODEL_NAME=MODEL_LARGE, params=params)
   # test(SAVED_MODEL, params)
-  # inference("../data_manipulation/examples/kkk.flac", SAVED_MODEL)
+  audio_array, _ = torchaudio.load("../data_manipulation/examples/kkk.flac")
+  audio_array = audio_array.squeeze(0)
+  inference(audio_array, MODEL_LARGE)
