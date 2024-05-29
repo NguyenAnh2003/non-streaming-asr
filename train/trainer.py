@@ -1,7 +1,7 @@
 import torch.cuda
 from data_manipulation.dataloader import DevSet, TrainSet, TrainLoader, DevLoader, LibriSpeechVocabRAW
 from torch.optim import Adam
-from train_utils import train_one_epoch, eval_one_epoch, setup_speech_model, get_device
+from utils.train_utils import train_one_epoch, eval_one_epoch, setup_speech_model, get_device
 from utils.utils import get_configs
 import torch.nn as nn
 import time
