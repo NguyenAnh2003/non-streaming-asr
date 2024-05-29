@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from .activations import Swish, GLU
+from ..activations import Swish, GLU
 
 class PointWise1DConv(nn.Module):
     def __init__(self, in_channels: int = 0, out_channels: int = 1, 
