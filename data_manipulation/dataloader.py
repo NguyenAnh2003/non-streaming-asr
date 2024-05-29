@@ -4,7 +4,6 @@ from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
 from .feats_extraction.log_mel import audio_transforms
 from utils.utils import get_configs
 import torchaudio
-from logger.my_logger import setup_logger
 import pandas as pd
 import os
 from typing import Tuple, List
