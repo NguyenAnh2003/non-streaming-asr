@@ -27,7 +27,7 @@ def main(MODEL_NAME: str, params):
                        enable_checkpointing=True, 
                        inference_mode=False)
   print("Training....")
-  # trainer.fit(asr_model)
+  trainer.fit(asr_model) ####
 
   # trainer.validate(model=asr_model,)
   
@@ -41,22 +41,24 @@ def test(MODEL_NAME, params):
     restore_path=f"../saved_model/{MODEL_NAME}")
 
   print(f"Prepare testing model: {MODEL_NAME}")
-  asr_model.setup_test_data(test_data_config=params['model']['test_ds'])
+  asr_model.setup_test_data(test_data_config=params['model']['validation_ds'])
   asr_model.cuda()
   asr_model.eval()
-  
+
+  # We will be computing Word Error Rate (WER) metric between our hypothesis and predictions.
+  # WER is computed as numerator/denominator.
+  # We'll gather all the test batches' numerators and denominators.
   wer_nums = []
-  wer_denoms = [] # label tokens
-  
+  wer_denoms = []
+
+  # Loop over all test batches.
+  # Iterating over the model's `test_dataloader` will give us:
+  # (audio_signal, audio_signal_length, transcript_tokens, transcript_length)
+  # See the AudioToCharDataset for more details.
   for test_batch in asr_model.test_dataloader():
     test_batch = [x.cuda() for x in test_batch]
-    targets = test_batch[2] #
-    targets_size = test_batch[3] #
-    in_size = test_batch[1] #
-
-    print(f"Targets length: {targets_size} "
-          f" In size: {in_size}")
-
+    targets = test_batch[2]
+    targets_lengths = test_batch[3]
     log_probs, encoded_len, greedy_predictions = asr_model(
       input_signal=test_batch[0], input_signal_length=test_batch[1]
     )
@@ -78,7 +80,7 @@ def inference(array, MODEL_NAME):
   asr_model = nemo_asr.models.EncDecCTCModelBPE.restore_from(
     restore_path=f"../saved_model/{MODEL_NAME}")
   asr_model.cuda()
-  result = asr_model.transcribe([array])
+  result = asr_model.transcribe(array)
   print(result)
 
 if __name__ == "__main__":
@@ -97,6 +99,6 @@ if __name__ == "__main__":
   params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/dev-clean-manifest.json"
   params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/test-aug-manifest.json"
 
-  # main(MODEL_NAME=MODEL_LARGE, params=params)
-  test(SAVED_MODEL, params)
+  main(MODEL_NAME=MODEL_LARGE, params=params)
+  # test(SAVED_MODEL, params)
   # inference("../data_manipulation/examples/kkk.flac", SAVED_MODEL)
