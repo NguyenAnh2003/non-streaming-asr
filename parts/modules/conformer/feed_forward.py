@@ -54,15 +54,3 @@ class FeedForwardNet(nn.Module):
     def forward(self, x):
         """ input is weights from Linear layer after Dropout """
         return self.chain(x)  # return output of FF network
-
-if __name__ == "__main__":
-    ff = FeedForwardNet(300, 100)
-    print(f"Feed forward net: {ff}")
-    x = torch.randint(0, 100, (81, 300)).float()
-    print(f"Shape: {x.shape}")
-    print(f"result: {ff(x).shape}")
-    
-    # with residual connection
-    ffr = ResidualConnection(module=ff, residual_half_step=0.5)
-    ffr2 = ResidualConnection(module=ff, residual_half_step=0.5)
-    print(f"ff residual connection result: {ffr(x).shape}")

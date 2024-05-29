@@ -138,11 +138,3 @@ class ConvolutionModule(nn.Module):
         """ the forward will be present as skip connection """
         conv_output = self.conv_module(x)
         return conv_output.contiguous().transpose(1, 2)
-    
-if __name__ == "__main__":
-    subsampling = ConvSubSampling(in_channels=1, out_channels=144, 
-                                  stride=2, kernel_size=3,
-                                  padding=1)
-    x = torch.randn(16, 786, 80)
-    supsampled_out = subsampling(x)
-    print(f"{supsampled_out.shape}")

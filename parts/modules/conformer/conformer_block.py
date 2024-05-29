@@ -108,10 +108,3 @@ class ConformerBlock(nn.Module):
         out = self.layer_norm(out)
         
         return out
-
-
-if __name__ == "__main__":
-    encoder_dim = 144
-    # batch_size, times, banks*channels
-    x = torch.randn(16, 74, 144)
-    # batch_size, times, feats = x.size()
