@@ -4,8 +4,7 @@ import torch.nn as nn
 import torch
 from torch import Tensor
 from typing import List
-from functools import cache
-
+from functools import cache, lru_cache
 
 
 class ASRModel(nn.Module):
@@ -13,10 +12,9 @@ class ASRModel(nn.Module):
         super().__init__()
         self.linear = nn.Linear(100, 300, bias=True)
         _, self.pencoder = self.get_pretrained_encoder(pretrained_name)
-
         self.chain = nn.Sequential(self.pencoder, self.linear)
 
-    @cache
+    @lru_cache(maxsize=1)
     def get_pretrained_encoder(model_name):
         asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name)
         return (asr_model, asr_model.encoder)
