@@ -12,9 +12,9 @@ class ASRModel(nn.Module):
     def __init__(self, pretrained_name):
         super().__init__()
         self.linear = nn.Linear(100, 300, bias=True)
-        self.encoder = self.get_pretrained_encoder(pretrained_name)
+        _, self.pencoder = self.get_pretrained_encoder(pretrained_name)
 
-        self.chain = nn.Sequential(self.encoder, self.linear)
+        self.chain = nn.Sequential(self.pencoder, self.linear)
 
     @cache
     def get_pretrained_encoder(model_name):
