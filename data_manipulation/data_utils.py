@@ -94,7 +94,7 @@ def _process_librispeech_dataset(metadata_file_path):
 
 def write_metadata_txt_2_csv(csv_path: str):
     # define metadata
-    metadata_dict = _process_librispeech_dataset("librispeech/test-transcripts.txt")
+    metadata_dict = _process_librispeech_dataset("librispeech/test-other-transcripts.txt")
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as csv_file:
         # define csv writer
@@ -110,7 +110,7 @@ def write_metadata_txt_2_csv(csv_path: str):
 
 def combine_audio_from_folders():
     source_folder_path = "./librispeech/test-other/test-other"
-    destination_folder_path = "librispeech/test-custom-other"
+    destination_folder_path = "./librispeech/test-custom-other"
 
     # list all child folder in parent
     for folder_name in os.listdir(source_folder_path):
@@ -128,14 +128,12 @@ def combine_audio_from_folders():
                         # copy and move to destination
                         shutil.copy(file_path, destination_folder_path)
 
-def ls_move_transcript_file(source_path = "librispeech/train-custom-clean"):
-    amounts = []
+def ls_move_transcript_file(source_path = "librispeech/test-custom-other", dest_path = "librispeech/test-other-trans"):
     for filename in os.listdir(source_path):
-        if filename.endswith(".flac"):
+        if filename.endswith(".txt"):
             file_path = os.path.join(source_path, filename)
             if os.path.isfile(file_path):
-                amounts.append(file_path)
-    return len(amounts)
+                shutil.move(file_path, dest_path)
 
 def get_number_audio_samples():
     source_path = "librispeech/train-custom-clean"
@@ -151,7 +149,7 @@ def get_number_audio_samples():
 # LibriSpeech utils
 def concat_transcripts_txt_file() -> None:
     # source path
-    source_path = "./librispeech/lb-test-other-transcripts"
+    source_path = "./librispeech/test-other-trans"
     # combined transcript txt file
     combined_txt_path = "librispeech/test-other-transcripts.txt"
 
@@ -312,8 +310,9 @@ def create_aug_audio(path: str):
         torchaudio.save(dest_path, augmented_audio, 16000)
 
 if __name__ == "__main__":
-    combine_audio_from_folders() # combine audio from sub folders
-    # move transcript files to another folder
-
-    # build_data_manifest("./metadata/test-clean.csv", "./metadata/test-aug-manifest.json")
+    # combine_audio_from_folders() # combine audio from sub folders
+    # ls_move_transcript_file() # move transcript files to another folder
+    # concat_transcripts_txt_file()
+    # write_metadata_txt_2_csv("./metadata/ls/metadata-test-other.csv") # write csv
+    build_data_manifest("./metadata/ls/test-other.csv", "./metadata/ls/test-other-manifest.json")
     print("DONE")

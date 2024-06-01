@@ -31,7 +31,7 @@ class ASRModel(LightningModule):
                 model_name=model_name
             )
         else:
-            asr_model = AutoModel(model_name)
+            asr_model = AutoModel.from_pretrained(model_name)
 
         return asr_model.encoder
 
