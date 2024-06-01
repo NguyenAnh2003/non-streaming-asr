@@ -109,8 +109,8 @@ def write_metadata_txt_2_csv(csv_path: str):
 
 
 def combine_audio_from_folders():
-    source_folder_path = "./librispeech/test-clean/test-clean"
-    destination_folder_path = "librispeech/test-custom-clean"
+    source_folder_path = "./librispeech/test-other/test-other"
+    destination_folder_path = "librispeech/test-custom-other"
 
     # list all child folder in parent
     for folder_name in os.listdir(source_folder_path):
@@ -128,6 +128,14 @@ def combine_audio_from_folders():
                         # copy and move to destination
                         shutil.copy(file_path, destination_folder_path)
 
+def ls_move_transcript_file(source_path = "librispeech/train-custom-clean"):
+    amounts = []
+    for filename in os.listdir(source_path):
+        if filename.endswith(".flac"):
+            file_path = os.path.join(source_path, filename)
+            if os.path.isfile(file_path):
+                amounts.append(file_path)
+    return len(amounts)
 
 def get_number_audio_samples():
     source_path = "librispeech/train-custom-clean"
@@ -143,9 +151,9 @@ def get_number_audio_samples():
 # LibriSpeech utils
 def concat_transcripts_txt_file() -> None:
     # source path
-    source_path = "./librispeech/lb-test-transcripts"
+    source_path = "./librispeech/lb-test-other-transcripts"
     # combined transcript txt file
-    combined_txt_path = "librispeech/test-transcripts.txt"
+    combined_txt_path = "librispeech/test-other-transcripts.txt"
 
     # open combined file
     with open(combined_txt_path, 'w', encoding='utf-8') as dest_file:
@@ -304,5 +312,8 @@ def create_aug_audio(path: str):
         torchaudio.save(dest_path, augmented_audio, 16000)
 
 if __name__ == "__main__":
-    build_data_manifest("./metadata/test-clean.csv", "./metadata/test-aug-manifest.json")
+    combine_audio_from_folders() # combine audio from sub folders
+    # move transcript files to another folder
+
+    # build_data_manifest("./metadata/test-clean.csv", "./metadata/test-aug-manifest.json")
     print("DONE")

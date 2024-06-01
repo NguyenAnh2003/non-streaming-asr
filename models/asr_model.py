@@ -4,18 +4,22 @@ from transformers import AutoModel
 import torch.nn as nn
 import torch
 from torch import Tensor
+from pytorch_lightning import LightningModule
 from typing import List
 
 
-class ASRModel(nn.Module):
+class ASRModel(LightningModule):
 
+    # the model will be built based on LightNing Module
     # the encoder will utilize the pre-trained model (which can be fine tuned on VN dataset)
     # use nemo is an arg that considered use nemo toolkit or transformer to get pretrained model
-    def __init__(self, pretrained_name, d_model, num_classes, use_nemo: bool):
+    # freeze encoder will be utilized
+    def __init__(self, pretrained_name, d_model, num_classes, use_nemo: bool, is_freeze_encoder: bool):
         super().__init__()
         self.linear = nn.Linear(d_model, num_classes, bias=True)
         self.pencoder = self.get_pretrained_encoder(pretrained_name)
         self.use_nemo = use_nemo
+        self.is_freeze_encoder = is_freeze_encoder
 
         self.chain = nn.Sequential(self.pencoder, self.linear)
 
