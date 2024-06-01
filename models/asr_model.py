@@ -11,13 +11,12 @@ class ASRModel(nn.Module):
     def __init__(self, pretrained_name, d_model, num_classes):
         super().__init__()
         self.linear = nn.Linear(d_model, num_classes, bias=True)
-        _, self.pencoder = self.get_pretrained_encoder(pretrained_name)
+        self.pencoder = self.get_pretrained_encoder(pretrained_name)
         self.chain = nn.Sequential(self.pencoder, self.linear)
-
     @cache
-    def get_pretrained_encoder(model_name):
-        asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name)
-        return (asr_model, asr_model.encoder)
+    def get_pretrained_encoder(self, model_name):
+        asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name=model_name)
+        return (asr_model.encoder)
 
     def forward(self, x: Tensor, lengths: List):
         out = self.encoder(x)

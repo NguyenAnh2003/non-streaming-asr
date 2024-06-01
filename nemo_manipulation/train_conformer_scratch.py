@@ -19,6 +19,7 @@ def main(MODEL_NAME: str, params):
                        inference_mode=False)
   
   conformer_large = nemo_asr.models.EncDecCTCModel(cfg=DictConfig(params['model']), trainer=trainer)
+  print(f"Model: {conformer_large}")
 
   print("Setup dataset")
   # dataloader
@@ -26,7 +27,7 @@ def main(MODEL_NAME: str, params):
   # conformer_large.setup_validation_data(val_data_config=params['model']['validation_ds'])
 
   print("Training....")
-  trainer.fit(conformer_large)
+  # trainer.fit(conformer_large)
   
   # save model
   # conformer_large.save_to(f"../saved_model/{MODEL_NAME}")
