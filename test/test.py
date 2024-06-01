@@ -38,13 +38,13 @@ def main(MODEL_NAME: str, params):
     print("Saved model ... DONE")
 
 
-def test(MODEL_NAME: str, params):
+def test(MODEL_NAME: str, params, use_cer):
     # prepare model
     asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(MODEL_NAME)
     asr_model._wer = WER(
         decoding=asr_model.decoding,
         batch_dim_index=0,
-        use_cer=True,
+        use_cer=use_cer,
         dist_sync_on_step=True,
         log_prediction=True,
     )
@@ -83,7 +83,10 @@ def test(MODEL_NAME: str, params):
         del test_batch, log_probs, targets, targets_lengths, encoded_len, greedy_predictions
 
     # We need to sum all numerators and denominators first. Then divide.
-    print(f"WER = {sum(wer_nums) / sum(wer_denoms)}")
+    metric = "WER"
+    if use_cer:
+        metric = "CER"
+    print(f"{metric} = {sum(wer_nums) / sum(wer_denoms)}")
 
 
 def inference(array, MODEL_NAME):
@@ -99,6 +102,7 @@ if __name__ == "__main__":
     params = get_configs("../configs/conformer_ctc_bpe.yaml")
     MODEL_LARGE = "nvidia/stt_en_conformer_ctc_large"
     FCONFORMER_LARGE = "nvidia/stt_en_fastconformer_ctc_large"
+    MODEL_SMALL = "nvidia/stt_en_conformer_ctc_small"
 
     # dataloader
     params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
@@ -109,10 +113,10 @@ if __name__ == "__main__":
     params['model']['validation_ds'][
         'manifest_filepath'] = "../data_manipulation/metadata/ls/manifests/dev-clean-manifest.json"
     params['model']['test_ds'][
-        'manifest_filepath'] = "../data_manipulation/metadata/ls/manifests/test-other-manifest.json"
+        'manifest_filepath'] = "../data_manipulation/metadata/ls/manifests/test-aug-manifest.json"
 
     # main(MODEL_NAME=MODEL_LARGE, params=params)
-    test(FCONFORMER_LARGE, params)
+    test(MODEL_LARGE, params, use_cer=True)
     # audio_array, _ = torchaudio.load("../data_manipulation/examples/kkk.flac")
     # audio_array = audio_array.squeeze(0)
     # inference(audio_array, MODEL_LARGE) em train thifthi tat vs code di
