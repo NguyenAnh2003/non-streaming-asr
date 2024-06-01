@@ -13,6 +13,7 @@ class ASRModel(nn.Module):
         self.linear = nn.Linear(d_model, num_classes, bias=True)
         self.pencoder = self.get_pretrained_encoder(pretrained_name)
         self.chain = nn.Sequential(self.pencoder, self.linear)
+        
     @staticmethod
     def get_pretrained_encoder(model_name):
         asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name=model_name)
