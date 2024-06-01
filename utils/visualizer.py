@@ -32,7 +32,7 @@ def plot_bar(data):
     # Make the plot
     bars1 = plt.bar(br1, WER, color='blue', width=barWidth,
                     edgecolor='grey', label='WER')
-    bars2 = plt.bar(br2, CER, color='orange', width=barWidth,
+    bars2 = plt.bar(br2, CER, color='red', width=barWidth,
                     edgecolor='grey', label='CER')
 
     # Adding annotations
