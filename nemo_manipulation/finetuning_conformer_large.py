@@ -36,10 +36,9 @@ def main(MODEL_NAME: str, params):
   # asr_model.save_to(f"../saved_model/{MODEL_NAME}")
   print("Saved model ... DONE")
 
-def test(MODEL_NAME, params):
+def test(MODEL_NAME: str, params):
   # prepare model
-  asr_model = nemo_asr.models.EncDecCTCModelBPE.restore_from(
-    restore_path=f"../saved_model/{MODEL_NAME}")
+  asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(MODEL_NAME)
 
   print(f"Prepare testing model: {MODEL_NAME}")
   asr_model.setup_test_data(test_data_config=params['model']['validation_ds'])
@@ -94,12 +93,12 @@ if __name__ == "__main__":
   params['model']['train_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['validation_ds']['sample_rate'] = SAMPLE_RATE
   params['model']['test_ds']['sample_rate'] = SAMPLE_RATE
-  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/train-clean-manifest.json"
-  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/dev-clean-manifest.json"
-  params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/test-aug-manifest.json"
+  params['model']['train_ds']['manifest_filepath'] = "../data_manipulation/metadata/ls/manifests/train-clean-manifest.json"
+  params['model']['validation_ds']['manifest_filepath'] = "../data_manipulation/metadata/ls/manifests/dev-clean-manifest.json"
+  params['model']['test_ds']['manifest_filepath'] = "../data_manipulation/metadata/manifests/ls/manifests/test-other-manifest.json"
 
   # main(MODEL_NAME=MODEL_LARGE, params=params)
-  # test(SAVED_MODEL, params)
-  audio_array, _ = torchaudio.load("../data_manipulation/examples/kkk.flac")
-  audio_array = audio_array.squeeze(0)
-  inference(audio_array, MODEL_LARGE)
+  test(MODEL_LARGE, params)
+  # audio_array, _ = torchaudio.load("../data_manipulation/examples/kkk.flac")
+  # audio_array = audio_array.squeeze(0)
+  # inference(audio_array, MODEL_LARGE) em train thifthi tat vs code di
