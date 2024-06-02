@@ -80,8 +80,8 @@ def plot_melspectrogram(specgram, title=None, ylabel=None):
     plt.show(block=False)
 
 if __name__ == "__main__":
-    data = [{"Fast Conformer": {"WER": 0.02068779708638839, "CER": 0.0062368567679781444}},
-            {"Finetuned Model": {"WER": 0.021803975905933068, "CER": 0.00599960457968618}},
-            {"Conformer ctc small": {"WER": 0.03694936781940997, "CER": 0.011884177795352014}}]
+    data = [{"Fast Conformer": {"WER": 0.04222150048717116, "CER": 0.015581577808900198}},
+            {"Finetuned Model": {"WER": 0.043520623579084115, "CER": 0.015038972275790262}},
+            {"Conformer ctc small": {"WER": 0.08144355501213152, "CER": 0.03227403045923492}}]
 
     plot_bar(data)

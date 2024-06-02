@@ -14,7 +14,14 @@ class ASRModel(LightningModule):
     # the encoder will utilize the pre-trained model (which can be fine tuned on VN dataset)
     # use nemo is an arg that considered use nemo toolkit or transformer to get pretrained model
     # freeze encoder will be utilized
-    def __init__(self, pretrained_name, d_model, num_classes, use_nemo: bool, is_freeze_encoder: bool):
+    def __init__(
+        self,
+        pretrained_name,
+        d_model,
+        num_classes,
+        use_nemo: bool,
+        is_freeze_encoder: bool,
+    ):
         super().__init__()
         self.linear = nn.Linear(d_model, num_classes, bias=True)
         self.pencoder = self.get_pretrained_encoder(pretrained_name)
@@ -46,7 +53,11 @@ def main():
     pretrained_model_name = "nvidia/stt_en_conformer_ctc_large"
 
     asr_model = ASRModel(
-        pretrained_name=pretrained_model_name, d_model=512, num_classes=128
+        pretrained_name=pretrained_model_name,
+        d_model=512,
+        num_classes=128,
+        use_nemo=True,
+        is_freeze_encoder=True,
     )
 
     print(f"Custom model: {asr_model}")
