@@ -23,6 +23,7 @@
 22. Prepare DS: [link](https://wenet.org.cn/wenet/tutorial_librispeech.html)
 23. Longformer Attention: [link](https://ahelhady.medium.com/understanding-longformers-sliding-window-attention-mechanism-f5d61048a907)
 24. Freezing model (Nemo): [link](https://github.com/NVIDIA/NeMo/issues/2334)
+26. Pointwise-ff: [link](https://serp.ai/position-wise-feed-forward-layer/)
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
