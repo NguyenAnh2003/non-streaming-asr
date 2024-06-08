@@ -39,7 +39,9 @@ class LibriSpeechVocabRAW:
 
 class TrainSet(Dataset):
 
-    def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_processing.yaml"):
+    def __init__(self, vocab, csv_file, root_dir: str = "./", 
+                 config_path: str = "../configs/audio_processing.yaml",
+                 transform: None = None):
         super(TrainSet, self).__init__()
         self.params = get_configs(config_path)  # defined params
         self.audio_samples = pd.read_csv(csv_file, nrows=3000)  # dataset defined as csv file
@@ -49,6 +51,8 @@ class TrainSet(Dataset):
         self.hg_dataset = self.__create_huggingface_dataset(csv_path=csv_file)
         # map each transcript from str to index(int) in word2index dict
         self.hg_dataset = self.hg_dataset.map(self.__process_sample_transcript)
+        # transform function
+        self.transform = transform
 
     def __getitem__(self, index):
         """ return log mel spectrogram, and transcript """
@@ -57,7 +61,7 @@ class TrainSet(Dataset):
         sample_path, sample_transcript = self.__get_audio_sample(index)
         array, rate = torchaudio.load(sample_path)
         # transform audio to mel spec
-        log_mel = audio_transforms(array=array, params=self.params)
+        log_mel = self.transform(array=array, params=self.params)
 
         # return log_mel and transcript
         return log_mel, torch.tensor(sample_transcript)
@@ -101,7 +105,9 @@ class TrainSet(Dataset):
 
 
 class DevSet(Dataset):
-    def __init__(self, vocab, csv_file, root_dir: str = "./", config_path: str = "../configs/audio_processing.yaml"):
+    def __init__(self, vocab, csv_file, root_dir: str = "./", 
+                 config_path: str = "../configs/audio_processing.yaml",
+                 transform: None = None):
         super(DevSet, self).__init__()
         self.params = get_configs(config_path)  # defined params
         self.audio_samples = pd.read_csv(csv_file)  # dataset defined as csv file
@@ -111,6 +117,8 @@ class DevSet(Dataset):
         self.hg_dataset = self.__create_huggingface_dataset(csv_path=csv_file)
         # map each transcript from str to index(int) in word2index dict
         self.hg_dataset = self.hg_dataset.map(self.__process_sample_transcript)
+        # transform function
+        self.transform = transform
 
     def __getitem__(self, index):
         """ return log mel spectrogram, and transcript """
@@ -119,7 +127,7 @@ class DevSet(Dataset):
         sample_path, sample_transcript = self.__get_audio_sample(index)
         array, rate = torchaudio.load(sample_path)
         # transform audio to mel spec
-        log_mel = audio_transforms(array=array, params=self.params)
+        log_mel = self.transform(array=array, params=self.params)
 
         # return log_mel and transcript
         return log_mel, torch.tensor(sample_transcript)
