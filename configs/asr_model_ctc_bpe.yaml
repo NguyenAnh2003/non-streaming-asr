@@ -1,14 +1,16 @@
 model:
   sample_rate: 16000
-  pretrained_encoder: "" # pretrained encoder used for feature extractor
-  encoder: # model encoder - customized
-    d_model:
-    self_attention_model: rel_pos_local_attn
-    att_context_size: [2, 2]
-    att_context_style: regular # regular or chunked_limited
-    xscaling: true # scales up the input embeddings by sqrt(d_model)
-    untie_biases: true # unties the biases of the TransformerXL layers
-    pos_emb_max_len: 5000
+  pretrained_model: "" # pretrained encoder used for feature extractor
+  use_nemo: True
+  nemo:
+    encoder: # model encoder - customized
+      d_model:
+      self_attention_model: rel_pos_local_attn
+      att_context_size: [2, 2]
+      att_context_style: regular # regular or chunked_limited
+      xscaling: true # scales up the input embeddings by sqrt(d_model)
+      untie_biases: true # unties the biases of the TransformerXL layers
+      pos_emb_max_len: 5000
 
 trainer:
   max_epochs: 100

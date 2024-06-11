@@ -6,7 +6,8 @@ import torch
 from torch import Tensor
 from pytorch_lightning import LightningModule
 from typing import List
-
+from torch.optim import Adam
+from omegaconf import OmegaConf, DictConfig
 
 class ASRModel(LightningModule):
 
@@ -14,24 +15,15 @@ class ASRModel(LightningModule):
     # the encoder will utilize the pre-trained model (which can be fine tuned on VN dataset)
     # use nemo is an arg that considered use nemo toolkit or transformer to get pretrained model
     # freeze encoder will be utilized
-    def __init__(
-        self,
-        pretrained_name,
-        d_model,
-        num_classes,
-        use_nemo: bool,
-        is_freeze_encoder: bool,
-    ):
+    def __init__(self, conf: DictConfig):
         super().__init__()
-        self.linear = nn.Linear(d_model, num_classes, bias=True)
-        self.pencoder = self.get_pretrained_encoder(pretrained_name)
-        self.use_nemo = use_nemo
-        self.is_freeze_encoder = is_freeze_encoder
+        self.conf = OmegaConf.create(conf)
+        self.pencoder = self.get_pretrained_encoder()
 
-        self.chain = nn.Sequential(self.pencoder, self.linear)
+        self.model = nn.Sequential(self.pencoder, self.linear)
 
-    def get_pretrained_encoder(self, model_name):
-
+    def get_pretrained_encoder(self):
+        model_name = self.conf.pretrained_model
         # considering use nemo toolkit or transformer
         if self.use_nemo:
             asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(
@@ -42,23 +34,31 @@ class ASRModel(LightningModule):
 
         return asr_model.encoder
 
-    def forward(self, x: Tensor, lengths: List):
-        out = self.encoder(x)
+    def forward(self, x: Tensor, lengths: List, targets):
+        """
+        Args:
+            x (Tensor): input with tensor
+            lengths (List): length input
+            targets (_type_): considered as labels
+        """
+        out = self.model(x)
         return out
+
+    def training_step(self, batch, batch_idx):
+        #
+        inputs, target = batch
+        output = self(inputs, target)
+        # define loss
+        loss = 0
+        return loss
 
 
 def main():
     params = get_configs("../configs/asr_model_ctc_bpe.yaml")
 
-    pretrained_model_name = "nvidia/stt_en_conformer_ctc_large"
+    params["model"]["pretrained_model"] = "nvidia/stt_en_conformer_ctc_large"
 
-    asr_model = ASRModel(
-        pretrained_name=pretrained_model_name,
-        d_model=512,
-        num_classes=128,
-        use_nemo=True,
-        is_freeze_encoder=True,
-    )
+    asr_model = ASRModel(params)
 
     print(f"Custom model: {asr_model}")
 
