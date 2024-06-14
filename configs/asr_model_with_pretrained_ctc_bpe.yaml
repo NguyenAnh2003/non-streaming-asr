@@ -1,7 +1,10 @@
 model:
   sample_rate: 16000
-  pretrained_model: "" # pretrained encoder used for feature extractor
-  use_nemo: True
+  pretrained_model: ??? # pretrained encoder used for feature extractor
+  use_pretrained: True # use pretrained
+  use_nemo: False # use nemo toolkit
+
+  # nemo toolkit - utilize nemo toolkit alter architecture
   nemo:
     encoder: # model encoder - customized
       d_model:
@@ -11,6 +14,9 @@ model:
       xscaling: true # scales up the input embeddings by sqrt(d_model)
       untie_biases: true # unties the biases of the TransformerXL layers
       pos_emb_max_len: 5000
+
+  log:
+    dir: '../core/logger/logs/model.log'
 
 trainer:
   max_epochs: 100

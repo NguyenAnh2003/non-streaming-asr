@@ -9,6 +9,7 @@ from typing import List
 from torch.optim import Adam
 from omegaconf import OmegaConf, DictConfig
 from parts.modules.decoder import ASRDecoder
+from core.logger.my_logger import setup_logger
 
 
 class ASRModel(LightningModule):
@@ -21,19 +22,20 @@ class ASRModel(LightningModule):
     def __init__(self, conf: DictConfig):
         super().__init__()
         self.conf = OmegaConf.create(conf)
-        self.pretrained_encoder = self.get_pretrained_encoder()
 
-        # decoder?
-        self.decoder = ASRDecoder()
+        if self.conf.model.use_pretrained == True:
+            self.pretrained_encoder = self.get_pretrained_encoder()
+
+        # self.decoder = ASRDecoder() # decoder?
 
     def get_pretrained_encoder(self):
         # considering use nemo toolkit or transformer
-        if self.use_nemo:
+        if self.conf.model.use_nemo:
             asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(
-                model_name=self.conf.pretrained_model
+                model_name=self.conf.model.pretrained_model
             )
         else:
-            asr_model = AutoModel.from_pretrained(self.conf.pretrained_model)
+            asr_model = AutoModel.from_pretrained(self.conf.model.pretrained_model)
 
         return asr_model.encoder
 
@@ -44,14 +46,12 @@ class ASRModel(LightningModule):
             lengths (List): length input
             targets (_type_): considered as labels
         """
-        out = self.model(x)
+        out = self.pretrained_encoder(x)
         return out
 
     def training_step(self, batch, batch_idx):
-        #
         inputs, target = batch
-        output = self(inputs, target)
-        # define loss
+        output = self.pretrained_encoder(inputs, target)
         loss = 0
         return loss
     
@@ -59,9 +59,9 @@ class ASRModel(LightningModule):
         return torch.nn.CTCLoss()
 
 def main():
-    params = get_configs("../configs/asr_model_ctc_bpe.yaml")
+    params = get_configs("../configs/asr_model_with_pretrained_ctc_bpe.yaml")
 
-    params["model"]["pretrained_model"] = "nvidia/stt_en_conformer_ctc_large"
+    params["model"]["pretrained_model"] = "vinai/PhoWhisper-base"
 
     asr_model = ASRModel(params)
 
