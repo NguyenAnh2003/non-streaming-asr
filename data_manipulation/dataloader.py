@@ -1,12 +1,11 @@
 import torch
 from torch.utils.data import DataLoader, Dataset # torch Dataset
 from datasets import Dataset as HuggingFaceDataset # huggingface Dataset
-from utils.utils import get_configs
+from parts.utils.utils import get_configs
 import torchaudio
 import pandas as pd
 import os
 from typing import Tuple, List
-from tqdm import tqdm
 import json
 
 

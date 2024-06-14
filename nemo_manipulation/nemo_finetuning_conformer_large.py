@@ -1,9 +1,7 @@
 import pytorch_lightning as pl
 import nemo.collections.asr as nemo_asr
 from pytorch_lightning.loggers import TensorBoardLogger
-from nemo.collections.asr.metrics.wer import WER
-import torchaudio
-from utils.utils import get_configs
+from parts.utils.utils import get_configs
 
 
 def main(MODEL_NAME: str, params):

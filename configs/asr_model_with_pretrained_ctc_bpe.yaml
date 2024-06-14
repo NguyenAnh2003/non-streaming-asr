@@ -15,6 +15,22 @@ model:
       untie_biases: true # unties the biases of the TransformerXL layers
       pos_emb_max_len: 5000
 
+  processor:
+    sample_rate: 16000
+    n_fft: 640
+    win_length: 640
+    hop_length: 321
+    window_fn: "torch.hamming_window"
+    center: True
+    pad_mode: "reflect"
+    power: 2.0
+    norm: "slaney"
+    n_mels: 80 # mel banks default n_mels
+    mel_scale: "slaney"
+    top_db: 25
+    pshift_bins_per_octave: 12
+    pshift_steps: 4
+
   log:
     dir: '../core/logger/logs/model.log'
 

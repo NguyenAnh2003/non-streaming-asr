@@ -2,7 +2,7 @@ from omegaconf import DictConfig
 import nemo.collections.asr as nemo_asr
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger
-from utils.utils import get_configs
+from parts.utils.utils import get_configs
 
 
 def main(MODEL_NAME: str, params):

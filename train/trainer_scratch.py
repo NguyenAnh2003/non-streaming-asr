@@ -1,12 +1,12 @@
 import torch.cuda
 from data_manipulation.dataloader import DevSet, TrainSet, TrainLoader, DevLoader, LibriSpeechVocabRAW
 from torch.optim import Adam
-from utils.train_utils import train_one_epoch, eval_one_epoch, setup_speech_model, get_device
-from utils.utils import get_configs
+from parts.utils.train_utils import train_one_epoch, eval_one_epoch, setup_speech_model, get_device
+from parts.utils.utils import get_configs
 import torch.nn as nn
 import time
 from logger.my_logger import setup_logger
-from utils.utils import get_executing_time
+from parts.utils.utils import get_executing_time
 
 # train logger
 _train_logger = setup_logger(path="../logger/logs/train.log", location="trainer")

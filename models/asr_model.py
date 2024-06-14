@@ -1,15 +1,11 @@
-from utils.utils import get_configs
+from parts.utils.utils import get_configs
 import nemo.collections.asr as nemo_asr
 from transformers import AutoModel
-import torch.nn as nn
 import torch
 from torch import Tensor
 from pytorch_lightning import LightningModule
 from typing import List
-from torch.optim import Adam
 from omegaconf import OmegaConf, DictConfig
-from parts.modules.decoder import ASRDecoder
-from core.logger.my_logger import setup_logger
 
 
 class ASRModel(LightningModule):
