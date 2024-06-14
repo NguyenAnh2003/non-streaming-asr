@@ -8,6 +8,8 @@ from pytorch_lightning import LightningModule
 from typing import List
 from torch.optim import Adam
 from omegaconf import OmegaConf, DictConfig
+from parts.modules.decoder import ASRDecoder
+
 
 class ASRModel(LightningModule):
 
@@ -15,22 +17,23 @@ class ASRModel(LightningModule):
     # the encoder will utilize the pre-trained model (which can be fine tuned on VN dataset)
     # use nemo is an arg that considered use nemo toolkit or transformer to get pretrained model
     # freeze encoder will be utilized
+
     def __init__(self, conf: DictConfig):
         super().__init__()
         self.conf = OmegaConf.create(conf)
-        self.pencoder = self.get_pretrained_encoder()
+        self.pretrained_encoder = self.get_pretrained_encoder()
 
-        self.model = nn.Sequential(self.pencoder, self.linear)
+        # decoder?
+        self.decoder = ASRDecoder()
 
     def get_pretrained_encoder(self):
-        model_name = self.conf.pretrained_model
         # considering use nemo toolkit or transformer
         if self.use_nemo:
             asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(
-                model_name=model_name
+                model_name=self.conf.pretrained_model
             )
         else:
-            asr_model = AutoModel.from_pretrained(model_name)
+            asr_model = AutoModel.from_pretrained(self.conf.pretrained_model)
 
         return asr_model.encoder
 
@@ -51,7 +54,9 @@ class ASRModel(LightningModule):
         # define loss
         loss = 0
         return loss
-
+    
+    def configure_optimizers(self):
+        return torch.nn.CTCLoss()
 
 def main():
     params = get_configs("../configs/asr_model_ctc_bpe.yaml")
