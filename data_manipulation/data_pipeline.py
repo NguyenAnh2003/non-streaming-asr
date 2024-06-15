@@ -6,6 +6,8 @@ import torchaudio.functional as F
 import torchaudio.transforms as T
 import math
 import pandas as pd
+import json
+import csv
 
 
 class DataProcessingPipeline:
@@ -120,6 +122,25 @@ class DataProcessingPipeline:
     def _get_duration(self, path):
         duration = librosa.core.get_duration(path=path, sr=16000)
         return duration
+
+    def build_metadata_manifests(self, path: str, outpath: str):
+        # example 
+        # build_data_manifest("./metadata/ls/test-other.csv", "./metadata/ls/test-other-manifest.json")
+        reader = csv.reader(open(path, "r", encoding="utf-8"))
+        next(reader)
+        with open(outpath, "w") as fout:
+            for line in reader:
+                try:
+                    duration = float(line[2])
+                    meta_data = {
+                        "audio_filepath": line[-1],
+                        "duration": duration,
+                        "text": line[1],
+                    }
+                    json.dump(meta_data, fout)
+                    fout.write("\n")
+                except ValueError:
+                    raise ValueError("Cannot convert str to float")
 
 
 class LibriSpeechDataProcessingPipeline:

@@ -192,65 +192,6 @@ def get_noise_files(path: str) -> List[str]:
 
     return result
 
-
-# remove unnecessary word
-def remove_un_data(csv_path: str):
-    # csv file
-    csv_file = open(csv_path, 'r', encoding="utf-8")
-    reader = csv.reader(csv_file)
-
-    # read vocab size
-    vocab_file = open("metadata/vocab.txt", 'r', encoding="utf-8")
-
-    for line in vocab_file:
-        word = line.replace("\n", "").strip()
-        csv_file.seek(0)
-        for row in reader:
-            matches = re.findall(r'\b{}\b'.format(re.escape(word)), row[1])
-            if matches:
-                # at least 1 will be moved to another file
-                print(f"Matching word: {word} row: {row[1]}")
-
-def process_vocab(path: str, out_path: str):
-    csv_file = open(path, 'r', encoding='utf-8')
-    reader = csv.reader(csv_file)
-
-    with open(out_path, 'a', encoding="utf-8") as outfile:
-        for row in reader:
-            transcript = row[1]
-            words = transcript.split(" ")
-            for word in words:
-                outfile.write(word + "\n")
-
-def collapsing_words(path: str, dest: str):
-    src = open(path, 'r', encoding='utf-8')
-    meno = set()
-    for word in src:
-        word = word.replace("\n", "")
-        if word not in meno:
-            meno.add(word)
-
-    with open(dest, 'a', encoding='utf-8') as outf:
-        for w in meno:
-            outf.write(w + '\n')
-
-def build_data_manifest(path: str, outpath: str):
-    reader = csv.reader(open(path, "r", encoding="utf-8"))
-    next(reader)
-    with open(outpath, 'w') as fout:
-        for line in reader:
-            try:
-                duration = float(line[2])
-                meta_data = {
-                    "audio_filepath": line[-1],
-                    "duration": duration,
-                    "text": line[1],
-                }
-                json.dump(meta_data, fout)
-                fout.write("\n")
-            except ValueError:
-                raise ValueError("Cannot convert str to float")
-
 # create noise (normal distribution)
 def create_noise(path: str):
     # Define parameters
@@ -308,5 +249,4 @@ if __name__ == "__main__":
     # ls_move_transcript_file() # move transcript files to another folder
     # concat_transcripts_txt_file()
     # write_metadata_txt_2_csv("./metadata/ls/metadata-test-other.csv") # write csv
-    build_data_manifest("./metadata/ls/test-other.csv", "./metadata/ls/test-other-manifest.json")
     print("DONE")
