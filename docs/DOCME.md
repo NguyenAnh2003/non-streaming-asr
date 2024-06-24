@@ -25,6 +25,8 @@
 24. Freezing model (Nemo): [link](https://github.com/NVIDIA/NeMo/issues/2334)
 25. Pointwise-ff: [link](https://serp.ai/position-wise-feed-forward-layer/)
 26. Simple explain GLU: [link](https://search.brave.com/search?q=gated+linear+unit&source=desktop&summary=1&summary_og=23590a48b50aa8b0bead86)
+27. VLSP dataset 2020: [link](https://institute.vinbigdata.org/events/vinbigdata-chia-se-100-gio-du-lieu-tieng-noi-cho-cong-dong/)
+
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
@@ -34,7 +36,6 @@
 1. Convolution Subsampling: used for sampling the input data, with kernel 3x3 abd stride 2
 2. DNN can ignore input topology and resize into column vector, but with the audio feature (mel-spectroram or log mel) these contain low level features that needed to learn so that CNN is suitable for this solution.
 3. LSTM out (out, hn, cn) while hn, cn is used for feed into another NN, output here is prediction.
-
 
 # Development
 1. ZipFormer: [link](https://arxiv.org/pdf/2310.11230.pdf)

@@ -49,16 +49,9 @@ def test(MODEL_NAME: str, params):
     asr_model.cuda()
     asr_model.eval()
 
-    # We will be computing Word Error Rate (WER) metric between our hypothesis and predictions.
-    # WER is computed as numerator/denominator.
-    # We'll gather all the test batches' numerators and denominators.
     wer_nums = []
     wer_denoms = []
 
-    # Loop over all test batches.
-    # Iterating over the model's `test_dataloader` will give us:
-    # (audio_signal, audio_signal_length, transcript_tokens, transcript_length)
-    # See the AudioToCharDataset for more details.
     for test_batch in asr_model.test_dataloader():
         test_batch = [x.cuda() for x in test_batch]
         targets = test_batch[2]
@@ -78,7 +71,6 @@ def test(MODEL_NAME: str, params):
         wer_nums.append(wer_num.detach().cpu().numpy())
         wer_denoms.append(wer_denom.detach().cpu().numpy())
 
-        # Release tensors from GPU memory
         del (
             test_batch,
             log_probs,
@@ -88,7 +80,6 @@ def test(MODEL_NAME: str, params):
             greedy_predictions,
         )
 
-    # We need to sum all numerators and denominators first. Then divide.
     print(f"WER = {sum(wer_nums) / sum(wer_denoms)}")
 
 
