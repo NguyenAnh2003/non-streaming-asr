@@ -5,14 +5,15 @@ import os
 import csv
 import pandas as pd
 import shutil
-from parts.modules.feats_extraction.log_mel import audio_transforms
 from typing import List, Tuple
 import torchaudio
 import torch
 from tqdm import tqdm
 import json
 from scipy.io import wavfile
-from data_manipulation.data_processing import _add_noise2audio
+from data_pipeline import DataProcessingPipeline
+
+data_pipeline = DataProcessingPipeline()
 
 import re # RegEx
 
@@ -171,7 +172,7 @@ def _get_long_audio(source_path: str = "./librispeech/train-custom-clean", param
         audio_array, _ = torchaudio.load(file_path)
 
         # get log mel shape
-        logmel_sample = audio_transforms(array=audio_array, params=params)
+        logmel_sample = data_pipeline.audio_transforms(sample_array=audio_array)
 
         # log mel shape [n_frames, banks]
         if logmel_sample.size(0) > 900:
@@ -236,7 +237,7 @@ def create_aug_audio(path: str):
         print(f"Processing with: {row[0]}")
         sample_path = os.path.join(root_dir, row[0] + ".flac")
         array, _ = torchaudio.load(sample_path)
-        augmented_audio = _add_noise2audio(array, noise_array)
+        augmented_audio = data_pipeline._add_noise2audio(array, noise_array)
         augmented_audio = augmented_audio.mean(0).unsqueeze(0)
 
         # ./librispeech/augmented-train/111.00.flac
