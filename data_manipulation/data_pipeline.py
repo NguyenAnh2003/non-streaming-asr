@@ -130,16 +130,16 @@ class DataProcessingPipeline:
         # build_data_manifest("./metadata/ls/test-other.csv", "./metadata/ls/test-other-manifest.json")
         reader = csv.reader(open(path, "r", encoding="utf-8"))
         next(reader)
-        with open(outpath, "w") as fout:
+        with open(outpath, "w", encoding="utf-8") as fout:
             for line in reader:
                 try:
-                    duration = float(line[2])
+                    duration = float(line[3])
                     meta_data = {
-                        "audio_filepath": line[-1],
+                        "audio_filepath": line[1],
                         "duration": duration,
-                        "text": line[1],
+                        "text": line[2],
                     }
-                    json.dump(meta_data, fout)
+                    json.dump(meta_data, fout, ensure_ascii=False)
                     fout.write("\n")
                 except ValueError:
                     raise ValueError("Cannot convert str to float")
