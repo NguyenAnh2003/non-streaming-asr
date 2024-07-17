@@ -27,6 +27,7 @@
 26. Simple explain GLU: [link](https://search.brave.com/search?q=gated+linear+unit&source=desktop&summary=1&summary_og=23590a48b50aa8b0bead86)
 27. VLSP dataset 2020: [link](https://institute.vinbigdata.org/events/vinbigdata-chia-se-100-gio-du-lieu-tieng-noi-cho-cong-dong/)
 28. AED: [link](https://www.linkedin.com/pulse/explanation-attention-based-encoder-decoder-deep-keshav-bhandari/)
+29. self-contrastive learning: [link](https://medium.com/popular-self-supervised-learning-methods-simclr/popular-self-supervised-learning-methods-simclr-and-swav-74f49d3a267)
 
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
