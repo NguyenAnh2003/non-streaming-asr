@@ -4,6 +4,8 @@ from omegaconf import OmegaConf, DictConfig
 import augment
 import random
 import torchaudio.transforms as T
+import torch.nn.functional as F
+import pytorch_lightning as pl
 
 
 class AudioAugmentation:
@@ -99,5 +101,15 @@ class ConstrastiveLoss(nn.Module):
         self.conf = OmegaConf.create(conf)
         self.temperature = temperature  # self.conf.model.temperature
 
-    def forward(self, x, y):
-        pass
+    def forward(self, x1, x2):
+        # dim input?
+        zi = F.normalize(x1, p=2, dim=1)
+        zj = F.normalize(x2, p=2, dim=1)
+
+
+class SimCLR(pl.LightningModule):
+    def __init__(self, *args: torch.Any, **kwargs: torch.Any) -> None:
+        super().__init__(*args, **kwargs)
+        
+        # self.model = #
+        self.loss_func = ConstrastiveLoss()
