@@ -1,6 +1,6 @@
 import torch
 from asr_models.asr_model import SpeechModel
-from parts.utils.utils import get_configs
+from build.parts.submodules.utils import get_configs
 from core.metric.wer import compute_wer
 from tqdm import tqdm
 
