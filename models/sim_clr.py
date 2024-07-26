@@ -14,8 +14,7 @@ from transformers import AutoModel
 class BasicASRModel(nn.Module):
     def __init__(self, conf) -> None:
         super().__init__()
-        self.conf = OmegaConf.create(conf)
-
+        self.conf = conf # already create as DictConfig with OmegaConf
         self.encoder = self._pretrained_encoder()
         self.mlp = nn.Sequential(
             nn.Linear(in_features=self.conf.model.mlp.in_feats,
@@ -162,7 +161,7 @@ class SimCLR(pl.LightningModule):
     def __init__(self, conf: DictConfig = None) -> None:
         super().__init__()
         self.conf = OmegaConf.create(conf)
-        self.model = ASRModel()
+        self.model = ASRModel(conf)
         self.loss_func = ConstrastiveLoss()
 
     def configure_optimizers(self):
