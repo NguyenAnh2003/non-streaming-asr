@@ -6,6 +6,43 @@ import random
 import torchaudio.transforms as T
 import torch.nn.functional as F
 import pytorch_lightning as pl
+from torch.optim import Adam, lr_scheduler
+from models.asr_model import ASRModel
+from transformers import AutoModel
+
+
+class BasicASRModel(nn.Module):
+    def __init__(self, conf) -> None:
+        super().__init__()
+        self.conf = OmegaConf.create(conf)
+
+        self.encoder = self._pretrained_encoder()
+        self.mlp = nn.Sequential(
+            nn.Linear(in_features=self.conf.model.mlp.in_feats,
+                      out_features=self.conf.model.mlp.out_feats, bias=True),
+            nn.ReLU(), nn.Dropout(p=0.1),
+            nn.Linear(in_features=self.conf.model.mlp.out_feats,
+                      out_features=128, bias=True))
+
+        self.softmax = nn.Softmax(dim=-1) # softmax the last dim
+
+
+    def _pretrained_encoder(self):
+        asr_model = AutoModel.from_pretrained(self.conf.model.pretrained_model)
+        encoder = asr_model.encoder
+
+        # freeze encoder
+        if self.conf.model.freeze == True:
+            for params in encoder.parameters():
+                params.requires_grad = False
+
+        return encoder
+
+    def forward(self, x: torch.Tensor):
+        encoder_out = self.encoder(x)
+        out = self.mlp(encoder_out)
+        out = self.softmax(out)
+        return out
 
 
 class AudioAugmentation:
@@ -101,15 +138,56 @@ class ConstrastiveLoss(nn.Module):
         self.conf = OmegaConf.create(conf)
         self.temperature = temperature  # self.conf.model.temperature
 
+    def calc_similarity_batch(self, x1, x2):
+        representations = torch.cat([x1, x2], dim=0)
+        return F.cosine_similarity(
+            representations.unsqueeze(1), representations.unsqueeze(0), dim=2
+        )
+
     def forward(self, x1, x2):
         # dim input?
         zi = F.normalize(x1, p=2, dim=1)
         zj = F.normalize(x2, p=2, dim=1)
 
+        # shape: (batch, seq, dim)
+        sim_matrix = self.calc_similarity_batch(zi, zj)
+
+        sim_ij = torch.diag(sim_matrix, self.conf.model.train.batch_size)
+        sim_ji = torch.diag(sim_matrix, -self.conf.model.train.batch_size)
+
+        positives = torch.cat([sim_ij, sim_ji], dim=0)
+
 
 class SimCLR(pl.LightningModule):
-    def __init__(self, *args: torch.Any, **kwargs: torch.Any) -> None:
-        super().__init__(*args, **kwargs)
-        
-        # self.model = #
+    def __init__(self, conf: DictConfig = None) -> None:
+        super().__init__()
+        self.conf = OmegaConf.create(conf)
+        self.model = ASRModel()
         self.loss_func = ConstrastiveLoss()
+
+    def configure_optimizers(self):
+        optim = Adam(
+            self.model.parameters(),
+            lr=self.conf.model.train.lr,
+            weight_decay=self.conf.model.train.weight_decay,
+        )
+
+        lr_scheduler = lr_scheduler.CosineAnnealingLR(
+            optim,
+            T_max=self.conf.model.train.max_epochs,
+            eta_min=self.conf.model.train.lr / 50,
+        )
+
+        return [optim], [lr_scheduler]
+
+    def nt_xent_loss(self, batch, mode="train"):
+        # integrate with speech model (asr model)
+        audio, _ = batch
+
+        pass
+
+    def training_step(self, batch, batch_idx):
+        pass
+
+    def validation_step(self, batch, batch_idx):
+        pass

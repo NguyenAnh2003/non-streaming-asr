@@ -50,19 +50,6 @@ class ASRModel(LightningModule):
         output = self.pretrained_encoder(inputs, target)
         loss = 0
         return loss
-    
+
     def configure_optimizers(self):
         return torch.nn.CTCLoss()
-
-def main():
-    params = get_configs("../configs/asr_model_with_pretrained_ctc_bpe.yaml")
-
-    params["model"]["pretrained_model"] = "vinai/PhoWhisper-base"
-
-    asr_model = ASRModel(params)
-
-    print(f"Custom model: {asr_model}")
-
-
-if __name__ == "__main__":
-    main()

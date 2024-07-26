@@ -1,0 +1,21 @@
+model:
+  pretrained_model: ??? # pretrained encoder used for feature extractor
+  # freeze (bool)
+  freeze: ???
+
+  # if using hf just need to define pretrained model
+  # basic MLP network
+  mlp:
+    in_feats: ???
+    out_feats: ???
+
+  log:
+    dir: '../core/logger/logs/model.log'
+  
+trainer:
+  batch_size: 8 # batch
+  max_epochs: 50
+  train_path: ???
+  dev_path: ???
+  test_path: ???
+  
