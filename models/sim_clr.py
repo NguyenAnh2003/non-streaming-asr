@@ -172,13 +172,13 @@ class SimCLR(pl.LightningModule):
             weight_decay=self.conf.model.train.weight_decay,
         )
 
-        lr_scheduler = lr_scheduler.CosineAnnealingLR(
+        scheduler = lr_scheduler.CosineAnnealingLR(
             optim,
             T_max=self.conf.model.train.max_epochs,
             eta_min=self.conf.model.train.lr / 50,
         )
 
-        return [optim], [lr_scheduler]
+        return [optim], [scheduler]
 
     def nt_xent_loss(self, batch, mode="train"):
         # integrate with speech model (asr model)
