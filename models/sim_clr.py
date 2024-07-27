@@ -63,9 +63,9 @@ class AudioTransforms:
             self.reverb_audio,  # reverb audio with room echo sound
         ]
 
-        self.transforms_log_melspectrogram = [self.time_mask, self.freq_mask]
+        self.transforms_melspectrogram = [self.time_mask, self.freq_mask]
 
-    def transforms_wavform_2_log_melspec(self, audio_array):
+    def transforms_wavform_2_melspec(self, audio_array):
         mel_transform = T.MelSpectrogram()
         mel_spec = mel_transform(audio_array)
         return mel_spec
@@ -81,9 +81,9 @@ class AudioTransforms:
         audio_array = random_transform_wavform_func(audio_array)
 
         # convert to mel-spectrogram
-        log_mel_spec = self.transforms_wavform_2_log_melspec(audio_array)
+        log_mel_spec = self.transforms_wavform_2_melspec(audio_array)
         # random aug log mel spectrogram
-        log_mel_spec_func = random.choice(self.transforms_log_melspectrogram)
+        log_mel_spec_func = random.choice(self.transforms_melspectrogram)
         log_mel_spec = log_mel_spec_func(log_mel_spec)
 
         return log_mel_spec
