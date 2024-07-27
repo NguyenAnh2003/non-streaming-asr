@@ -15,6 +15,7 @@ model:
 trainer:
   batch_size: 8 # batch
   max_epochs: 50
+  root_dir: ???
   train_path: ???
   dev_path: ???
   test_path: ???

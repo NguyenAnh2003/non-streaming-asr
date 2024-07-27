@@ -9,22 +9,28 @@ import pytorch_lightning as pl
 from torch.optim import Adam, lr_scheduler
 from models.asr_model import ASRModel
 from transformers import AutoModel
+import torchaudio
 
 
 class BasicASRModel(nn.Module):
     def __init__(self, conf) -> None:
         super().__init__()
-        self.conf = conf # already create as DictConfig with OmegaConf
+        self.conf = conf  # already create as DictConfig with OmegaConf
         self.encoder = self._pretrained_encoder()
         self.mlp = nn.Sequential(
-            nn.Linear(in_features=self.conf.model.mlp.in_feats,
-                      out_features=self.conf.model.mlp.out_feats, bias=True),
-            nn.ReLU(), nn.Dropout(p=0.1),
-            nn.Linear(in_features=self.conf.model.mlp.out_feats,
-                      out_features=128, bias=True))
+            nn.Linear(
+                in_features=self.conf.model.mlp.in_feats,
+                out_features=self.conf.model.mlp.out_feats,
+                bias=True,
+            ),
+            nn.ReLU(),
+            nn.Dropout(p=0.1),
+            nn.Linear(
+                in_features=self.conf.model.mlp.out_feats, out_features=128, bias=True
+            ),
+        )
 
-        self.softmax = nn.Softmax(dim=-1) # softmax the last dim
-
+        self.softmax = nn.Softmax(dim=-1)  # softmax the last dim
 
     def _pretrained_encoder(self):
         asr_model = AutoModel.from_pretrained(self.conf.model.pretrained_model)
@@ -44,7 +50,7 @@ class BasicASRModel(nn.Module):
         return out
 
 
-class AudioAugmentation:
+class AudioTransforms:
     # transform function contains
     # pitch shift, reverbration, adding noise
     # advanced techniques - time masking, freq masking
@@ -55,7 +61,6 @@ class AudioAugmentation:
         self.transforms_waveform = [
             self.pitch_shift,  # shifting audio pitch
             self.reverb_audio,  # reverb audio with room echo sound
-            self.add_noise,
         ]
 
         self.transforms_log_melspectrogram = [self.time_mask, self.freq_mask]
@@ -65,7 +70,12 @@ class AudioAugmentation:
         mel_spec = mel_transform(audio_array)
         return mel_spec
 
-    def audio_augment(self, audio_array):
+    def _load_audio_signal(self, audio_path):
+        audio_array, _ = torchaudio.load(audio_path)
+        return audio_array
+
+    def audio_augment(self, audio_path):
+        audio_array = self._load_audio_signal(audio_path)
         # random audio aug function
         random_transform_wavform_func = random.choice(self.transforms_waveform)
         audio_array = random_transform_wavform_func(audio_array)
@@ -78,22 +88,22 @@ class AudioAugmentation:
 
         return log_mel_spec
 
-    def reverb_audio(self):
+    def reverb_audio(self, audio_array):
         reverbered_audio = (
             augment.EffectChain()
             .reverb(100, 80, 90)
             .channels(1)
-            .apply(self.array, src_info={"rate": self.rate})
+            .apply(audio_array, src_info={"rate": self.rate})
         )
 
         return reverbered_audio
 
-    def pitch_shift(self):
+    def pitch_shift(self, audio_array):
         pitch_shifted_audio = (
             augment.EffectChain()
             .pitch(200)
             .rate(self.rate)
-            .apply(self.array, src_info={"rate": self.rate})
+            .apply(audio_array, src_info={"rate": self.rate})
         )
         return pitch_shifted_audio
 
@@ -107,6 +117,7 @@ class AudioAugmentation:
         pass
 
     def __call__(self, input):
+        # input is audio_path
         x1 = self.audio_augment(input)
         x2 = self.audio_augment(input)
         return x1, x2
