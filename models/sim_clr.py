@@ -86,7 +86,6 @@ class SpectrogramToDB(object):
             )
         return spec_db
 
-
 class AudioTransforms:
     # transform function contains
     # pitch shift, reverbration, adding noise
@@ -102,26 +101,30 @@ class AudioTransforms:
 
         self.augment_melspec = [self.time_mask, self.freq_mask]
 
-    def transforms_wavform_2_melspec(self, audio_array):
-        # melspec transform function
-        mel_transform = T.MelSpectrogram(
-            sample_rate=self.rate,
-            n_mels=80,
-            n_fft=640,
-            win_length=640,
-            hop_length=321,
-            f_min=-80,
-            f_max=8000,
-            pad=0,
-        )
-
-        mel_spec = mel_transform(audio_array)
-        mel_spec = SpectrogramToDB(stype="magnitude", top_db=8000)(mel_spec)
-        return mel_spec
-
     def _load_audio_signal(self, audio_path):
         audio_array, _ = torchaudio.load(audio_path)
         return audio_array
+
+    def transforms_wavform_2_melspec(self, audio_array):
+        # melspec transform function
+        mel_transform = T.MelSpectrogram(sample_rate=self.rate, 
+                                         n_mels=80, 
+                                         n_fft=640, 
+                                         win_length=640, 
+                                         hop_length=321, 
+                                         f_min=-80, 
+                                         f_max=8000, 
+                                         pad=0)
+        
+        mel_spec = mel_transform(audio_array)
+        mel_spec = SpectrogramToDB(stype='magnitude', top_db=8000)(mel_spec)
+        return mel_spec
+
+    def _feature_extraction_original(self, audio_path):
+        # melspec transform function
+        audio_array = self._load_audio_signal(audio_path)
+        mel_spec = self.transforms_wavform_2_melspec(audio_array)
+        return mel_spec
 
     def audio_augment(self, audio_path):
         audio_array = self._load_audio_signal(audio_path)
@@ -159,40 +162,34 @@ class AudioTransforms:
     def time_mask(self, spec, T=40, num_masks=1, replace_with_zero=False):
         cloned = spec.clone()
         len_spectro = cloned.shape[2]
-
+        
         for i in range(0, num_masks):
             t = random.randrange(0, T)
             t_zero = random.randrange(0, len_spectro - t)
 
             # avoids randrange error if values are equal and range is empty
-            if t_zero == t_zero + t:
-                return cloned
+            if (t_zero == t_zero + t): return cloned
 
             mask_end = random.randrange(t_zero, t_zero + t)
-            if replace_with_zero:
-                cloned[0][:, t_zero:mask_end] = 0
-            else:
-                cloned[0][:, t_zero:mask_end] = cloned.mean()
+            if (replace_with_zero): cloned[0][:,t_zero:mask_end] = 0
+            else: cloned[0][:,t_zero:mask_end] = cloned.mean()
         return cloned
 
-    def freq_mask(self, spec, F=30, num_masks=1, replace_with_zero=False):
+    def freq_mask(self, spec, F=30, num_masks=2, replace_with_zero=False):
         cloned = spec.clone()
         num_mel_channels = cloned.shape[1]
-
-        for i in range(0, num_masks):
+        
+        for i in range(0, num_masks):        
             f = random.randrange(0, F)
             f_zero = random.randrange(0, num_mel_channels - f)
 
             # avoids randrange error if values are equal and range is empty
-            if f_zero == f_zero + f:
-                return cloned
+            if (f_zero == f_zero + f): return cloned
 
-            mask_end = random.randrange(f_zero, f_zero + f)
-            if replace_with_zero:
-                cloned[0][f_zero:mask_end] = 0
-            else:
-                cloned[0][f_zero:mask_end] = cloned.mean()
-
+            mask_end = random.randrange(f_zero, f_zero + f) 
+            if (replace_with_zero): cloned[0][f_zero:mask_end] = 0
+            else: cloned[0][f_zero:mask_end] = cloned.mean()
+        
         return cloned
 
     def add_noise(self):
@@ -200,7 +197,7 @@ class AudioTransforms:
 
     def __call__(self, input):
         # input is audio path
-        x1 = self.audio_augment(input)
+        x1 = self._feature_extraction_original(input) # keep one original
         x2 = self.audio_augment(input)
         return x1, x2
 
