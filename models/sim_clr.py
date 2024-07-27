@@ -197,7 +197,7 @@ class AudioTransforms:
 
     def __call__(self, input):
         # input is audio path
-        x1 = self._feature_extraction_original(input) # keep one original
+        x1 = self.audio_augment(input) # keep one original
         x2 = self.audio_augment(input)
         return x1, x2
 
