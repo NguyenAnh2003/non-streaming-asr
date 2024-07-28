@@ -40,3 +40,7 @@ class SimCLRDataset(Dataset):
 class SimCLRDataloader(DataLoader):
     def __init__(self):
         super().__init__()
+        self.collate_fn = self.collate_function
+        
+    def collate_function(self):
+        pass

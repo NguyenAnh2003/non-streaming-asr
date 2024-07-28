@@ -10,6 +10,7 @@ from torch.optim import Adam, lr_scheduler
 from transformers import AutoModel, WhisperTokenizer, WhisperFeatureExtractor
 import torchaudio
 import numpy as np
+from lightly.loss import NTXentLoss # https://docs.lightly.ai/self-supervised-learning/examples/simclr.html
 
 
 class BasicASRModel(nn.Module):
@@ -19,6 +20,7 @@ class BasicASRModel(nn.Module):
         self.encoder = self._pretrained_encoder()
 
         # acting as projection head
+        # https://arxiv.org/pdf/2212.11491 dive into projection head
         self.mlp = nn.Sequential(
             nn.Linear(
                 in_features=self.conf.model.mlp.in_feats,
@@ -216,6 +218,8 @@ class SimCLR(pl.LightningModule):
         super().__init__()
         self.conf = OmegaConf.create(conf)
         self.asr_model = BasicASRModel(conf)
+        self.temperature = 0.55
+        self.nt_xent_loss = NTXentLoss()
 
     def configure_optimizers(self):
         optim = Adam(
@@ -232,9 +236,18 @@ class SimCLR(pl.LightningModule):
 
         return [optim], [scheduler]
 
-    def nt_xent_loss(self, batch, mode="train"):
+    def loss(self, batch, mode="train"):
         # integrate with speech model (asr model)
-        pass
+        melspecs, _ = batch  # get melspec augmented
+
+        xi, xj = melspecs
+        zi = self.asr_model(xi)
+        zj = self.asr_model(xj)
+        # loss
+        sim_matrix = self._calc_sim(zi, zj) / self.temperature
+        sim_matrix = torch.exp(sim_matrix)
+
+        return loss
 
     def info_nce_loss(self, batch, mode="train"):
         melspecs, _ = batch  # get melspec augmented
@@ -242,9 +255,6 @@ class SimCLR(pl.LightningModule):
         xi, xj = melspecs
         zi = self.asr_model(xi)
         zj = self.asr_model(xj)
-        
-        # calculate similarity matrix
-        similarity_matrx = self._calc_sim(zi, zj)
 
 
         self.log("train_loss")
@@ -252,15 +262,15 @@ class SimCLR(pl.LightningModule):
 
     def _calc_sim(self, zi, zj):
         representations = torch.cat((zi, zj), dim=0)
-        sim_matrx = F.cosine_similarity(representations.unsqueeze(1), 
-                                  representations.unsqueeze(0),
-                                  dim=-1)
+        sim_matrx = F.cosine_similarity(
+            representations.unsqueeze(1), representations.unsqueeze(0), dim=-1
+        )
         return sim_matrx
 
     def training_step(self, batch, batch_idx):
         # return loss each step - lightning module include backward
         # process not need to pay attention
-        return self.info_nce_loss(batch, mode="train")
+        return self.loss(batch, mode="train")
 
     def validation_step(self, batch, batch_idx):
-        return self.info_nce_loss(batch, mode="val")
+        return self.loss(batch, mode="val")
