@@ -7,7 +7,6 @@ import torchaudio.transforms as T
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torch.optim import Adam, lr_scheduler
-from models.asr_model import ASRModel
 from transformers import AutoModel
 import torchaudio
 import numpy as np
@@ -86,6 +85,7 @@ class SpectrogramToDB(object):
             )
         return spec_db
 
+
 class AudioTransforms:
     # transform function contains
     # pitch shift, reverbration, adding noise
@@ -107,17 +107,19 @@ class AudioTransforms:
 
     def transforms_wavform_2_melspec(self, audio_array):
         # melspec transform function
-        mel_transform = T.MelSpectrogram(sample_rate=self.rate, 
-                                         n_mels=80, 
-                                         n_fft=640, 
-                                         win_length=640, 
-                                         hop_length=321, 
-                                         f_min=-80, 
-                                         f_max=8000, 
-                                         pad=0)
-        
+        mel_transform = T.MelSpectrogram(
+            sample_rate=self.rate,
+            n_mels=80,
+            n_fft=640,
+            win_length=640,
+            hop_length=321,
+            f_min=-80,
+            f_max=8000,
+            pad=0,
+        )
+
         mel_spec = mel_transform(audio_array)
-        mel_spec = SpectrogramToDB(stype='magnitude', top_db=8000)(mel_spec)
+        mel_spec = SpectrogramToDB(stype="magnitude", top_db=8000)(mel_spec)
         return mel_spec
 
     def _feature_extraction_original(self, audio_path):
@@ -162,34 +164,40 @@ class AudioTransforms:
     def time_mask(self, spec, T=40, num_masks=1, replace_with_zero=False):
         cloned = spec.clone()
         len_spectro = cloned.shape[2]
-        
+
         for i in range(0, num_masks):
             t = random.randrange(0, T)
             t_zero = random.randrange(0, len_spectro - t)
 
             # avoids randrange error if values are equal and range is empty
-            if (t_zero == t_zero + t): return cloned
+            if t_zero == t_zero + t:
+                return cloned
 
             mask_end = random.randrange(t_zero, t_zero + t)
-            if (replace_with_zero): cloned[0][:,t_zero:mask_end] = 0
-            else: cloned[0][:,t_zero:mask_end] = cloned.mean()
+            if replace_with_zero:
+                cloned[0][:, t_zero:mask_end] = 0
+            else:
+                cloned[0][:, t_zero:mask_end] = cloned.mean()
         return cloned
 
     def freq_mask(self, spec, F=30, num_masks=2, replace_with_zero=False):
         cloned = spec.clone()
         num_mel_channels = cloned.shape[1]
-        
-        for i in range(0, num_masks):        
+
+        for i in range(0, num_masks):
             f = random.randrange(0, F)
             f_zero = random.randrange(0, num_mel_channels - f)
 
             # avoids randrange error if values are equal and range is empty
-            if (f_zero == f_zero + f): return cloned
+            if f_zero == f_zero + f:
+                return cloned
 
-            mask_end = random.randrange(f_zero, f_zero + f) 
-            if (replace_with_zero): cloned[0][f_zero:mask_end] = 0
-            else: cloned[0][f_zero:mask_end] = cloned.mean()
-        
+            mask_end = random.randrange(f_zero, f_zero + f)
+            if replace_with_zero:
+                cloned[0][f_zero:mask_end] = 0
+            else:
+                cloned[0][f_zero:mask_end] = cloned.mean()
+
         return cloned
 
     def add_noise(self):
@@ -197,7 +205,7 @@ class AudioTransforms:
 
     def __call__(self, input):
         # input is audio path
-        x1 = self.audio_augment(input) # keep one original
+        x1 = self.audio_augment(input)  # keep one original
         x2 = self.audio_augment(input)
         return x1, x2
 
@@ -216,43 +224,11 @@ class ProjectionHeadNetwork(nn.Module):
         return out
 
 
-class ConstrastiveLoss(nn.Module):
-    # implement based SimCLR framework
-    # the working principle input -> split 2 sample and augment another one ->
-    # perform with f(.) (can be transformer encoder) -> perform representation
-    # projection head g(.)
-    # calculate the cosine similarity
-    def __init__(self, conf: DictConfig = None, temperature=0.7) -> None:
-        super().__init__()
-        self.conf = OmegaConf.create(conf)
-        self.temperature = temperature  # self.conf.model.temperature
-
-    def calc_similarity_batch(self, x1, x2):
-        representations = torch.cat([x1, x2], dim=0)
-        return F.cosine_similarity(
-            representations.unsqueeze(1), representations.unsqueeze(0), dim=2
-        )
-
-    def forward(self, x1, x2):
-        # dim input?
-        zi = F.normalize(x1, p=2, dim=1)
-        zj = F.normalize(x2, p=2, dim=1)
-
-        # shape: (batch, seq, dim)
-        sim_matrix = self.calc_similarity_batch(zi, zj)
-
-        sim_ij = torch.diag(sim_matrix, self.conf.model.train.batch_size)
-        sim_ji = torch.diag(sim_matrix, -self.conf.model.train.batch_size)
-
-        positives = torch.cat([sim_ij, sim_ji], dim=0)
-
-
 class SimCLR(pl.LightningModule):
     def __init__(self, conf: DictConfig = None) -> None:
         super().__init__()
         self.conf = OmegaConf.create(conf)
-        self.model = ASRModel(conf)
-        self.loss_func = ConstrastiveLoss()
+        self.asr_model = BasicASRModel(conf)
 
     def configure_optimizers(self):
         optim = Adam(
@@ -271,12 +247,23 @@ class SimCLR(pl.LightningModule):
 
     def nt_xent_loss(self, batch, mode="train"):
         # integrate with speech model (asr model)
-        audio, _ = batch
-
         pass
+
+    def info_nce_loss(self, batch, mode="train"):
+        melspecs, _ = batch  # get melspecs per batch
+
+        embs = self.asr_model(melspecs)  #
+
+        # calculate d_model (last dim)
+        similarity = F.cosine_similarity(embs[:, None, :], embs[None, :, :], dim=-1)
+
+        self.log("train_loss")
+        return
 
     def training_step(self, batch, batch_idx):
-        pass
+        # return loss each step - lightning module include backward
+        # process not need to pay attention
+        return self.info_nce_loss(batch, mode="train")
 
     def validation_step(self, batch, batch_idx):
-        pass
+        return self.info_nce_loss(batch, mode="val")

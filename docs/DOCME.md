@@ -29,6 +29,8 @@
 28. AED: [link](https://www.linkedin.com/pulse/explanation-attention-based-encoder-decoder-deep-keshav-bhandari/)
 29. self-contrastive learning: [link](https://medium.com/popular-self-supervised-learning-methods-simclr/popular-self-supervised-learning-methods-simclr-and-swav-74f49d3a267)
 30. SpecAugment torch & torchaudio: [link](https://github.com/zcaceres/spec_augment/blob/master/SpecAugment.ipynb)
+31. Finetuning Whisper: [link](https://billtcheng2013.medium.com/openai-whisper-fine-tuning-f519be0f6d4a)
+
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
 2. kernel size for audio: [link](https://stats.stackexchange.com/questions/441847/conv2d-kernel-size-for-audio-related-tasks)
