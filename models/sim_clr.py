@@ -219,7 +219,6 @@ class SimCLR(pl.LightningModule):
         self.conf = OmegaConf.create(conf)
         self.asr_model = BasicASRModel(conf)
         self.temperature = 0.55
-        self.nt_xent_loss = NTXentLoss()
 
     def configure_optimizers(self):
         optim = Adam(
@@ -236,7 +235,7 @@ class SimCLR(pl.LightningModule):
 
         return [optim], [scheduler]
 
-    def loss(self, batch, mode="train"):
+    def nt_xent_loss(self, batch, mode="train"):
         # integrate with speech model (asr model)
         melspecs, _ = batch  # get melspec augmented
 
@@ -244,8 +243,10 @@ class SimCLR(pl.LightningModule):
         zi = self.asr_model(xi)
         zj = self.asr_model(xj)
         # loss
-        sim_matrix = self._calc_sim(zi, zj) / self.temperature
-        sim_matrix = torch.exp(sim_matrix)
+        sim_matrix = torch.exp(self._calc_sim(zi, zj) / self.temperature)
+        
+
+        self.log(mode + "_loss", loss)
 
         return loss
 
@@ -255,8 +256,7 @@ class SimCLR(pl.LightningModule):
         xi, xj = melspecs
         zi = self.asr_model(xi)
         zj = self.asr_model(xj)
-
-
+        # 
         self.log("train_loss")
         return
 
@@ -270,7 +270,7 @@ class SimCLR(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         # return loss each step - lightning module include backward
         # process not need to pay attention
-        return self.loss(batch, mode="train")
+        return self.nt_xent_loss(batch, mode="train")
 
     def validation_step(self, batch, batch_idx):
-        return self.loss(batch, mode="val")
+        return self.nt_xent_loss(batch, mode="val")

@@ -36,11 +36,14 @@ class SimCLRDataset(Dataset):
         dataset = HFDataset.from_json(self.conf.trainer.train_path)
         return dataset
 
+    def __len__(self):
+        return len(self.dataset)
+
 
 class SimCLRDataloader(DataLoader):
     def __init__(self):
         super().__init__()
         self.collate_fn = self.collate_function
-        
+
     def collate_function(self):
         pass
