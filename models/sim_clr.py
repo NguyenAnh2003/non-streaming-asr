@@ -7,7 +7,7 @@ import torchaudio.transforms as T
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torch.optim import Adam, lr_scheduler
-from transformers import AutoModel
+from transformers import AutoModel, WhisperTokenizer, WhisperFeatureExtractor
 import torchaudio
 import numpy as np
 
@@ -17,6 +17,8 @@ class BasicASRModel(nn.Module):
         super().__init__()
         self.conf = conf  # already create as DictConfig with OmegaConf
         self.encoder = self._pretrained_encoder()
+
+        # acting as projection head
         self.mlp = nn.Sequential(
             nn.Linear(
                 in_features=self.conf.model.mlp.in_feats,
@@ -43,7 +45,7 @@ class BasicASRModel(nn.Module):
 
         return encoder
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         encoder_out = self.encoder(x)
         out = self.mlp(encoder_out)
         out = self.softmax(out)
@@ -92,6 +94,9 @@ class AudioTransforms:
     # advanced techniques - time masking, freq masking
     def __init__(self, rate=16_000) -> None:
         self.rate = rate
+        self.whisper_feature_extractor = WhisperFeatureExtractor.from_pretrained(
+            "openai/whisper-base"
+        )
 
         # transform function input should be mel spectrogram
         self.augment_waveform = [
@@ -107,25 +112,19 @@ class AudioTransforms:
 
     def transforms_wavform_2_melspec(self, audio_array):
         # melspec transform function
-        mel_transform = T.MelSpectrogram(
-            sample_rate=self.rate,
-            n_mels=80,
-            n_fft=640,
-            win_length=640,
-            hop_length=321,
-            f_min=-80,
-            f_max=8000,
-            pad=0,
-        )
-
-        mel_spec = mel_transform(audio_array)
+        # using WhisperFeatureExtractor to compute mel-spectrogram
+        mel_spec = self.whisper_feature_extractor(
+            audio_array, self.rate, return_tensors="pt"
+        ).input_features  #
         mel_spec = SpectrogramToDB(stype="magnitude", top_db=8000)(mel_spec)
         return mel_spec
 
     def _feature_extraction_original(self, audio_path):
         # melspec transform function
         audio_array = self._load_audio_signal(audio_path)
+        audio_array = audio_array.squeeze(0)  # remove batch dim
         mel_spec = self.transforms_wavform_2_melspec(audio_array)
+        print(f"mel: {mel_spec.shape}")
         return mel_spec
 
     def audio_augment(self, audio_path):
@@ -133,6 +132,8 @@ class AudioTransforms:
         # random audio aug function
         for funcs in self.augment_waveform:
             audio_array = funcs(audio_array)
+
+        audio_array = audio_array.squeeze(0)  # remove batch dim
 
         # convert to mel-spectrogram
         mel_spec = self.transforms_wavform_2_melspec(audio_array)
@@ -210,20 +211,6 @@ class AudioTransforms:
         return x1, x2
 
 
-class ProjectionHeadNetwork(nn.Module):
-    def __init__(self, in_feats, out_feats, hidden_dim, bias: bool = True):
-        super.__init__()
-        self.fc1 = nn.Linear(in_features=in_feats, out_features=hidden_dim, bias=bias)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(in_features=hidden_dim, out_features=out_feats, bias=bias)
-
-        self.chain = nn.Sequential(self.fc1, self.relu, self.fc2)
-
-    def forward(self, x):
-        out = self.chain(x)
-        return out
-
-
 class SimCLR(pl.LightningModule):
     def __init__(self, conf: DictConfig = None) -> None:
         super().__init__()
@@ -250,15 +237,25 @@ class SimCLR(pl.LightningModule):
         pass
 
     def info_nce_loss(self, batch, mode="train"):
-        melspecs, _ = batch  # get melspecs per batch
+        melspecs, _ = batch  # get melspec augmented
 
-        embs = self.asr_model(melspecs)  #
-
-        # calculate d_model (last dim)
-        similarity = F.cosine_similarity(embs[:, None, :], embs[None, :, :], dim=-1)
+        xi, xj = melspecs
+        zi = self.asr_model(xi)
+        zj = self.asr_model(xj)
+        
+        # calculate similarity matrix
+        similarity_matrx = self._calc_sim(zi, zj)
+        
 
         self.log("train_loss")
         return
+
+    def _calc_sim(self, zi, zj):
+        representations = torch.cat((zi, zj), dim=0)
+        sim = F.cosine_similarity(representations.unsqueeze(1), 
+                                  representations.unsqueeze(0),
+                                  dim=-1)
+        return sim
 
     def training_step(self, batch, batch_idx):
         # return loss each step - lightning module include backward
