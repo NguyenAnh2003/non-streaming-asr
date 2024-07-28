@@ -245,17 +245,17 @@ class SimCLR(pl.LightningModule):
         
         # calculate similarity matrix
         similarity_matrx = self._calc_sim(zi, zj)
-        
+
 
         self.log("train_loss")
         return
 
     def _calc_sim(self, zi, zj):
         representations = torch.cat((zi, zj), dim=0)
-        sim = F.cosine_similarity(representations.unsqueeze(1), 
+        sim_matrx = F.cosine_similarity(representations.unsqueeze(1), 
                                   representations.unsqueeze(0),
                                   dim=-1)
-        return sim
+        return sim_matrx
 
     def training_step(self, batch, batch_idx):
         # return loss each step - lightning module include backward
