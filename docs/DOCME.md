@@ -32,6 +32,7 @@
 31. Finetuning Whisper: [link](https://billtcheng2013.medium.com/openai-whisper-fine-tuning-f519be0f6d4a)
 32. SimCLR gg code: [link](https://amitness.com/posts/simclr#simclr-code)
 33. intuition SimCLR: [link](https://amitness.com/posts/simclr#simclr-code)
+34. Core SSL: [link](https://viblo.asia/p/tang-hieu-suat-cua-mo-hinh-ung-dung-self-supervised-learning-sao-cho-hieu-qua-1VgZvAn7KAw)
 
 ### Guides
 1. build guide: [link](https://www.assemblyai.com/blog/end-to-end-speech-recognition-pytorch/)
